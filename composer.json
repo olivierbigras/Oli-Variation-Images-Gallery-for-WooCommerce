@@ -1,0 +1,30 @@
+{
+    "name": "bigrat95/oli-variation-images-gallery",
+    "description": "Add unlimited gallery images per product variation with thumbnail gallery, zoom, and lightbox support",
+    "type": "wordpress-plugin",
+    "license": "GPL-2.0-or-later",
+    "authors": [
+        {
+            "name": "Olivier Bigras",
+            "email": "contact@olivierbigras.com",
+            "homepage": "https://olivierbigras.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.4"
+    },
+    "require-dev": {
+        "squizlabs/php_codesniffer": "^3.7",
+        "wp-coding-standards/wpcs": "^3.0"
+    },
+    "scripts": {
+        "lint": "find . -path ./vendor -prune -o -name '*.php' -exec php -l {} \\;",
+        "phpcs": "phpcs --standard=WordPress --extensions=php --ignore=vendor/ .",
+        "phpcbf": "phpcbf --standard=WordPress --extensions=php --ignore=vendor/ ."
+    },
+    "config": {
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true
+        }
+    }
+}

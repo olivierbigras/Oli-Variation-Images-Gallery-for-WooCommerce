@@ -1,0 +1,58 @@
+name: PHP Checks
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  php-checks:
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        php-version: ['7.4', '8.0', '8.1', '8.2']
+
+    name: PHP ${{ matrix.php-version }} Checks
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: ${{ matrix.php-version }}
+        tools: composer, cs2pr
+        coverage: none
+
+    - name: Get Composer Cache Directory
+      id: composer-cache
+      run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+    - name: Cache Composer packages
+      uses: actions/cache@v4
+      with:
+        path: ${{ steps.composer-cache.outputs.dir }}
+        key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-composer-
+
+    - name: Install dependencies
+      run: |
+        composer require --dev squizlabs/php_codesniffer:"^3.7" wp-coding-standards/wpcs:"^3.0" --no-interaction --prefer-dist
+
+    - name: Configure PHPCS
+      run: |
+        vendor/bin/phpcs --config-set installed_paths vendor/wp-coding-standards/wpcs
+
+    - name: PHP Lint
+      run: find . -path ./vendor -prune -o -name "*.php" -exec php -l {} \; | grep -v "No syntax errors"
+
+    - name: Run PHPCS
+      run: vendor/bin/phpcs --standard=WordPress --extensions=php --ignore=vendor/ . --report=checkstyle | cs2pr
+      continue-on-error: true
+
+    - name: Run PHPCS (strict)
+      run: vendor/bin/phpcs --standard=WordPress --extensions=php --ignore=vendor/ .
