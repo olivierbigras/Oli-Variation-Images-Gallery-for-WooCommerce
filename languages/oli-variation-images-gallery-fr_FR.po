@@ -2,7 +2,7 @@
 # This file is distributed under the GPL v2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Oli Variation Images Gallery for WooCommerce 0.1.0\n"
+"Project-Id-Version: Oli Variation Images Gallery for WooCommerce 0.1.1\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/oli-variation-images-gallery\n"
 "POT-Creation-Date: 2024-10-19 17:35:00+00:00\n"
 "PO-Revision-Date: 2024-10-19 17:35:00+00:00\n"
@@ -190,3 +190,39 @@ msgstr "Nonce invalide."
 #: includes/class-oli-vig-ajax.php:57
 msgid "Invalid variation ID"
 msgstr "ID de variation invalide"
+
+#: includes/class-oli-vig-settings.php:132
+msgid "Thumbnail Mode"
+msgstr "Mode des miniatures"
+
+#: includes/class-oli-vig-settings.php:140
+msgid "Transition Effect"
+msgstr "Effet de transition"
+
+#: includes/class-oli-vig-settings.php:328
+msgid "Grid (static)"
+msgstr "Grille (statique)"
+
+#: includes/class-oli-vig-settings.php:329
+msgid "Slider (carousel)"
+msgstr "Diaporama (carrousel)"
+
+#: includes/class-oli-vig-settings.php:331
+msgid "Display thumbnails as a static grid or scrollable carousel"
+msgstr "Afficher les miniatures en grille statique ou en carrousel défilant"
+
+#: includes/class-oli-vig-settings.php:344
+msgid "None (instant)"
+msgstr "Aucun (instantané)"
+
+#: includes/class-oli-vig-settings.php:345
+msgid "Fade"
+msgstr "Fondu"
+
+#: includes/class-oli-vig-settings.php:346
+msgid "Slide"
+msgstr "Glissement"
+
+#: includes/class-oli-vig-settings.php:348
+msgid "Animation when switching between images"
+msgstr "Animation lors du changement d'image"

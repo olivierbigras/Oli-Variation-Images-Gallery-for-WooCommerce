@@ -1,9 +1,9 @@
 <?php
 /**
  * Plugin Name: Oli Variation Images Gallery for WooCommerce
- * Plugin URI: https://github.com/bigrat95/oli-variation-images-gallery
+ * Plugin URI: https://github.com/olivierbigras/Oli-Variation-Images-Gallery-for-WooCommerce
  * Description: Add unlimited gallery images per product variation with thumbnail gallery, zoom, and lightbox support. Includes one-click importer from RadiusTheme Variation Images Gallery.
- * Version: 0.1.0
+ * Version: 0.1.1
  * Author: Olivier Bigras
  * Author URI: https://olivierbigras.com/
  * License: GPL v2 or later
@@ -23,7 +23,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'OLI_VIG_VERSION', '0.1.0' );
+define( 'OLI_VIG_VERSION', '0.1.1' );
 define( 'OLI_VIG_PLUGIN_FILE', __FILE__ );
 define( 'OLI_VIG_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'OLI_VIG_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
@@ -36,7 +36,7 @@ function oli_vig_check_woocommerce() {
 	if ( ! class_exists( 'WooCommerce' ) ) {
 		add_action(
 			'admin_notices',
-			function() {
+			function () {
 				?>
 				<div class="notice notice-error">
 					<p><?php esc_html_e( 'Oli Variation Images Gallery requires WooCommerce to be installed and active.', 'oli-variation-images-gallery' ); ?></p>
@@ -89,6 +89,8 @@ function oli_vig_activate() {
 			'gallery_width'      => 100,
 			'preload_images'     => 'yes',
 			'reset_on_clear'     => 'yes',
+			'thumbnail_mode'     => 'grid',
+			'transition_effect'  => 'none',
 		)
 	);
 }
@@ -99,7 +101,7 @@ register_activation_hook( __FILE__, 'oli_vig_activate' );
  */
 add_action(
 	'before_woocommerce_init',
-	function() {
+	function () {
 		if ( class_exists( '\Automattic\WooCommerce\Utilities\FeaturesUtil' ) ) {
 			\Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility( 'custom_order_tables', __FILE__, true );
 		}

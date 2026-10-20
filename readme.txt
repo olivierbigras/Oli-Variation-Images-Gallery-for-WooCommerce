@@ -4,7 +4,7 @@ Tags: woocommerce, variations, gallery, product images, variable products
 Requires at least: 6.5
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 0.1.0
+Stable tag: 0.1.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -19,12 +19,12 @@ Oli Variation Images Gallery for WooCommerce allows you to add unlimited additio
 * **Unlimited Gallery Images**: Add as many images as you need to each variation
 * **Easy Management**: Drag and drop to reorder images in the admin panel
 * **Automatic Gallery Swap**: Gallery updates instantly when variation is selected
-* **Thumbnail Gallery**: Configurable thumbnail position (bottom, left, or right) and columns
+* **Thumbnail Gallery**: Configurable thumbnail position (bottom, left, or right), columns, and slider/carousel mode
 * **Image Zoom**: Optional zoom on hover for detailed product viewing
 * **Lightbox**: Full-screen image viewing with keyboard and touch navigation
 * **Mobile Optimized**: Touch-friendly swipe gestures on mobile devices
 * **Performance**: REST/AJAX lazy loading for products with many variations
-* **Settings Page**: Configure thumbnail position, columns, zoom, lightbox, and more
+* **Settings Page**: Configure thumbnail position, columns, carousel mode, fade/slide transitions, zoom, lightbox, and more
 * **Import Tool**: One-click migration from RadiusTheme Variation Images Gallery plugin
 
 = Perfect For =
@@ -98,6 +98,14 @@ Yes, the lightbox includes keyboard navigation (arrow keys, Escape) and proper f
 
 == Changelog ==
 
+= 0.1.1 - 2026-10-20 =
+* Importer reads the real RadiusTheme `rtwpvg_images` format (PHP-serialized attachment IDs) and WooCommerce `_product_image_gallery` on variations
+* Never deletes source RadiusTheme/WooCommerce meta
+* Thumbnail slider/carousel mode with prev/next arrows
+* Fade and slide main-image transition options
+* Unit test covering the real RadiusTheme meta format
+* PHPCS WordPress standard and PHP lint CI fixes
+
 = 0.1.0 - 2024-10-19 =
 * Initial release
 * Unlimited gallery images per variation
@@ -113,6 +121,9 @@ Yes, the lightbox includes keyboard navigation (arrow keys, Escape) and proper f
 
 == Upgrade Notice ==
 
+= 0.1.1 =
+Importer now matches RadiusTheme's real meta format. Adds thumbnail carousel and fade/slide transitions.
+
 = 0.1.0 =
 Initial release of Oli Variation Images Gallery for WooCommerce.
 
@@ -122,4 +133,4 @@ Developed by [Olivier Bigras](https://olivierbigras.com/)
 
 == Support ==
 
-For support, please visit the [plugin support forum](https://wordpress.org/support/plugin/oli-variation-images-gallery/) or [GitHub repository](https://github.com/bigrat95/oli-variation-images-gallery).
+For support, please visit the [plugin support forum](https://wordpress.org/support/plugin/oli-variation-images-gallery/) or [GitHub repository](https://github.com/olivierbigras/Oli-Variation-Images-Gallery-for-WooCommerce).

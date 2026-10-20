@@ -127,6 +127,22 @@ class Oli_VIG_Settings {
 			'oli-variation-gallery-settings',
 			'oli_vig_gallery_section'
 		);
+
+		add_settings_field(
+			'thumbnail_mode',
+			__( 'Thumbnail Mode', 'oli-variation-images-gallery' ),
+			array( $this, 'render_thumbnail_mode_field' ),
+			'oli-variation-gallery-settings',
+			'oli_vig_gallery_section'
+		);
+
+		add_settings_field(
+			'transition_effect',
+			__( 'Transition Effect', 'oli-variation-images-gallery' ),
+			array( $this, 'render_transition_effect_field' ),
+			'oli-variation-gallery-settings',
+			'oli_vig_gallery_section'
+		);
 	}
 
 	/**
@@ -138,8 +154,8 @@ class Oli_VIG_Settings {
 	public function sanitize_settings( $input ) {
 		$sanitized = array();
 
-		$sanitized['thumbnail_position'] = isset( $input['thumbnail_position'] ) && in_array( $input['thumbnail_position'], array( 'bottom', 'left', 'right' ), true ) 
-			? $input['thumbnail_position'] 
+		$sanitized['thumbnail_position'] = isset( $input['thumbnail_position'] ) && in_array( $input['thumbnail_position'], array( 'bottom', 'left', 'right' ), true )
+			? $input['thumbnail_position']
 			: 'bottom';
 
 		$sanitized['thumbnail_columns'] = isset( $input['thumbnail_columns'] ) ? max( 1, min( 8, intval( $input['thumbnail_columns'] ) ) ) : 4;
@@ -154,6 +170,14 @@ class Oli_VIG_Settings {
 
 		$sanitized['reset_on_clear'] = ! empty( $input['reset_on_clear'] ) ? 'yes' : 'no';
 
+		$sanitized['thumbnail_mode'] = isset( $input['thumbnail_mode'] ) && in_array( $input['thumbnail_mode'], array( 'grid', 'slider' ), true )
+			? $input['thumbnail_mode']
+			: 'grid';
+
+		$sanitized['transition_effect'] = isset( $input['transition_effect'] ) && in_array( $input['transition_effect'], array( 'none', 'fade', 'slide' ), true )
+			? $input['transition_effect']
+			: 'none';
+
 		return $sanitized;
 	}
 
@@ -165,6 +189,7 @@ class Oli_VIG_Settings {
 			return;
 		}
 
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Display-only flag set by the Settings API after options.php.
 		if ( isset( $_GET['settings-updated'] ) ) {
 			add_settings_error(
 				'oli_vig_messages',
@@ -218,7 +243,7 @@ class Oli_VIG_Settings {
 		$settings = get_option( 'oli_vig_settings', array( 'thumbnail_columns' => 4 ) );
 		$value    = isset( $settings['thumbnail_columns'] ) ? intval( $settings['thumbnail_columns'] ) : 4;
 		?>
-		<input type="number" name="oli_vig_settings[thumbnail_columns]" id="thumbnail_columns" 
+		<input type="number" name="oli_vig_settings[thumbnail_columns]" id="thumbnail_columns"
 			value="<?php echo esc_attr( $value ); ?>" min="1" max="8" />
 		<p class="description"><?php esc_html_e( 'Number of thumbnail columns (1-8)', 'oli-variation-images-gallery' ); ?></p>
 		<?php
@@ -259,7 +284,7 @@ class Oli_VIG_Settings {
 		$settings = get_option( 'oli_vig_settings', array( 'gallery_width' => 100 ) );
 		$value    = isset( $settings['gallery_width'] ) ? intval( $settings['gallery_width'] ) : 100;
 		?>
-		<input type="number" name="oli_vig_settings[gallery_width]" id="gallery_width" 
+		<input type="number" name="oli_vig_settings[gallery_width]" id="gallery_width"
 			value="<?php echo esc_attr( $value ); ?>" min="50" max="100" />
 		<p class="description"><?php esc_html_e( 'Gallery width as percentage (50-100%)', 'oli-variation-images-gallery' ); ?></p>
 		<?php
@@ -290,6 +315,37 @@ class Oli_VIG_Settings {
 			<input type="checkbox" name="oli_vig_settings[reset_on_clear]" value="yes" <?php checked( $checked ); ?> />
 			<?php esc_html_e( 'Reset to parent gallery when variation is cleared', 'oli-variation-images-gallery' ); ?>
 		</label>
+		<?php
+	}
+
+	/**
+	 * Render thumbnail mode field
+	 */
+	public function render_thumbnail_mode_field() {
+		$settings = get_option( 'oli_vig_settings', array( 'thumbnail_mode' => 'grid' ) );
+		$value    = isset( $settings['thumbnail_mode'] ) ? $settings['thumbnail_mode'] : 'grid';
+		?>
+		<select name="oli_vig_settings[thumbnail_mode]" id="thumbnail_mode">
+			<option value="grid" <?php selected( $value, 'grid' ); ?>><?php esc_html_e( 'Grid (static)', 'oli-variation-images-gallery' ); ?></option>
+			<option value="slider" <?php selected( $value, 'slider' ); ?>><?php esc_html_e( 'Slider (carousel)', 'oli-variation-images-gallery' ); ?></option>
+		</select>
+		<p class="description"><?php esc_html_e( 'Display thumbnails as a static grid or scrollable carousel', 'oli-variation-images-gallery' ); ?></p>
+		<?php
+	}
+
+	/**
+	 * Render transition effect field
+	 */
+	public function render_transition_effect_field() {
+		$settings = get_option( 'oli_vig_settings', array( 'transition_effect' => 'none' ) );
+		$value    = isset( $settings['transition_effect'] ) ? $settings['transition_effect'] : 'none';
+		?>
+		<select name="oli_vig_settings[transition_effect]" id="transition_effect">
+			<option value="none" <?php selected( $value, 'none' ); ?>><?php esc_html_e( 'None (instant)', 'oli-variation-images-gallery' ); ?></option>
+			<option value="fade" <?php selected( $value, 'fade' ); ?>><?php esc_html_e( 'Fade', 'oli-variation-images-gallery' ); ?></option>
+			<option value="slide" <?php selected( $value, 'slide' ); ?>><?php esc_html_e( 'Slide', 'oli-variation-images-gallery' ); ?></option>
+		</select>
+		<p class="description"><?php esc_html_e( 'Animation when switching between images', 'oli-variation-images-gallery' ); ?></p>
 		<?php
 	}
 }

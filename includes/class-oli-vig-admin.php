@@ -124,9 +124,9 @@ class Oli_VIG_Admin {
 					<?php esc_html_e( 'Add Images', 'oli-variation-images-gallery' ); ?>
 				</button>
 			</div>
-			<input type="hidden" 
-				name="oli_vig_gallery_images[<?php echo esc_attr( $loop ); ?>]" 
-				class="oli-vig-gallery-images-input" 
+			<input type="hidden"
+				name="oli_vig_gallery_images[<?php echo esc_attr( $loop ); ?>]"
+				class="oli-vig-gallery-images-input"
 				value="<?php echo esc_attr( implode( ',', $image_ids ) ); ?>" />
 		</div>
 		<?php
@@ -144,7 +144,7 @@ class Oli_VIG_Admin {
 		}
 
 		$nonce_field = 'woocommerce_save_data';
-		if ( ! isset( $_POST['woocommerce_meta_nonce'] ) || 
+		if ( ! isset( $_POST['woocommerce_meta_nonce'] ) ||
 			! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['woocommerce_meta_nonce'] ) ), $nonce_field ) ) {
 			return;
 		}

@@ -5,6 +5,21 @@ All notable changes to Oli Variation Images Gallery for WooCommerce will be docu
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.1] - 2026-10-20
+
+### Added
+- Thumbnail slider/carousel mode (scrollable strip with prev/next arrows)
+- Fade and slide transitions for the main gallery image
+- Standalone unit test for the RadiusTheme importer using the real serialized `rtwpvg_images` format
+
+### Fixed
+- Importer now parses RadiusTheme `rtwpvg_images` as a PHP-serialized array of attachment IDs (the format `update_post_meta()` actually stores)
+- Importer also reads WooCommerce native `_product_image_gallery` on variations (RadiusTheme copies IDs there on WC 11.1+)
+- Source RadiusTheme/WooCommerce meta is never deleted
+- Yoda conditions and other WordPress PHPCS violations
+- GitHub Actions PHP lint no longer fails when every file is clean
+- GitHub URLs updated after the owner rename to olivierbigras
+
 ## [0.1.0] - 2024-10-19
 
 ### Added
@@ -57,4 +72,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Works with classic WooCommerce product templates
 - Compatible with most popular themes
 
-[0.1.0]: https://github.com/bigrat95/oli-variation-images-gallery/releases/tag/0.1.0
+[0.1.1]: https://github.com/olivierbigras/Oli-Variation-Images-Gallery-for-WooCommerce/releases/tag/0.1.1
+[0.1.0]: https://github.com/olivierbigras/Oli-Variation-Images-Gallery-for-WooCommerce/releases/tag/0.1.0

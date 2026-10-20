@@ -38,14 +38,36 @@ class Oli_VIG_Frontend {
 	 */
 	private function __construct() {
 		add_filter( 'woocommerce_available_variation', array( $this, 'add_variation_gallery_data' ), 10, 3 );
+		add_filter( 'woocommerce_single_product_image_gallery_classes', array( $this, 'gallery_classes' ) );
+	}
+
+	/**
+	 * Add layout classes to the WooCommerce gallery wrapper.
+	 *
+	 * @param array $classes Gallery classes.
+	 * @return array
+	 */
+	public function gallery_classes( $classes ) {
+		$settings = Oli_VIG_Main::get_settings();
+
+		$classes[] = 'oli-vig-gallery';
+		$classes[] = 'oli-vig-thumbs-' . sanitize_html_class( $settings['thumbnail_position'] );
+		$classes[] = 'oli-vig-thumbs-mode-' . sanitize_html_class( $settings['thumbnail_mode'] );
+		$classes[] = 'oli-vig-transition-' . sanitize_html_class( $settings['transition_effect'] );
+
+		if ( 'yes' === $settings['enable_zoom'] ) {
+			$classes[] = 'oli-vig-zoom-enabled';
+		}
+
+		return $classes;
 	}
 
 	/**
 	 * Add variation gallery data to available variations
 	 *
-	 * @param array                 $data Variation data.
-	 * @param WC_Product            $product Product object.
-	 * @param WC_Product_Variation  $variation Variation object.
+	 * @param array                $data Variation data.
+	 * @param WC_Product           $product Product object.
+	 * @param WC_Product_Variation $variation Variation object.
 	 * @return array
 	 */
 	public function add_variation_gallery_data( $data, $product, $variation ) {
@@ -62,14 +84,14 @@ class Oli_VIG_Frontend {
 
 				if ( $image_url ) {
 					$gallery_images[] = array(
-						'id'        => $image_id,
-						'url'       => $image_url,
-						'thumb'     => $thumb_url ? $thumb_url : $image_url,
-						'full'      => $full_url ? $full_url : $image_url,
-						'alt'       => get_post_meta( $image_id, '_wp_attachment_image_alt', true ),
-						'title'     => get_the_title( $image_id ),
-						'srcset'    => wp_get_attachment_image_srcset( $image_id, 'woocommerce_single' ),
-						'sizes'     => wp_get_attachment_image_sizes( $image_id, 'woocommerce_single' ),
+						'id'     => $image_id,
+						'url'    => $image_url,
+						'thumb'  => $thumb_url ? $thumb_url : $image_url,
+						'full'   => $full_url ? $full_url : $image_url,
+						'alt'    => get_post_meta( $image_id, '_wp_attachment_image_alt', true ),
+						'title'  => get_the_title( $image_id ),
+						'srcset' => wp_get_attachment_image_srcset( $image_id, 'woocommerce_single' ),
+						'sizes'  => wp_get_attachment_image_sizes( $image_id, 'woocommerce_single' ),
 					);
 				}
 			}

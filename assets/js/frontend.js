@@ -22,7 +22,64 @@
 
 			this.bindEvents();
 			this.storeOriginalGallery();
+			this.applyLayout();
 			this.initTouchSupport();
+		},
+
+		applyLayout: function() {
+			var $gallery = $('.woocommerce-product-gallery');
+			if (!$gallery.length) {
+				return;
+			}
+
+			$gallery.removeClass('oli-vig-transition-fade oli-vig-transition-slide oli-vig-transition-none');
+			$gallery.addClass('oli-vig-transition-' + (oliVigSettings.transitionEffect || 'none'));
+
+			if (oliVigSettings.enableZoom) {
+				$gallery.addClass('oli-vig-zoom-enabled');
+			}
+
+			var $thumbs = $gallery.find('.flex-control-thumbs, ol.flex-control-nav');
+			var position = oliVigSettings.thumbnailPosition || 'bottom';
+			var useSlider = oliVigSettings.thumbnailMode === 'slider' || position === 'left' || position === 'right';
+
+			$thumbs.removeClass('mode-slider mode-grid position-bottom position-left position-right');
+			$thumbs.addClass('position-' + position);
+			$thumbs.addClass(useSlider ? 'mode-slider' : 'mode-grid');
+
+			if (useSlider) {
+				this.initThumbnailSlider($thumbs);
+			}
+		},
+
+		initThumbnailSlider: function($thumbs) {
+			if (!$thumbs.length || $thumbs.parent().hasClass('oli-vig-thumbs-slider-wrap')) {
+				return;
+			}
+
+			$thumbs.wrap('<div class="oli-vig-thumbs-slider-wrap"></div>');
+			var $wrap = $thumbs.parent();
+			$wrap.prepend('<button type="button" class="oli-vig-slider-arrow prev" aria-label="Previous">&lsaquo;</button>');
+			$wrap.append('<button type="button" class="oli-vig-slider-arrow next" aria-label="Next">&rsaquo;</button>');
+
+			$wrap.on('click', '.oli-vig-slider-arrow.prev', function(e) {
+				e.preventDefault();
+				OliVIG.scrollThumbnails($thumbs, -1);
+			});
+			$wrap.on('click', '.oli-vig-slider-arrow.next', function(e) {
+				e.preventDefault();
+				OliVIG.scrollThumbnails($thumbs, 1);
+			});
+		},
+
+		scrollThumbnails: function($thumbs, direction) {
+			var vertical = $thumbs.hasClass('position-left') || $thumbs.hasClass('position-right');
+			var amount = 120 * direction;
+			if (vertical) {
+				$thumbs.stop().animate({ scrollTop: $thumbs.scrollTop() + amount }, 200);
+			} else {
+				$thumbs.stop().animate({ scrollLeft: $thumbs.scrollLeft() + amount }, 200);
+			}
 		},
 
 		bindEvents: function() {
@@ -138,6 +195,22 @@
 
 			$thumbsContainer.empty();
 
+			// Add slider/grid mode class
+			if (oliVigSettings.thumbnailMode === 'slider') {
+				$thumbsContainer.addClass('mode-slider');
+			} else {
+				$thumbsContainer.removeClass('mode-slider');
+			}
+
+			// Add transition effect class
+			var $gallery = $('.woocommerce-product-gallery');
+			$gallery.removeClass('oli-vig-transition-fade oli-vig-transition-slide');
+			if (oliVigSettings.transitionEffect === 'fade') {
+				$gallery.addClass('oli-vig-transition-fade');
+			} else if (oliVigSettings.transitionEffect === 'slide') {
+				$gallery.addClass('oli-vig-transition-slide');
+			}
+
 			$.each(images, function(index, image) {
 				var $thumb = $('<li><img src="' + image.thumb + '" alt="' + (image.alt || '') + '"></li>');
 				$thumbsContainer.append($thumb);
@@ -160,28 +233,101 @@
 			var $mainImage = $('.woocommerce-product-gallery__image').first();
 			var $img = $mainImage.find('img');
 			var $link = $mainImage.find('a');
+			var self = this;
 
-			$img.attr('src', image.url);
-			$img.attr('alt', image.alt || '');
+			// Apply transition effect
+			var transitionEffect = oliVigSettings.transitionEffect || 'none';
 
-			if (image.srcset) {
-				$img.attr('srcset', image.srcset);
-			}
-			if (image.sizes) {
-				$img.attr('sizes', image.sizes);
-			}
+			if (transitionEffect === 'fade') {
+				// Fade out, change image, fade in
+				$img.addClass('oli-vig-fading-out');
+				setTimeout(function() {
+					$img.attr('src', image.url);
+					$img.attr('alt', image.alt || '');
 
-			if ($link.length) {
-				$link.attr('href', image.full);
+					if (image.srcset) {
+						$img.attr('srcset', image.srcset);
+					}
+					if (image.sizes) {
+						$img.attr('sizes', image.sizes);
+					}
+
+					if ($link.length) {
+						$link.attr('href', image.full);
+					}
+
+					$img.removeClass('oli-vig-fading-out').addClass('oli-vig-fading-in');
+					setTimeout(function() {
+						$img.removeClass('oli-vig-fading-in');
+					}, 300);
+				}, 300);
+			} else if (transitionEffect === 'slide') {
+				// Determine slide direction
+				var direction = index > self.currentIndex ? 'left' : 'right';
+				
+				// Slide out current image
+				$img.addClass('oli-vig-slide-out-' + direction);
+				setTimeout(function() {
+					$img.attr('src', image.url);
+					$img.attr('alt', image.alt || '');
+
+					if (image.srcset) {
+						$img.attr('srcset', image.srcset);
+					}
+					if (image.sizes) {
+						$img.attr('sizes', image.sizes);
+					}
+
+					if ($link.length) {
+						$link.attr('href', image.full);
+					}
+
+					// Slide in new image from opposite direction
+					var slideInClass = 'oli-vig-slide-in-' + (direction === 'left' ? 'right' : 'left');
+					$img.removeClass('oli-vig-slide-out-left oli-vig-slide-out-right').addClass(slideInClass);
+					setTimeout(function() {
+						$img.removeClass('oli-vig-slide-in-left oli-vig-slide-in-right');
+					}, 400);
+				}, 400);
+			} else {
+				// No transition - instant change
+				$img.attr('src', image.url);
+				$img.attr('alt', image.alt || '');
+
+				if (image.srcset) {
+					$img.attr('srcset', image.srcset);
+				}
+				if (image.sizes) {
+					$img.attr('sizes', image.sizes);
+				}
+
+				if ($link.length) {
+					$link.attr('href', image.full);
+				}
 			}
 
 			this.currentIndex = index;
 
 			// Update active thumbnail
-			$('.flex-control-thumbs li, .woocommerce-product-gallery__thumbnails li')
+			var $thumbs = $('.flex-control-thumbs, .woocommerce-product-gallery__thumbnails, ol.flex-control-nav');
+			$thumbs.find('li')
 				.removeClass('active')
 				.eq(index)
 				.addClass('active');
+
+			var $active = $thumbs.find('li').eq(index);
+			if ($active.length && $thumbs.hasClass('mode-slider')) {
+				var vertical = $thumbs.hasClass('position-left') || $thumbs.hasClass('position-right');
+				if (vertical) {
+					$thumbs.stop().animate({
+						scrollTop: $thumbs.scrollTop() + $active.position().top - 8
+					}, 200);
+				} else {
+					$thumbs.stop().animate({
+						scrollLeft: $thumbs.scrollLeft() + $active.position().left - 8
+					}, 200);
+				}
+			}
 		},
 
 		resetToOriginalGallery: function() {

@@ -204,7 +204,7 @@ These gaps are **acceptable for v0.1.0** and align with the requirements:
 ### Repository
 - ✅ Branch: `cursor/oli-variation-gallery-plugin-1d0c`
 - ✅ Commits: 2 (initial plugin + testing guide)
-- ✅ Pull Request: [#1](https://github.com/bigrat95/Oli-Variation-Images-Gallery-for-WooCommerce/pull/1) (Draft)
+- ✅ Pull Request: [#1](https://github.com/olivierbigras/Oli-Variation-Images-Gallery-for-WooCommerce/pull/1) (Draft)
 
 ### What's Ready
 1. ✅ Plugin activates on WP 7.x + WooCommerce 11.x
@@ -215,7 +215,7 @@ These gaps are **acceptable for v0.1.0** and align with the requirements:
 6. ✅ PR is open with features, gaps, and test steps
 
 ### Next Steps
-1. **Review PR**: Check [PR #1](https://github.com/bigrat95/Oli-Variation-Images-Gallery-for-WooCommerce/pull/1)
+1. **Review PR**: Check [PR #1](https://github.com/olivierbigras/Oli-Variation-Images-Gallery-for-WooCommerce/pull/1)
 2. **Test Locally**: Follow steps in `TESTING.md`
 3. **Verify GitHub Actions**: CI will run on merge (PHP 7.4-8.2 tests)
 4. **Test Import**: If RadiusTheme data exists, verify import works
@@ -285,8 +285,8 @@ Beyond requirements:
 
 ## 📞 Support Resources
 
-- **PR**: https://github.com/bigrat95/Oli-Variation-Images-Gallery-for-WooCommerce/pull/1
-- **Issues**: https://github.com/bigrat95/Oli-Variation-Images-Gallery-for-WooCommerce/issues
+- **PR**: https://github.com/olivierbigras/Oli-Variation-Images-Gallery-for-WooCommerce/pull/1
+- **Issues**: https://github.com/olivierbigras/Oli-Variation-Images-Gallery-for-WooCommerce/issues
 - **Testing Guide**: [TESTING.md](TESTING.md)
 - **Changelog**: [CHANGELOG.md](CHANGELOG.md)
 

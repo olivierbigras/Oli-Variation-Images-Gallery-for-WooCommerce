@@ -1,8 +1,8 @@
 # Oli Variation Images Gallery for WooCommerce
 
-[![PHP Checks](https://github.com/bigrat95/oli-variation-images-gallery/actions/workflows/phpcs.yml/badge.svg)](https://github.com/bigrat95/oli-variation-images-gallery/actions/workflows/phpcs.yml)
+[![PHP Checks](https://github.com/olivierbigras/Oli-Variation-Images-Gallery-for-WooCommerce/actions/workflows/phpcs.yml/badge.svg)](https://github.com/olivierbigras/Oli-Variation-Images-Gallery-for-WooCommerce/actions/workflows/phpcs.yml)
 [![License: GPL v2](https://img.shields.io/badge/License-GPL%20v2-blue.svg)](https://www.gnu.org/licenses/gpl-2.0)
-[![WordPress Plugin Version](https://img.shields.io/badge/version-0.1.0-green.svg)](https://github.com/bigrat95/oli-variation-images-gallery/releases)
+[![WordPress Plugin Version](https://img.shields.io/badge/version-0.1.1-green.svg)](https://github.com/olivierbigras/Oli-Variation-Images-Gallery-for-WooCommerce/releases)
 
 Add unlimited gallery images per product variation with thumbnail gallery, zoom, and lightbox support for WooCommerce.
 
@@ -85,7 +85,7 @@ This plugin follows:
 
 ## Known Gaps vs RadiusTheme Plugin
 
-This is version 0.1.0 with feature parity on core functionality:
+This is version 0.1.1 with feature parity on core functionality:
 - ✅ Unlimited gallery images per variation
 - ✅ Drag & drop ordering
 - ✅ Gallery swap on variation selection
@@ -95,7 +95,8 @@ This is version 0.1.0 with feature parity on core functionality:
 - ✅ Mobile swipe support
 - ✅ Settings page
 - ✅ Import tool
-- ⏳ Advanced gallery transitions (may be added in future updates)
+- ✅ Fade/slide gallery transitions (v0.1.1)
+- ✅ Thumbnail slider/carousel (v0.1.1)
 - ⏳ Video gallery support (may be added in future updates)
 - ⏳ Additional lightbox effects (may be added in future updates)
 
@@ -109,7 +110,7 @@ The plugin has been tested with:
 
 ## Support
 
-- **Issues**: [GitHub Issues](https://github.com/bigrat95/oli-variation-images-gallery/issues)
+- **Issues**: [GitHub Issues](https://github.com/olivierbigras/Oli-Variation-Images-Gallery-for-WooCommerce/issues)
 - **WordPress.org**: [Support Forum](https://wordpress.org/support/plugin/oli-variation-images-gallery/)
 
 ## Contributing

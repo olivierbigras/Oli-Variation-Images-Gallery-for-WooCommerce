@@ -80,18 +80,7 @@ class Oli_VIG_Main {
 			true
 		);
 
-		$settings = get_option(
-			'oli_vig_settings',
-			array(
-				'thumbnail_position' => 'bottom',
-				'thumbnail_columns'  => 4,
-				'enable_zoom'        => 'yes',
-				'enable_lightbox'    => 'yes',
-				'gallery_width'      => 100,
-				'preload_images'     => 'yes',
-				'reset_on_clear'     => 'yes',
-			)
-		);
+		$settings = self::get_settings();
 
 		wp_localize_script(
 			'oli-vig-frontend',
@@ -101,12 +90,52 @@ class Oli_VIG_Main {
 				'nonce'             => wp_create_nonce( 'oli_vig_nonce' ),
 				'thumbnailPosition' => $settings['thumbnail_position'],
 				'thumbnailColumns'  => intval( $settings['thumbnail_columns'] ),
-				'enableZoom'        => $settings['enable_zoom'] === 'yes',
-				'enableLightbox'    => $settings['enable_lightbox'] === 'yes',
-				'resetOnClear'      => $settings['reset_on_clear'] === 'yes',
-				'preloadImages'     => $settings['preload_images'] === 'yes',
+				'enableZoom'        => ( 'yes' === $settings['enable_zoom'] ),
+				'enableLightbox'    => ( 'yes' === $settings['enable_lightbox'] ),
+				'resetOnClear'      => ( 'yes' === $settings['reset_on_clear'] ),
+				'preloadImages'     => ( 'yes' === $settings['preload_images'] ),
+				'thumbnailMode'     => $settings['thumbnail_mode'],
+				'transitionEffect'  => $settings['transition_effect'],
 			)
 		);
+
+		$width = max( 50, min( 100, intval( $settings['gallery_width'] ) ) );
+		wp_add_inline_style(
+			'oli-vig-frontend',
+			'.woocommerce-product-gallery{max-width:' . intval( $width ) . '%;}'
+		);
+	}
+
+	/**
+	 * Default plugin settings.
+	 *
+	 * @return array
+	 */
+	public static function get_default_settings() {
+		return array(
+			'thumbnail_position' => 'bottom',
+			'thumbnail_columns'  => 4,
+			'enable_zoom'        => 'yes',
+			'enable_lightbox'    => 'yes',
+			'gallery_width'      => 100,
+			'preload_images'     => 'yes',
+			'reset_on_clear'     => 'yes',
+			'thumbnail_mode'     => 'grid',
+			'transition_effect'  => 'none',
+		);
+	}
+
+	/**
+	 * Get merged plugin settings.
+	 *
+	 * @return array
+	 */
+	public static function get_settings() {
+		$saved = get_option( 'oli_vig_settings', array() );
+		if ( ! is_array( $saved ) ) {
+			$saved = array();
+		}
+		return wp_parse_args( $saved, self::get_default_settings() );
 	}
 
 	/**
@@ -117,7 +146,7 @@ class Oli_VIG_Main {
 	 */
 	public static function get_variation_gallery_images( $variation_id ) {
 		$image_ids = get_post_meta( $variation_id, '_oli_vig_gallery_images', true );
-		
+
 		if ( empty( $image_ids ) || ! is_array( $image_ids ) ) {
 			return array();
 		}

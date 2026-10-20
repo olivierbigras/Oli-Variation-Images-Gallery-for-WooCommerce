@@ -37,6 +37,8 @@
 2. Test each setting:
    - [ ] Thumbnail Position: bottom/left/right
    - [ ] Thumbnail Columns: 1-8
+   - [ ] Thumbnail Mode: grid vs slider (carousel)
+   - [ ] Transition Effect: none / fade / slide
    - [ ] Enable Zoom checkbox
    - [ ] Enable Lightbox checkbox
    - [ ] Gallery Width: 50-100%
@@ -183,7 +185,7 @@ Test in multiple browsers:
 - ✅ Compatible with major themes
 
 ### Known Limitations
-- Video support not included in v0.1.0
+- Video support not included in v0.1.1
 - Advanced carousel animations not included
 - Global settings only (no per-product overrides)
 
@@ -204,5 +206,14 @@ If you find bugs, please report with:
 The GitHub Actions workflow automatically tests:
 - PHP syntax on PHP 7.4, 8.0, 8.1, 8.2
 - WordPress Coding Standards (PHPCS)
+- Importer unit tests (`php tests/test-importer.php`) covering the real RadiusTheme `rtwpvg_images` serialized-array format
 
-Check: https://github.com/bigrat95/Oli-Variation-Images-Gallery-for-WooCommerce/actions
+Locally:
+```bash
+composer install
+composer lint
+composer phpcs
+composer test
+```
+
+Check: https://github.com/olivierbigras/Oli-Variation-Images-Gallery-for-WooCommerce/actions
