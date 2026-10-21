@@ -1,0 +1,103 @@
+/**
+ * Admin styles
+ *
+ * @package Oli_Variation_Images_Gallery
+ */
+
+.oli-vig-variation-gallery-wrapper {
+	margin-top: 15px;
+	padding: 12px;
+	background: #f9f9f9;
+	border: 1px solid #ddd;
+}
+
+.oli-vig-variation-gallery-wrapper label {
+	display: block;
+	margin-bottom: 10px;
+	font-weight: 600;
+}
+
+.oli-vig-gallery-container {
+	display: block;
+}
+
+.oli-vig-gallery-images {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 10px;
+	margin: 0 0 15px 0;
+	padding: 0;
+	list-style: none;
+}
+
+.oli-vig-gallery-image {
+	position: relative;
+	width: 80px;
+	height: 80px;
+	border: 2px solid #ddd;
+	border-radius: 4px;
+	overflow: hidden;
+	cursor: move;
+	background: #fff;
+}
+
+.oli-vig-gallery-image:hover {
+	border-color: #2271b1;
+}
+
+.oli-vig-gallery-image img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.oli-vig-gallery-image .oli-vig-remove-image {
+	position: absolute;
+	top: 0;
+	right: 0;
+	width: 24px;
+	height: 24px;
+	padding: 0;
+	border: none;
+	background: rgba(0, 0, 0, 0.7);
+	color: #fff;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	opacity: 0;
+	transition: opacity 0.2s;
+}
+
+.oli-vig-gallery-image:hover .oli-vig-remove-image {
+	opacity: 1;
+}
+
+.oli-vig-gallery-image .oli-vig-remove-image:hover {
+	background: rgba(0, 0, 0, 0.9);
+}
+
+.oli-vig-gallery-image .oli-vig-remove-image .dashicons {
+	font-size: 16px;
+	width: 16px;
+	height: 16px;
+}
+
+.oli-vig-add-images {
+	display: inline-block;
+}
+
+.oli-vig-gallery-image-dragging {
+	background-color: #f6f6f6;
+}
+
+.oli-vig-gallery-image.ui-sortable-helper {
+	opacity: 0.8;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.oli-vig-gallery-image.ui-sortable-placeholder {
+	border: 2px dashed #2271b1;
+	background: #f0f0f1;
+	visibility: visible !important;
+}

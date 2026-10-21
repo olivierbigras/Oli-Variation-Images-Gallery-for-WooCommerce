@@ -1,0 +1,44 @@
+name: PHP Checks
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  php-checks:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        php-version: ['7.4', '8.0', '8.1', '8.2']
+
+    name: PHP ${{ matrix.php-version }} Checks
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: ${{ matrix.php-version }}
+        tools: composer
+        coverage: none
+
+    - name: Install dependencies
+      run: composer install --no-interaction --prefer-dist
+
+    - name: PHP Lint
+      run: |
+        set -euo pipefail
+        while IFS= read -r -d '' file; do
+          php -l "$file"
+        done < <(find . -path ./vendor -prune -o -name '*.php' -print0)
+
+    - name: Run PHPCS
+      run: vendor/bin/phpcs
+
+    - name: Importer unit tests
+      run: php tests/test-importer.php
