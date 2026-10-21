@@ -153,4 +153,13 @@ oli_vig_test_assert(
 );
 
 echo 'All importer tests passed.' . PHP_EOL;
+
+require_once dirname( __DIR__ ) . '/includes/oli-vig-upgrade.php';
+
+oli_vig_test_assert(
+	array() === oli_vig_legacy_option_map(),
+	'legacy option map is an array (empty until a prefix rename exists)'
+);
+
+echo 'All upgrade tests passed.' . PHP_EOL;
 exit( 0 );

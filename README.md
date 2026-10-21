@@ -2,7 +2,7 @@
 
 [![PHP Checks](https://github.com/olivierbigras/Oli-Variation-Images-Gallery-for-WooCommerce/actions/workflows/phpcs.yml/badge.svg)](https://github.com/olivierbigras/Oli-Variation-Images-Gallery-for-WooCommerce/actions/workflows/phpcs.yml)
 [![License: GPL v2](https://img.shields.io/badge/License-GPL%20v2-blue.svg)](https://www.gnu.org/licenses/gpl-2.0)
-[![WordPress Plugin Version](https://img.shields.io/badge/version-0.1.1-green.svg)](https://github.com/olivierbigras/Oli-Variation-Images-Gallery-for-WooCommerce/releases)
+[![WordPress Plugin Version](https://img.shields.io/badge/version-0.1.2-green.svg)](https://github.com/olivierbigras/Oli-Variation-Images-Gallery-for-WooCommerce/releases)
 
 Add unlimited gallery images per product variation with thumbnail gallery, zoom, and lightbox support for WooCommerce.
 
@@ -85,7 +85,7 @@ This plugin follows:
 
 ## Known Gaps vs RadiusTheme Plugin
 
-This is version 0.1.1 with feature parity on core functionality:
+This is version 0.1.2 with feature parity on core functionality:
 - ✅ Unlimited gallery images per variation
 - ✅ Drag & drop ordering
 - ✅ Gallery swap on variation selection
@@ -104,7 +104,7 @@ This is version 0.1.1 with feature parity on core functionality:
 
 The plugin has been tested with:
 - WordPress 6.5 - 7.1
-- WooCommerce 9.0 - 11.0
+- WooCommerce 9.0 - 11.2
 - PHP 7.4 - 8.2
 - Common themes: Storefront, Astra, OceanWP, Flatsome
 
@@ -124,7 +124,7 @@ Contributions are welcome! Please:
 
 ## License
 
-GPL v2 or later - see [LICENSE](https://www.gnu.org/licenses/gpl-2.0.html)
+GPL v2 or later - see [license.txt](license.txt)
 
 ## Credits
 

@@ -32,6 +32,23 @@
 				return;
 			}
 
+			var width = parseInt(oliVigSettings.galleryWidth, 10);
+			if (isNaN(width)) {
+				width = 100;
+			}
+			width = Math.max(50, Math.min(100, width));
+			document.documentElement.style.setProperty('--oli-vig-gallery-width', width + '%');
+
+			var columns = parseInt(oliVigSettings.thumbnailColumns, 10);
+			if (isNaN(columns)) {
+				columns = 4;
+			}
+			columns = Math.max(1, Math.min(8, columns));
+			$gallery.removeClass(function(index, className) {
+				return (className.match(/(^|\s)oli-vig-columns-\S+/g) || []).join(' ');
+			});
+			$gallery.addClass('oli-vig-columns-' + columns);
+
 			$gallery.removeClass('oli-vig-transition-fade oli-vig-transition-slide oli-vig-transition-none');
 			$gallery.addClass('oli-vig-transition-' + (oliVigSettings.transitionEffect || 'none'));
 
@@ -59,8 +76,17 @@
 
 			$thumbs.wrap('<div class="oli-vig-thumbs-slider-wrap"></div>');
 			var $wrap = $thumbs.parent();
-			$wrap.prepend('<button type="button" class="oli-vig-slider-arrow prev" aria-label="Previous">&lsaquo;</button>');
-			$wrap.append('<button type="button" class="oli-vig-slider-arrow next" aria-label="Next">&rsaquo;</button>');
+			var labels = oliVigSettings.i18n || {};
+			$wrap.prepend($('<button/>', {
+				type: 'button',
+				'class': 'oli-vig-slider-arrow prev',
+				'aria-label': labels.previous || 'Previous'
+			}).html('&lsaquo;'));
+			$wrap.append($('<button/>', {
+				type: 'button',
+				'class': 'oli-vig-slider-arrow next',
+				'aria-label': labels.next || 'Next'
+			}).html('&rsaquo;'));
 
 			$wrap.on('click', '.oli-vig-slider-arrow.prev', function(e) {
 				e.preventDefault();
@@ -212,7 +238,10 @@
 			}
 
 			$.each(images, function(index, image) {
-				var $thumb = $('<li><img src="' + image.thumb + '" alt="' + (image.alt || '') + '"></li>');
+				var $thumb = $('<li/>').append($('<img/>', {
+					src: image.thumb,
+					alt: image.alt || ''
+				}));
 				$thumbsContainer.append($thumb);
 			});
 
@@ -365,17 +394,33 @@
 		initLightbox: function() {
 			var self = this;
 
-			// Create lightbox HTML if it doesn't exist
+			// Create lightbox markup if it doesn't exist
 			if ($('.oli-vig-lightbox').length === 0) {
-				var lightboxHtml = '<div class="oli-vig-lightbox">' +
-					'<div class="oli-vig-lightbox-content">' +
-					'<button class="oli-vig-lightbox-close">&times;</button>' +
-					'<button class="oli-vig-lightbox-prev">&lsaquo;</button>' +
-					'<button class="oli-vig-lightbox-next">&rsaquo;</button>' +
-					'<img class="oli-vig-lightbox-image" src="" alt="">' +
-					'</div>' +
-					'</div>';
-				$('body').append(lightboxHtml);
+				var labels = oliVigSettings.i18n || {};
+				var $lightbox = $('<div/>', { 'class': 'oli-vig-lightbox' });
+				var $content = $('<div/>', { 'class': 'oli-vig-lightbox-content' });
+				$content.append($('<button/>', {
+					type: 'button',
+					'class': 'oli-vig-lightbox-close',
+					'aria-label': labels.close || 'Close'
+				}).html('&times;'));
+				$content.append($('<button/>', {
+					type: 'button',
+					'class': 'oli-vig-lightbox-prev',
+					'aria-label': labels.previous || 'Previous'
+				}).html('&lsaquo;'));
+				$content.append($('<button/>', {
+					type: 'button',
+					'class': 'oli-vig-lightbox-next',
+					'aria-label': labels.next || 'Next'
+				}).html('&rsaquo;'));
+				$content.append($('<img/>', {
+					'class': 'oli-vig-lightbox-image',
+					src: '',
+					alt: ''
+				}));
+				$lightbox.append($content);
+				$('body').append($lightbox);
 			}
 
 			// Open lightbox on image click

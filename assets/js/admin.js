@@ -43,15 +43,17 @@
 				
 				selection.each(function(attachment) {
 					attachment = attachment.toJSON();
-					
-					var imageHtml = '<li class="oli-vig-gallery-image" data-attachment-id="' + attachment.id + '">' +
-						'<img src="' + (attachment.sizes.thumbnail ? attachment.sizes.thumbnail.url : attachment.url) + '" alt="" />' +
-						'<button type="button" class="oli-vig-remove-image">' +
-						'<span class="dashicons dashicons-no-alt"></span>' +
-						'</button>' +
-						'</li>';
-					
-					galleryList.append(imageHtml);
+					var thumbSrc = (attachment.sizes && attachment.sizes.thumbnail) ? attachment.sizes.thumbnail.url : attachment.url;
+					var $item = $('<li/>', {
+						'class': 'oli-vig-gallery-image',
+						'data-attachment-id': attachment.id
+					});
+					$item.append($('<img/>', { src: thumbSrc, alt: '' }));
+					$item.append(
+						$('<button/>', { type: 'button', 'class': 'oli-vig-remove-image' })
+							.append($('<span/>', { 'class': 'dashicons dashicons-no-alt' }))
+					);
+					galleryList.append($item);
 				});
 
 				updateGalleryInput(galleryList, input);
@@ -90,10 +92,10 @@
 				opacity: 0.65,
 				placeholder: 'oli-vig-gallery-image ui-sortable-placeholder',
 				start: function(event, ui) {
-					ui.item.css('background-color', '#f6f6f6');
+					ui.item.addClass('oli-vig-gallery-image-dragging');
 				},
 				stop: function(event, ui) {
-					ui.item.removeAttr('style');
+					ui.item.removeClass('oli-vig-gallery-image-dragging');
 				},
 				update: function() {
 					var input = galleryList.closest('.oli-vig-variation-gallery-wrapper').find('.oli-vig-gallery-images-input');

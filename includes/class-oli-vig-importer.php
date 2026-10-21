@@ -458,29 +458,7 @@ class Oli_VIG_Importer {
 	private function register_cli_command() {
 		WP_CLI::add_command(
 			'oli-vig import',
-			function ( $args, $assoc_args ) {
-				$dry_run = isset( $assoc_args['dry-run'] );
-
-				WP_CLI::log( 'Starting import from RadiusTheme Variation Images Gallery...' );
-
-				$result = $this->run_import( $dry_run );
-
-				if ( $dry_run ) {
-					WP_CLI::success(
-						sprintf(
-							'Dry run complete. Found %d variations with gallery data.',
-							$result['found']
-						)
-					);
-				} else {
-					WP_CLI::success(
-						sprintf(
-							'Import complete. Imported gallery data for %d variations.',
-							$result['imported']
-						)
-					);
-				}
-			},
+			array( $this, 'cli_import' ),
 			array(
 				'shortdesc' => 'Import variation gallery data from RadiusTheme plugin',
 				'synopsis'  => array(
@@ -493,5 +471,36 @@ class Oli_VIG_Importer {
 				),
 			)
 		);
+	}
+
+	/**
+	 * WP-CLI import callback.
+	 *
+	 * @param array $args       Positional arguments.
+	 * @param array $assoc_args Associative arguments.
+	 */
+	public function cli_import( $args, $assoc_args ) {
+		unset( $args );
+		$dry_run = isset( $assoc_args['dry-run'] );
+
+		WP_CLI::log( 'Starting import from RadiusTheme Variation Images Gallery...' );
+
+		$result = $this->run_import( $dry_run );
+
+		if ( $dry_run ) {
+			WP_CLI::success(
+				sprintf(
+					'Dry run complete. Found %d variations with gallery data.',
+					$result['found']
+				)
+			);
+		} else {
+			WP_CLI::success(
+				sprintf(
+					'Import complete. Imported gallery data for %d variations.',
+					$result['imported']
+				)
+			);
+		}
 	}
 }

@@ -39,6 +39,16 @@ class Oli_VIG_Settings {
 	private function __construct() {
 		add_action( 'admin_menu', array( $this, 'add_settings_page' ), 99 );
 		add_action( 'admin_init', array( $this, 'register_settings' ) );
+		add_filter( 'option_page_capability_oli_vig_settings_group', array( $this, 'settings_capability' ) );
+	}
+
+	/**
+	 * Capability required to save the settings page.
+	 *
+	 * @return string
+	 */
+	public function settings_capability() {
+		return 'manage_woocommerce';
 	}
 
 	/**
@@ -62,7 +72,12 @@ class Oli_VIG_Settings {
 		register_setting(
 			'oli_vig_settings_group',
 			'oli_vig_settings',
-			array( $this, 'sanitize_settings' )
+			array(
+				'type'              => 'array',
+				'sanitize_callback' => array( $this, 'sanitize_settings' ),
+				'default'           => Oli_VIG_Main::get_default_settings(),
+				'show_in_rest'      => false,
+			)
 		);
 
 		add_settings_section(
@@ -225,10 +240,10 @@ class Oli_VIG_Settings {
 	 * Render thumbnail position field
 	 */
 	public function render_thumbnail_position_field() {
-		$settings = get_option( 'oli_vig_settings', array( 'thumbnail_position' => 'bottom' ) );
-		$value    = isset( $settings['thumbnail_position'] ) ? $settings['thumbnail_position'] : 'bottom';
+		$settings = Oli_VIG_Main::get_settings();
+		$value    = $settings['thumbnail_position'];
 		?>
-		<select name="oli_vig_settings[thumbnail_position]" id="thumbnail_position">
+		<select name="oli_vig_settings[thumbnail_position]" id="oli_vig_thumbnail_position">
 			<option value="bottom" <?php selected( $value, 'bottom' ); ?>><?php esc_html_e( 'Bottom', 'oli-variation-images-gallery' ); ?></option>
 			<option value="left" <?php selected( $value, 'left' ); ?>><?php esc_html_e( 'Left', 'oli-variation-images-gallery' ); ?></option>
 			<option value="right" <?php selected( $value, 'right' ); ?>><?php esc_html_e( 'Right', 'oli-variation-images-gallery' ); ?></option>
@@ -240,10 +255,10 @@ class Oli_VIG_Settings {
 	 * Render thumbnail columns field
 	 */
 	public function render_thumbnail_columns_field() {
-		$settings = get_option( 'oli_vig_settings', array( 'thumbnail_columns' => 4 ) );
-		$value    = isset( $settings['thumbnail_columns'] ) ? intval( $settings['thumbnail_columns'] ) : 4;
+		$settings = Oli_VIG_Main::get_settings();
+		$value    = intval( $settings['thumbnail_columns'] );
 		?>
-		<input type="number" name="oli_vig_settings[thumbnail_columns]" id="thumbnail_columns"
+		<input type="number" name="oli_vig_settings[thumbnail_columns]" id="oli_vig_thumbnail_columns"
 			value="<?php echo esc_attr( $value ); ?>" min="1" max="8" />
 		<p class="description"><?php esc_html_e( 'Number of thumbnail columns (1-8)', 'oli-variation-images-gallery' ); ?></p>
 		<?php
@@ -253,8 +268,8 @@ class Oli_VIG_Settings {
 	 * Render enable zoom field
 	 */
 	public function render_enable_zoom_field() {
-		$settings = get_option( 'oli_vig_settings', array( 'enable_zoom' => 'yes' ) );
-		$checked  = ! empty( $settings['enable_zoom'] ) && 'yes' === $settings['enable_zoom'];
+		$settings = Oli_VIG_Main::get_settings();
+		$checked  = 'yes' === $settings['enable_zoom'];
 		?>
 		<label>
 			<input type="checkbox" name="oli_vig_settings[enable_zoom]" value="yes" <?php checked( $checked ); ?> />
@@ -267,8 +282,8 @@ class Oli_VIG_Settings {
 	 * Render enable lightbox field
 	 */
 	public function render_enable_lightbox_field() {
-		$settings = get_option( 'oli_vig_settings', array( 'enable_lightbox' => 'yes' ) );
-		$checked  = ! empty( $settings['enable_lightbox'] ) && 'yes' === $settings['enable_lightbox'];
+		$settings = Oli_VIG_Main::get_settings();
+		$checked  = 'yes' === $settings['enable_lightbox'];
 		?>
 		<label>
 			<input type="checkbox" name="oli_vig_settings[enable_lightbox]" value="yes" <?php checked( $checked ); ?> />
@@ -281,10 +296,10 @@ class Oli_VIG_Settings {
 	 * Render gallery width field
 	 */
 	public function render_gallery_width_field() {
-		$settings = get_option( 'oli_vig_settings', array( 'gallery_width' => 100 ) );
-		$value    = isset( $settings['gallery_width'] ) ? intval( $settings['gallery_width'] ) : 100;
+		$settings = Oli_VIG_Main::get_settings();
+		$value    = intval( $settings['gallery_width'] );
 		?>
-		<input type="number" name="oli_vig_settings[gallery_width]" id="gallery_width"
+		<input type="number" name="oli_vig_settings[gallery_width]" id="oli_vig_gallery_width"
 			value="<?php echo esc_attr( $value ); ?>" min="50" max="100" />
 		<p class="description"><?php esc_html_e( 'Gallery width as percentage (50-100%)', 'oli-variation-images-gallery' ); ?></p>
 		<?php
@@ -294,8 +309,8 @@ class Oli_VIG_Settings {
 	 * Render preload images field
 	 */
 	public function render_preload_images_field() {
-		$settings = get_option( 'oli_vig_settings', array( 'preload_images' => 'yes' ) );
-		$checked  = ! empty( $settings['preload_images'] ) && 'yes' === $settings['preload_images'];
+		$settings = Oli_VIG_Main::get_settings();
+		$checked  = 'yes' === $settings['preload_images'];
 		?>
 		<label>
 			<input type="checkbox" name="oli_vig_settings[preload_images]" value="yes" <?php checked( $checked ); ?> />
@@ -308,8 +323,8 @@ class Oli_VIG_Settings {
 	 * Render reset on clear field
 	 */
 	public function render_reset_on_clear_field() {
-		$settings = get_option( 'oli_vig_settings', array( 'reset_on_clear' => 'yes' ) );
-		$checked  = ! empty( $settings['reset_on_clear'] ) && 'yes' === $settings['reset_on_clear'];
+		$settings = Oli_VIG_Main::get_settings();
+		$checked  = 'yes' === $settings['reset_on_clear'];
 		?>
 		<label>
 			<input type="checkbox" name="oli_vig_settings[reset_on_clear]" value="yes" <?php checked( $checked ); ?> />
@@ -322,10 +337,10 @@ class Oli_VIG_Settings {
 	 * Render thumbnail mode field
 	 */
 	public function render_thumbnail_mode_field() {
-		$settings = get_option( 'oli_vig_settings', array( 'thumbnail_mode' => 'grid' ) );
-		$value    = isset( $settings['thumbnail_mode'] ) ? $settings['thumbnail_mode'] : 'grid';
+		$settings = Oli_VIG_Main::get_settings();
+		$value    = $settings['thumbnail_mode'];
 		?>
-		<select name="oli_vig_settings[thumbnail_mode]" id="thumbnail_mode">
+		<select name="oli_vig_settings[thumbnail_mode]" id="oli_vig_thumbnail_mode">
 			<option value="grid" <?php selected( $value, 'grid' ); ?>><?php esc_html_e( 'Grid (static)', 'oli-variation-images-gallery' ); ?></option>
 			<option value="slider" <?php selected( $value, 'slider' ); ?>><?php esc_html_e( 'Slider (carousel)', 'oli-variation-images-gallery' ); ?></option>
 		</select>
@@ -337,10 +352,10 @@ class Oli_VIG_Settings {
 	 * Render transition effect field
 	 */
 	public function render_transition_effect_field() {
-		$settings = get_option( 'oli_vig_settings', array( 'transition_effect' => 'none' ) );
-		$value    = isset( $settings['transition_effect'] ) ? $settings['transition_effect'] : 'none';
+		$settings = Oli_VIG_Main::get_settings();
+		$value    = $settings['transition_effect'];
 		?>
-		<select name="oli_vig_settings[transition_effect]" id="transition_effect">
+		<select name="oli_vig_settings[transition_effect]" id="oli_vig_transition_effect">
 			<option value="none" <?php selected( $value, 'none' ); ?>><?php esc_html_e( 'None (instant)', 'oli-variation-images-gallery' ); ?></option>
 			<option value="fade" <?php selected( $value, 'fade' ); ?>><?php esc_html_e( 'Fade', 'oli-variation-images-gallery' ); ?></option>
 			<option value="slide" <?php selected( $value, 'slide' ); ?>><?php esc_html_e( 'Slide', 'oli-variation-images-gallery' ); ?></option>

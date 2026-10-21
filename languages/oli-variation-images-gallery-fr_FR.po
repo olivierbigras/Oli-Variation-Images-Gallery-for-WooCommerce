@@ -2,7 +2,7 @@
 # This file is distributed under the GPL v2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Oli Variation Images Gallery for WooCommerce 0.1.1\n"
+"Project-Id-Version: Oli Variation Images Gallery for WooCommerce 0.1.2\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/oli-variation-images-gallery\n"
 "POT-Creation-Date: 2024-10-19 17:35:00+00:00\n"
 "PO-Revision-Date: 2024-10-19 17:35:00+00:00\n"
@@ -226,3 +226,15 @@ msgstr "Glissement"
 #: includes/class-oli-vig-settings.php:348
 msgid "Animation when switching between images"
 msgstr "Animation lors du changement d'image"
+
+#: includes/class-oli-vig-main.php
+msgid "Previous"
+msgstr "Précédent"
+
+#: includes/class-oli-vig-main.php
+msgid "Next"
+msgstr "Suivant"
+
+#: includes/class-oli-vig-main.php
+msgid "Close"
+msgstr "Fermer"

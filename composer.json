@@ -22,7 +22,7 @@
         "lint": "find . -path ./vendor -prune -o -name '*.php' -print0 | xargs -0 -n1 php -l",
         "phpcs": "phpcs",
         "phpcbf": "phpcbf",
-        "test": "php tests/test-importer.php"
+        "test": "php tests/test-importer.php && php tests/test-upgrade-migrate.php"
     },
     "config": {
         "allow-plugins": {

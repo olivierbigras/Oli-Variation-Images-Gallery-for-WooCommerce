@@ -4,7 +4,7 @@ Tags: woocommerce, variations, gallery, product images, variable products
 Requires at least: 6.5
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 0.1.1
+Stable tag: 0.1.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -52,6 +52,17 @@ If you're currently using the RadiusTheme "Variation Images Gallery for WooComme
 
 This plugin is fully compatible with WooCommerce High-Performance Order Storage (HPOS).
 
+== External services ==
+
+This plugin does not connect to any external service at runtime.
+
+* Scripts and styles are loaded from the plugin folder. There are no calls to olivierbigras.com, PayPal, Google APIs, Cloudflare Turnstile, Carto, Leaflet, Google Sheets, Google Fonts, or Adobe Typekit.
+* Gallery images come from the local WordPress Media Library.
+* The optional RadiusTheme importer reads existing variation meta (`rtwpvg_images` and `_product_image_gallery`) from this site's database only. It does not contact RadiusTheme or any remote host.
+* Author and support links in the plugin header and readme (olivierbigras.com, github.com/olivierbigras, wordpress.org) are documentation only. The plugin does not phone home.
+
+If a future release adds an optional remote feature, it will be opt-in and documented here with the service terms and privacy policy.
+
 == Installation ==
 
 1. Upload the plugin files to `/wp-content/plugins/oli-variation-images-gallery/`, or install through the WordPress plugin repository
@@ -98,6 +109,13 @@ Yes, the lightbox includes keyboard navigation (arrow keys, Escape) and proper f
 
 == Changelog ==
 
+= 0.1.2 - 2026-10-21 =
+* WordPress.org readiness: External services section, no inline CSS, versioned option upgrade, uninstall cleanup
+* Shop managers can save settings (`manage_woocommerce` capability on the options page)
+* Frontend thumbnail column setting now applies to the WooCommerce gallery
+* Localized previous/next/close labels; safer admin/frontend markup construction
+* Requires Plugins: woocommerce; WC tested up to 11.2
+
 = 0.1.1 - 2026-10-20 =
 * Importer reads the real RadiusTheme `rtwpvg_images` format (PHP-serialized attachment IDs) and WooCommerce `_product_image_gallery` on variations
 * Never deletes source RadiusTheme/WooCommerce meta
@@ -120,6 +138,9 @@ Yes, the lightbox includes keyboard navigation (arrow keys, Escape) and proper f
 * HPOS compatibility
 
 == Upgrade Notice ==
+
+= 0.1.2 =
+WordPress.org guideline polish. Existing settings and variation galleries are kept.
 
 = 0.1.1 =
 Importer now matches RadiusTheme's real meta format. Adds thumbnail carousel and fade/slide transitions.

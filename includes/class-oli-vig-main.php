@@ -90,19 +90,19 @@ class Oli_VIG_Main {
 				'nonce'             => wp_create_nonce( 'oli_vig_nonce' ),
 				'thumbnailPosition' => $settings['thumbnail_position'],
 				'thumbnailColumns'  => intval( $settings['thumbnail_columns'] ),
+				'galleryWidth'      => max( 50, min( 100, intval( $settings['gallery_width'] ) ) ),
 				'enableZoom'        => ( 'yes' === $settings['enable_zoom'] ),
 				'enableLightbox'    => ( 'yes' === $settings['enable_lightbox'] ),
 				'resetOnClear'      => ( 'yes' === $settings['reset_on_clear'] ),
 				'preloadImages'     => ( 'yes' === $settings['preload_images'] ),
 				'thumbnailMode'     => $settings['thumbnail_mode'],
 				'transitionEffect'  => $settings['transition_effect'],
+				'i18n'              => array(
+					'previous' => __( 'Previous', 'oli-variation-images-gallery' ),
+					'next'     => __( 'Next', 'oli-variation-images-gallery' ),
+					'close'    => __( 'Close', 'oli-variation-images-gallery' ),
+				),
 			)
-		);
-
-		$width = max( 50, min( 100, intval( $settings['gallery_width'] ) ) );
-		wp_add_inline_style(
-			'oli-vig-frontend',
-			'.woocommerce-product-gallery{max-width:' . intval( $width ) . '%;}'
 		);
 	}
 

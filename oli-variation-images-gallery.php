@@ -3,7 +3,7 @@
  * Plugin Name: Oli Variation Images Gallery for WooCommerce
  * Plugin URI: https://github.com/olivierbigras/Oli-Variation-Images-Gallery-for-WooCommerce
  * Description: Add unlimited gallery images per product variation with thumbnail gallery, zoom, and lightbox support. Includes one-click importer from RadiusTheme Variation Images Gallery.
- * Version: 0.1.1
+ * Version: 0.1.2
  * Author: Olivier Bigras
  * Author URI: https://olivierbigras.com/
  * License: GPL v2 or later
@@ -13,8 +13,9 @@
  * Requires at least: 6.5
  * Tested up to: 7.1
  * Requires PHP: 7.4
+ * Requires Plugins: woocommerce
  * WC requires at least: 9.0
- * WC tested up to: 11.0
+ * WC tested up to: 11.2
  *
  * @package Oli_Variation_Images_Gallery
  */
@@ -23,34 +24,48 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'OLI_VIG_VERSION', '0.1.1' );
+define( 'OLI_VIG_VERSION', '0.1.2' );
 define( 'OLI_VIG_PLUGIN_FILE', __FILE__ );
 define( 'OLI_VIG_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'OLI_VIG_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'OLI_VIG_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
 
 /**
- * Check if WooCommerce is active
+ * Admin notice when WooCommerce is missing.
+ */
+function oli_vig_woocommerce_missing_notice() {
+	?>
+	<div class="notice notice-error">
+		<p><?php esc_html_e( 'Oli Variation Images Gallery requires WooCommerce to be installed and active.', 'oli-variation-images-gallery' ); ?></p>
+	</div>
+	<?php
+}
+
+/**
+ * Check if WooCommerce is active.
+ *
+ * @return bool
  */
 function oli_vig_check_woocommerce() {
 	if ( ! class_exists( 'WooCommerce' ) ) {
-		add_action(
-			'admin_notices',
-			function () {
-				?>
-				<div class="notice notice-error">
-					<p><?php esc_html_e( 'Oli Variation Images Gallery requires WooCommerce to be installed and active.', 'oli-variation-images-gallery' ); ?></p>
-				</div>
-				<?php
-			}
-		);
+		add_action( 'admin_notices', 'oli_vig_woocommerce_missing_notice' );
 		return false;
 	}
 	return true;
 }
 
 /**
- * Initialize the plugin
+ * Declare WooCommerce HPOS compatibility.
+ */
+function oli_vig_declare_hpos_compatibility() {
+	if ( class_exists( '\Automattic\WooCommerce\Utilities\FeaturesUtil' ) ) {
+		\Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility( 'custom_order_tables', OLI_VIG_PLUGIN_FILE, true );
+	}
+}
+add_action( 'before_woocommerce_init', 'oli_vig_declare_hpos_compatibility' );
+
+/**
+ * Initialize the plugin.
  */
 function oli_vig_init() {
 	if ( ! oli_vig_check_woocommerce() ) {
@@ -59,6 +74,7 @@ function oli_vig_init() {
 
 	load_plugin_textdomain( 'oli-variation-images-gallery', false, dirname( OLI_VIG_PLUGIN_BASENAME ) . '/languages' );
 
+	require_once OLI_VIG_PLUGIN_DIR . 'includes/oli-vig-upgrade.php';
 	require_once OLI_VIG_PLUGIN_DIR . 'includes/class-oli-vig-main.php';
 	require_once OLI_VIG_PLUGIN_DIR . 'includes/class-oli-vig-admin.php';
 	require_once OLI_VIG_PLUGIN_DIR . 'includes/class-oli-vig-frontend.php';
@@ -66,12 +82,14 @@ function oli_vig_init() {
 	require_once OLI_VIG_PLUGIN_DIR . 'includes/class-oli-vig-importer.php';
 	require_once OLI_VIG_PLUGIN_DIR . 'includes/class-oli-vig-ajax.php';
 
+	oli_vig_maybe_upgrade();
+
 	Oli_VIG_Main::instance();
 }
 add_action( 'plugins_loaded', 'oli_vig_init' );
 
 /**
- * Activation hook
+ * Activation hook.
  */
 function oli_vig_activate() {
 	if ( ! class_exists( 'WooCommerce' ) ) {
@@ -79,31 +97,11 @@ function oli_vig_activate() {
 		wp_die( esc_html__( 'This plugin requires WooCommerce to be installed and active.', 'oli-variation-images-gallery' ) );
 	}
 
-	add_option(
-		'oli_vig_settings',
-		array(
-			'thumbnail_position' => 'bottom',
-			'thumbnail_columns'  => 4,
-			'enable_zoom'        => 'yes',
-			'enable_lightbox'    => 'yes',
-			'gallery_width'      => 100,
-			'preload_images'     => 'yes',
-			'reset_on_clear'     => 'yes',
-			'thumbnail_mode'     => 'grid',
-			'transition_effect'  => 'none',
-		)
-	);
+	require_once OLI_VIG_PLUGIN_DIR . 'includes/oli-vig-upgrade.php';
+	require_once OLI_VIG_PLUGIN_DIR . 'includes/class-oli-vig-main.php';
+
+	add_option( 'oli_vig_settings', Oli_VIG_Main::get_default_settings() );
+	add_option( 'oli_vig_version', OLI_VIG_VERSION );
+	oli_vig_migrate_legacy_options();
 }
 register_activation_hook( __FILE__, 'oli_vig_activate' );
-
-/**
- * Declare HPOS compatibility
- */
-add_action(
-	'before_woocommerce_init',
-	function () {
-		if ( class_exists( '\Automattic\WooCommerce\Utilities\FeaturesUtil' ) ) {
-			\Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility( 'custom_order_tables', __FILE__, true );
-		}
-	}
-);

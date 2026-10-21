@@ -87,6 +87,10 @@
 	display: inline-block;
 }
 
+.oli-vig-gallery-image-dragging {
+	background-color: #f6f6f6;
+}
+
 .oli-vig-gallery-image.ui-sortable-helper {
 	opacity: 0.8;
 	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);

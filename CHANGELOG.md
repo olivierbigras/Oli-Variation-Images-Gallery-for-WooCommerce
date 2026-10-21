@@ -5,6 +5,29 @@ All notable changes to Oli Variation Images Gallery for WooCommerce will be docu
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.2] - 2026-10-21
+
+### Added
+- `== External services ==` section in `readme.txt` (no remote calls at runtime)
+- Versioned upgrade that copies leftover unprefixed options to `oli_vig_*` then deletes the old keys
+- `uninstall.php` removes `oli_vig_settings` and `oli_vig_version` (gallery meta is left in place)
+- `license.txt` (GPL v2 or later)
+- `Requires Plugins: woocommerce` header
+- Localized previous / next / close labels for slider and lightbox
+
+### Changed
+- Gallery width is applied via a CSS custom property from localized settings (no `wp_add_inline_style`)
+- Settings page uses `manage_woocommerce` for the options form (shop managers can save)
+- Thumbnail column setting is applied to the WooCommerce product gallery
+- WC tested up to 11.2
+
+### Fixed
+- Admin sortable no longer writes inline styles
+- Admin/frontend gallery markup is built with jQuery attributes instead of string HTML
+- AJAX gallery lookup rejects non-variation IDs and unpublished parent products
+
+[0.1.2]: https://github.com/olivierbigras/Oli-Variation-Images-Gallery-for-WooCommerce/releases/tag/0.1.2
+
 ## [0.1.1] - 2026-10-20
 
 ### Added

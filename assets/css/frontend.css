@@ -5,9 +5,11 @@
  */
 
 /* Gallery container */
-.oli-vig-gallery-wrapper {
+.oli-vig-gallery-wrapper,
+.woocommerce-product-gallery.oli-vig-gallery {
 	position: relative;
 	width: 100%;
+	max-width: var(--oli-vig-gallery-width, 100%);
 }
 
 /* Main image container */
@@ -200,6 +202,46 @@ ol.flex-control-nav.mode-slider::-webkit-scrollbar-thumb:hover {
 }
 
 /* Thumbnail sizing based on columns */
+.woocommerce-product-gallery.oli-vig-columns-1 .flex-control-thumbs li,
+.woocommerce-product-gallery.oli-vig-columns-1 ol.flex-control-nav li {
+	width: 100%;
+}
+
+.woocommerce-product-gallery.oli-vig-columns-2 .flex-control-thumbs li,
+.woocommerce-product-gallery.oli-vig-columns-2 ol.flex-control-nav li {
+	width: 50%;
+}
+
+.woocommerce-product-gallery.oli-vig-columns-3 .flex-control-thumbs li,
+.woocommerce-product-gallery.oli-vig-columns-3 ol.flex-control-nav li {
+	width: 33.333%;
+}
+
+.woocommerce-product-gallery.oli-vig-columns-4 .flex-control-thumbs li,
+.woocommerce-product-gallery.oli-vig-columns-4 ol.flex-control-nav li {
+	width: 25%;
+}
+
+.woocommerce-product-gallery.oli-vig-columns-5 .flex-control-thumbs li,
+.woocommerce-product-gallery.oli-vig-columns-5 ol.flex-control-nav li {
+	width: 20%;
+}
+
+.woocommerce-product-gallery.oli-vig-columns-6 .flex-control-thumbs li,
+.woocommerce-product-gallery.oli-vig-columns-6 ol.flex-control-nav li {
+	width: 16.666%;
+}
+
+.woocommerce-product-gallery.oli-vig-columns-7 .flex-control-thumbs li,
+.woocommerce-product-gallery.oli-vig-columns-7 ol.flex-control-nav li {
+	width: 14.285%;
+}
+
+.woocommerce-product-gallery.oli-vig-columns-8 .flex-control-thumbs li,
+.woocommerce-product-gallery.oli-vig-columns-8 ol.flex-control-nav li {
+	width: 12.5%;
+}
+
 .oli-vig-thumbnails.columns-1 .oli-vig-thumbnail {
 	width: 100%;
 }

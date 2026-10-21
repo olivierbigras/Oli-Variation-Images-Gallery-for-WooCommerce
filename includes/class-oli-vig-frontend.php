@@ -50,10 +50,13 @@ class Oli_VIG_Frontend {
 	public function gallery_classes( $classes ) {
 		$settings = Oli_VIG_Main::get_settings();
 
+		$columns = max( 1, min( 8, intval( $settings['thumbnail_columns'] ) ) );
+
 		$classes[] = 'oli-vig-gallery';
 		$classes[] = 'oli-vig-thumbs-' . sanitize_html_class( $settings['thumbnail_position'] );
 		$classes[] = 'oli-vig-thumbs-mode-' . sanitize_html_class( $settings['thumbnail_mode'] );
 		$classes[] = 'oli-vig-transition-' . sanitize_html_class( $settings['transition_effect'] );
+		$classes[] = 'oli-vig-columns-' . $columns;
 
 		if ( 'yes' === $settings['enable_zoom'] ) {
 			$classes[] = 'oli-vig-zoom-enabled';
@@ -88,8 +91,8 @@ class Oli_VIG_Frontend {
 						'url'    => $image_url,
 						'thumb'  => $thumb_url ? $thumb_url : $image_url,
 						'full'   => $full_url ? $full_url : $image_url,
-						'alt'    => get_post_meta( $image_id, '_wp_attachment_image_alt', true ),
-						'title'  => get_the_title( $image_id ),
+						'alt'    => sanitize_text_field( (string) get_post_meta( $image_id, '_wp_attachment_image_alt', true ) ),
+						'title'  => sanitize_text_field( get_the_title( $image_id ) ),
 						'srcset' => wp_get_attachment_image_srcset( $image_id, 'woocommerce_single' ),
 						'sizes'  => wp_get_attachment_image_sizes( $image_id, 'woocommerce_single' ),
 					);
