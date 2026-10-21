@@ -57,7 +57,7 @@ class Oli_VIG_Importer {
 	 * Constructor
 	 */
 	private function __construct() {
-		add_action( 'admin_menu', array( $this, 'add_importer_page' ), 100 );
+		add_action( 'admin_notices', array( $this, 'maybe_admin_notice' ) );
 		add_action( 'admin_post_oli_vig_run_import', array( $this, 'handle_import' ) );
 
 		if ( defined( 'WP_CLI' ) && WP_CLI ) {
@@ -181,138 +181,121 @@ class Oli_VIG_Importer {
 	}
 
 	/**
-	 * Add importer page
+	 * Whether the current screen is the Variation galleries settings section.
+	 *
+	 * @return bool
 	 */
-	public function add_importer_page() {
-		add_submenu_page(
-			'woocommerce',
-			__( 'Import Variation Gallery Data', 'oli-variation-images-gallery' ),
-			__( 'Import Gallery Data', 'oli-variation-images-gallery' ),
-			'manage_woocommerce',
-			'oli-variation-gallery-importer',
-			array( $this, 'render_importer_page' )
-		);
+	private function is_settings_screen() {
+		if ( ! is_admin() ) {
+			return false;
+		}
+
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Display-only query args identify the settings section.
+		$page = isset( $_GET['page'] ) ? sanitize_key( wp_unslash( $_GET['page'] ) ) : '';
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Display-only query args identify the settings section.
+		$tab = isset( $_GET['tab'] ) ? sanitize_key( wp_unslash( $_GET['tab'] ) ) : '';
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Display-only query args identify the settings section.
+		$section = isset( $_GET['section'] ) ? sanitize_key( wp_unslash( $_GET['section'] ) ) : '';
+
+		return ( 'wc-settings' === $page && 'products' === $tab && Oli_VIG_Settings::SECTION_ID === $section );
 	}
 
 	/**
-	 * Render importer page
+	 * Count variations that have importable gallery data from another plugin.
+	 *
+	 * @return int
 	 */
-	public function render_importer_page() {
-		if ( ! current_user_can( 'manage_woocommerce' ) ) {
+	public function count_importable_variations() {
+		$result = $this->run_import( true );
+		return isset( $result['found'] ) ? (int) $result['found'] : 0;
+	}
+
+	/**
+	 * Settings-section notices: import result, then a detect-and-import banner.
+	 *
+	 * Shows nothing when no third-party variation gallery data is present.
+	 */
+	public function maybe_admin_notice() {
+		if ( ! current_user_can( 'manage_woocommerce' ) || ! $this->is_settings_screen() ) {
 			return;
 		}
 
-		$import_status  = '';
-		$imported_count = 0;
-		$found_count    = 0;
+		$this->render_import_result_notice();
 
-		if ( isset( $_GET['_wpnonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_GET['_wpnonce'] ) ), 'oli_vig_import_result' ) ) {
-			$import_status  = isset( $_GET['import_status'] ) ? sanitize_key( wp_unslash( $_GET['import_status'] ) ) : '';
-			$imported_count = isset( $_GET['imported_count'] ) ? absint( wp_unslash( $_GET['imported_count'] ) ) : 0;
-			$found_count    = isset( $_GET['found_count'] ) ? absint( wp_unslash( $_GET['found_count'] ) ) : 0;
+		$count = $this->count_importable_variations();
+		if ( $count < 1 ) {
+			return;
 		}
 
-		$has_data = $this->check_radiustheme_data();
+		$action_url = admin_url( 'admin-post.php' );
 		?>
-		<div class="wrap">
-			<h1><?php esc_html_e( 'Import Variation Gallery Data', 'oli-variation-images-gallery' ); ?></h1>
-
-			<?php if ( 'success' === $import_status ) : ?>
-				<div class="notice notice-success">
-					<p>
-						<?php
-						printf(
-							/* translators: 1: number of variations imported */
-							esc_html__( 'Successfully imported gallery data for %d variations.', 'oli-variation-images-gallery' ),
-							absint( $imported_count )
-						);
-						?>
-					</p>
-				</div>
-			<?php elseif ( 'dry_run' === $import_status ) : ?>
-				<div class="notice notice-info">
-					<p>
-						<?php
-						printf(
-							/* translators: 1: number of variations that would be imported */
-							esc_html__( 'Dry run complete. Found %d variations with gallery data that can be imported.', 'oli-variation-images-gallery' ),
-							absint( $found_count )
-						);
-						?>
-					</p>
-				</div>
-			<?php endif; ?>
-
-			<div class="card">
-				<h2><?php esc_html_e( 'Import from RadiusTheme Variation Images Gallery', 'oli-variation-images-gallery' ); ?></h2>
-
-				<?php if ( $has_data ) : ?>
-					<p><?php esc_html_e( 'This tool will import variation gallery images from the RadiusTheme "Variation Images Gallery for WooCommerce" plugin.', 'oli-variation-images-gallery' ); ?></p>
-					<p><strong><?php esc_html_e( 'Important:', 'oli-variation-images-gallery' ); ?></strong> <?php esc_html_e( 'The original data will NOT be deleted. You can safely run this import and keep both plugins active during migration.', 'oli-variation-images-gallery' ); ?></p>
-
-					<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
-						<?php wp_nonce_field( 'oli_vig_import', 'oli_vig_import_nonce' ); ?>
-						<input type="hidden" name="action" value="oli_vig_run_import" />
-
-						<p>
-							<label>
-								<input type="checkbox" name="dry_run" value="1" />
-								<?php esc_html_e( 'Dry run (preview only, do not import)', 'oli-variation-images-gallery' ); ?>
-							</label>
-						</p>
-
-						<p>
-							<?php submit_button( __( 'Run Import', 'oli-variation-images-gallery' ), 'primary', 'submit', false ); ?>
-						</p>
-					</form>
-				<?php else : ?>
-					<p><?php esc_html_e( 'No RadiusTheme variation gallery data found. Either the plugin is not installed, or no variations have gallery images.', 'oli-variation-images-gallery' ); ?></p>
-				<?php endif; ?>
-			</div>
-
-			<div class="card">
-				<h2><?php esc_html_e( 'WP-CLI Command', 'oli-variation-images-gallery' ); ?></h2>
-				<p><?php esc_html_e( 'You can also run the import via WP-CLI:', 'oli-variation-images-gallery' ); ?></p>
-				<pre>wp oli-vig import [--dry-run]</pre>
-			</div>
+		<div class="notice notice-info oli-vig-import-notice">
+			<p>
+				<?php
+				echo esc_html(
+					sprintf(
+						/* translators: %d: number of variations with importable gallery data */
+						_n( '%d variation found.', '%d variations found.', $count, 'oli-variation-images-gallery' ),
+						$count
+					)
+				);
+				?>
+			</p>
+			<form method="post" action="<?php echo esc_url( $action_url ); ?>" class="oli-vig-import-actions">
+				<?php wp_nonce_field( 'oli_vig_import', 'oli_vig_import_nonce' ); ?>
+				<input type="hidden" name="action" value="oli_vig_run_import" />
+				<button type="submit" name="dry_run" value="1" class="button">
+					<?php esc_html_e( 'Preview', 'oli-variation-images-gallery' ); ?>
+				</button>
+				<button type="submit" name="import" value="1" class="button button-primary">
+					<?php esc_html_e( 'Import', 'oli-variation-images-gallery' ); ?>
+				</button>
+			</form>
 		</div>
 		<?php
 	}
 
 	/**
-	 * Check if RadiusTheme (or migrated native) gallery data exists.
-	 *
-	 * @return bool
+	 * Show the result of a preview or import when redirected back.
 	 */
-	private function check_radiustheme_data() {
-		global $wpdb;
-
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- One-off admin existence check.
-		$count = (int) $wpdb->get_var(
-			$wpdb->prepare(
-				"SELECT COUNT(*) FROM {$wpdb->postmeta} WHERE meta_key = %s AND meta_value != '' AND meta_value != 'a:0:{}'",
-				self::RTWPVG_LEGACY_META_KEY
-			)
-		);
-
-		if ( $count > 0 ) {
-			return true;
+	private function render_import_result_notice() {
+		if ( ! isset( $_GET['_wpnonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_GET['_wpnonce'] ) ), 'oli_vig_import_result' ) ) {
+			return;
 		}
 
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- One-off admin existence check.
-		$native_count = (int) $wpdb->get_var(
-			$wpdb->prepare(
-				"SELECT COUNT(*) FROM {$wpdb->postmeta} pm
-				INNER JOIN {$wpdb->posts} p ON p.ID = pm.post_id
-				WHERE pm.meta_key = %s
-				AND p.post_type = %s
-				AND pm.meta_value != ''",
-				self::WC_GALLERY_META_KEY,
-				'product_variation'
-			)
-		);
+		$status = isset( $_GET['import_status'] ) ? sanitize_key( wp_unslash( $_GET['import_status'] ) ) : '';
+		$count  = isset( $_GET['imported_count'] ) ? absint( wp_unslash( $_GET['imported_count'] ) ) : 0;
 
-		return $native_count > 0;
+		if ( 'success' === $status ) {
+			echo '<div class="notice notice-success is-dismissible"><p>';
+			echo esc_html(
+				sprintf(
+					/* translators: %d: number of imported variations */
+					_n(
+						'%d variation imported. Original data was not modified.',
+						'%d variations imported. Original data was not modified.',
+						$count,
+						'oli-variation-images-gallery'
+					),
+					$count
+				)
+			);
+			echo '</p></div>';
+			return;
+		}
+
+		if ( 'dry_run' === $status ) {
+			$found = isset( $_GET['found_count'] ) ? absint( wp_unslash( $_GET['found_count'] ) ) : $count;
+			echo '<div class="notice notice-info is-dismissible"><p>';
+			echo esc_html(
+				sprintf(
+					/* translators: %d: number of variations that would be imported */
+					_n( '%d variation found.', '%d variations found.', $found, 'oli-variation-images-gallery' ),
+					$found
+				)
+			);
+			echo '</p></div>';
+		}
 	}
 
 	/**
@@ -333,7 +316,9 @@ class Oli_VIG_Importer {
 
 		$redirect_url = add_query_arg(
 			array(
-				'page'           => 'oli-variation-gallery-importer',
+				'page'           => 'wc-settings',
+				'tab'            => 'products',
+				'section'        => Oli_VIG_Settings::SECTION_ID,
 				'import_status'  => $dry_run ? 'dry_run' : 'success',
 				'imported_count' => $result['imported'],
 				'found_count'    => $result['found'],

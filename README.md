@@ -2,7 +2,7 @@
 
 [![PHP Checks](https://github.com/olivierbigras/Oli-Variation-Images-Gallery-for-WooCommerce/actions/workflows/phpcs.yml/badge.svg)](https://github.com/olivierbigras/Oli-Variation-Images-Gallery-for-WooCommerce/actions/workflows/phpcs.yml)
 [![License: GPL v2](https://img.shields.io/badge/License-GPL%20v2-blue.svg)](https://www.gnu.org/licenses/gpl-2.0)
-[![WordPress Plugin Version](https://img.shields.io/badge/version-0.1.2-green.svg)](https://github.com/olivierbigras/Oli-Variation-Images-Gallery-for-WooCommerce/releases)
+[![WordPress Plugin Version](https://img.shields.io/badge/version-0.2.0-green.svg)](https://github.com/olivierbigras/Oli-Variation-Images-Gallery-for-WooCommerce/releases)
 
 Add unlimited gallery images per product variation with thumbnail gallery, zoom, and lightbox support for WooCommerce.
 
@@ -33,7 +33,7 @@ Add unlimited gallery images per product variation with thumbnail gallery, zoom,
 1. Download the latest release or clone this repository
 2. Upload to `/wp-content/plugins/oli-variation-images-gallery/`
 3. Activate the plugin through the WordPress admin
-4. Configure settings under WooCommerce → Variation Gallery
+4. Configure settings under WooCommerce → Settings → Products → Variation galleries
 5. Edit a variable product and add images to variations
 
 ## Importing from RadiusTheme Plugin
@@ -42,8 +42,8 @@ If you're migrating from the RadiusTheme "Variation Images Gallery for WooCommer
 
 ### Via Admin UI
 1. Keep the RadiusTheme plugin active (data will be preserved)
-2. Go to WooCommerce → Import Gallery Data
-3. Click "Run Import" (or use dry run to preview first)
+2. Go to WooCommerce → Settings → Products → Variation galleries
+3. If other plugin data is found, click Preview or Import (source data is never deleted)
 
 ### Via WP-CLI
 ```bash
@@ -85,7 +85,7 @@ This plugin follows:
 
 ## Known Gaps vs RadiusTheme Plugin
 
-This is version 0.1.2 with feature parity on core functionality:
+This is version 0.2.0 with feature parity on core functionality:
 - ✅ Unlimited gallery images per variation
 - ✅ Drag & drop ordering
 - ✅ Gallery swap on variation selection

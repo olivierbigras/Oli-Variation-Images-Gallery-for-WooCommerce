@@ -1,11 +1,11 @@
-# Copyright (C) 2024 Olivier Bigras
+# Copyright (C) 2026 Olivier Bigras
 # This file is distributed under the GPL v2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Oli Variation Images Gallery for WooCommerce 0.1.2\n"
+"Project-Id-Version: Oli Variation Images Gallery for WooCommerce 0.2.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/oli-variation-images-gallery\n"
-"POT-Creation-Date: 2024-10-19 17:35:00+00:00\n"
-"PO-Revision-Date: 2024-10-19 17:35:00+00:00\n"
+"POT-Creation-Date: 2026-10-21 13:40:00+00:00\n"
+"PO-Revision-Date: 2026-10-21 13:40:00+00:00\n"
 "Last-Translator: Olivier Bigras <contact@olivierbigras.com>\n"
 "Language-Team: Français\n"
 "Language: fr_FR\n"
@@ -14,218 +14,201 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: oli-variation-images-gallery.php:44
+#: oli-variation-images-gallery.php
 msgid "Oli Variation Images Gallery requires WooCommerce to be installed and active."
 msgstr "Oli Variation Images Gallery nécessite que WooCommerce soit installé et actif."
 
-#: oli-variation-images-gallery.php:74
+#: oli-variation-images-gallery.php
 msgid "This plugin requires WooCommerce to be installed and active."
 msgstr "Cette extension nécessite que WooCommerce soit installé et actif."
 
-#: includes/class-oli-vig-admin.php:94
+#: includes/class-oli-vig-admin.php
 msgid "Add Images to Variation Gallery"
 msgstr "Ajouter des images à la galerie de variation"
 
-#: includes/class-oli-vig-admin.php:95
+#: includes/class-oli-vig-admin.php
 msgid "Add to gallery"
 msgstr "Ajouter à la galerie"
 
-#: includes/class-oli-vig-admin.php:96
-msgid "Remove"
-msgstr "Retirer"
+#: includes/class-oli-vig-admin.php
+msgid "Remove image %s"
+msgstr "Retirer l'image %s"
 
-#: includes/class-oli-vig-admin.php:110
-msgid "Variation Gallery Images"
+#: includes/class-oli-vig-admin.php
+msgid "Move image left"
+msgstr "Déplacer l'image vers la gauche"
+
+#: includes/class-oli-vig-admin.php
+msgid "Move image right"
+msgstr "Déplacer l'image vers la droite"
+
+#: includes/class-oli-vig-admin.php
+msgid "Variation gallery images"
 msgstr "Images de galerie de variation"
 
-#: includes/class-oli-vig-admin.php:128
-msgid "Add Images"
+#: includes/class-oli-vig-admin.php
+msgid "The first image of the variation remains the main image."
+msgstr "La première image de la variation reste l'image principale."
+
+#: includes/class-oli-vig-admin.php
+msgid "No images: the product gallery will be used."
+msgstr "Aucune image : la galerie du produit sera utilisée."
+
+#: includes/class-oli-vig-admin.php
+msgid "Add images"
 msgstr "Ajouter des images"
 
-#: includes/class-oli-vig-settings.php:40
-#: includes/class-oli-vig-settings.php:41
-msgid "Variation Gallery Settings"
-msgstr "Paramètres de galerie de variation"
+#: includes/class-oli-vig-settings.php
+msgid "Variation galleries"
+msgstr "Galeries de variations"
 
-#: includes/class-oli-vig-settings.php:62
-msgid "Gallery Settings"
-msgstr "Paramètres de galerie"
-
-#: includes/class-oli-vig-settings.php:69
-msgid "Thumbnail Position"
-msgstr "Position des miniatures"
-
-#: includes/class-oli-vig-settings.php:76
-msgid "Thumbnail Columns"
-msgstr "Colonnes de miniatures"
-
-#: includes/class-oli-vig-settings.php:83
-msgid "Enable Zoom"
-msgstr "Activer le zoom"
-
-#: includes/class-oli-vig-settings.php:90
-msgid "Enable Lightbox"
-msgstr "Activer la lightbox"
-
-#: includes/class-oli-vig-settings.php:97
-msgid "Gallery Width (%)"
-msgstr "Largeur de la galerie (%)"
-
-#: includes/class-oli-vig-settings.php:104
-msgid "Preload Images"
-msgstr "Précharger les images"
-
-#: includes/class-oli-vig-settings.php:111
-msgid "Reset Gallery on Clear"
-msgstr "Réinitialiser la galerie lors de l'effacement"
-
-#: includes/class-oli-vig-settings.php:158
-msgid "Settings saved successfully."
-msgstr "Paramètres enregistrés avec succès."
-
-#: includes/class-oli-vig-settings.php:169
+#: includes/class-oli-vig-settings.php
 msgid "Configure how variation galleries are displayed on product pages."
 msgstr "Configurez l'affichage des galeries de variations sur les pages produit."
 
-#: includes/class-oli-vig-settings.php:179
+#: includes/class-oli-vig-settings.php
+msgid "Thumbnail position"
+msgstr "Position des miniatures"
+
+#: includes/class-oli-vig-settings.php
 msgid "Bottom"
 msgstr "En bas"
 
-#: includes/class-oli-vig-settings.php:180
+#: includes/class-oli-vig-settings.php
 msgid "Left"
 msgstr "À gauche"
 
-#: includes/class-oli-vig-settings.php:181
+#: includes/class-oli-vig-settings.php
 msgid "Right"
 msgstr "À droite"
 
-#: includes/class-oli-vig-settings.php:194
-msgid "Number of thumbnail columns (1-8)"
-msgstr "Nombre de colonnes de miniatures (1-8)"
-
-#: includes/class-oli-vig-settings.php:207
-msgid "Enable image zoom on hover"
-msgstr "Activer le zoom au survol"
-
-#: includes/class-oli-vig-settings.php:220
-msgid "Enable lightbox when clicking images"
-msgstr "Activer la lightbox lors du clic sur les images"
-
-#: includes/class-oli-vig-settings.php:233
-msgid "Gallery width as percentage (50-100%)"
-msgstr "Largeur de la galerie en pourcentage (50-100%)"
-
-#: includes/class-oli-vig-settings.php:246
-msgid "Preload variation images for faster switching"
-msgstr "Précharger les images de variation pour un changement plus rapide"
-
-#: includes/class-oli-vig-settings.php:259
-msgid "Reset to parent gallery when variation is cleared"
-msgstr "Réinitialiser à la galerie parente lorsque la variation est effacée"
-
-#: includes/class-oli-vig-importer.php:41
-#: includes/class-oli-vig-importer.php:42
-msgid "Import Variation Gallery Data"
-msgstr "Importer les données de galerie de variation"
-
-#: includes/class-oli-vig-importer.php:57
-msgid "Import Gallery Data"
-msgstr "Importer les données de galerie"
-
-#: includes/class-oli-vig-importer.php:68
-#, php-format
-msgid "Successfully imported gallery data for %d variations."
-msgstr "Données de galerie importées avec succès pour %d variations."
-
-#: includes/class-oli-vig-importer.php:77
-#, php-format
-msgid "Dry run complete. Found %d variations with gallery data that can be imported."
-msgstr "Simulation terminée. %d variations avec des données de galerie peuvent être importées."
-
-#: includes/class-oli-vig-importer.php:85
-msgid "Import from RadiusTheme Variation Images Gallery"
-msgstr "Importer depuis RadiusTheme Variation Images Gallery"
-
-#: includes/class-oli-vig-importer.php:88
-msgid "This tool will import variation gallery images from the RadiusTheme \"Variation Images Gallery for WooCommerce\" plugin."
-msgstr "Cet outil importera les images de galerie de variation depuis l'extension RadiusTheme \"Variation Images Gallery for WooCommerce\"."
-
-#: includes/class-oli-vig-importer.php:89
-msgid "Important:"
-msgstr "Important :"
-
-#: includes/class-oli-vig-importer.php:89
-msgid "The original data will NOT be deleted. You can safely run this import and keep both plugins active during migration."
-msgstr "Les données originales ne seront PAS supprimées. Vous pouvez exécuter cette importation en toute sécurité et garder les deux extensions actives durant la migration."
-
-#: includes/class-oli-vig-importer.php:96
-msgid "Dry run (preview only, do not import)"
-msgstr "Simulation (aperçu uniquement, ne pas importer)"
-
-#: includes/class-oli-vig-importer.php:100
-msgid "Run Import"
-msgstr "Lancer l'importation"
-
-#: includes/class-oli-vig-importer.php:103
-msgid "No RadiusTheme variation gallery data found. Either the plugin is not installed, or no variations have gallery images."
-msgstr "Aucune donnée de galerie RadiusTheme trouvée. Soit l'extension n'est pas installée, soit aucune variation ne possède d'images de galerie."
-
-#: includes/class-oli-vig-importer.php:108
-msgid "WP-CLI Command"
-msgstr "Commande WP-CLI"
-
-#: includes/class-oli-vig-importer.php:109
-msgid "You can also run the import via WP-CLI:"
-msgstr "Vous pouvez également lancer l'importation via WP-CLI :"
-
-#: includes/class-oli-vig-importer.php:130
-msgid "You do not have permission to perform this action."
-msgstr "Vous n'avez pas la permission d'effectuer cette action."
-
-#: includes/class-oli-vig-importer.php:136
-msgid "Invalid nonce."
-msgstr "Nonce invalide."
-
-#: includes/class-oli-vig-ajax.php:51
-#: includes/class-oli-vig-ajax.php:57
-msgid "Invalid variation ID"
-msgstr "ID de variation invalide"
-
-#: includes/class-oli-vig-settings.php:132
-msgid "Thumbnail Mode"
+#: includes/class-oli-vig-settings.php
+msgid "Thumbnail mode"
 msgstr "Mode des miniatures"
 
-#: includes/class-oli-vig-settings.php:140
-msgid "Transition Effect"
+#: includes/class-oli-vig-settings.php
+msgid "Grid"
+msgstr "Grille"
+
+#: includes/class-oli-vig-settings.php
+msgid "Carousel"
+msgstr "Carrousel"
+
+#: includes/class-oli-vig-settings.php
+msgid "Thumbnail columns"
+msgstr "Colonnes de miniatures"
+
+#: includes/class-oli-vig-settings.php
+msgid "Number of thumbnail columns (1-8)."
+msgstr "Nombre de colonnes de miniatures (1-8)."
+
+#: includes/class-oli-vig-settings.php
+msgid "Enable zoom"
+msgstr "Activer le zoom"
+
+#: includes/class-oli-vig-settings.php
+msgid "Enable image zoom on hover."
+msgstr "Activer le zoom au survol."
+
+#: includes/class-oli-vig-settings.php
+msgid "Enable lightbox"
+msgstr "Activer la lightbox"
+
+#: includes/class-oli-vig-settings.php
+msgid "Enable lightbox when clicking images."
+msgstr "Activer la lightbox lors du clic sur les images."
+
+#: includes/class-oli-vig-settings.php
+msgid "Advanced"
+msgstr "Avancé"
+
+#: includes/class-oli-vig-settings.php
+msgid "Reset gallery on clear"
+msgstr "Réinitialiser la galerie lors de l'effacement"
+
+#: includes/class-oli-vig-settings.php
+msgid "Reset to the product gallery when the variation is cleared."
+msgstr "Revenir à la galerie du produit lorsque la variation est effacée."
+
+#: includes/class-oli-vig-settings.php
+msgid "Preload images"
+msgstr "Précharger les images"
+
+#: includes/class-oli-vig-settings.php
+msgid "Preload variation images for faster switching. This can increase the page weight on products with many variation images."
+msgstr "Précharger les images de variation pour un changement plus rapide. Cela peut augmenter le poids de la page si de nombreuses variations ont de grandes galeries."
+
+#: includes/class-oli-vig-settings.php
+msgid "Transition effect"
 msgstr "Effet de transition"
 
-#: includes/class-oli-vig-settings.php:328
-msgid "Grid (static)"
-msgstr "Grille (statique)"
+#: includes/class-oli-vig-settings.php
+msgid "None"
+msgstr "Aucune"
 
-#: includes/class-oli-vig-settings.php:329
-msgid "Slider (carousel)"
-msgstr "Diaporama (carrousel)"
-
-#: includes/class-oli-vig-settings.php:331
-msgid "Display thumbnails as a static grid or scrollable carousel"
-msgstr "Afficher les miniatures en grille statique ou en carrousel défilant"
-
-#: includes/class-oli-vig-settings.php:344
-msgid "None (instant)"
-msgstr "Aucun (instantané)"
-
-#: includes/class-oli-vig-settings.php:345
+#: includes/class-oli-vig-settings.php
 msgid "Fade"
 msgstr "Fondu"
 
-#: includes/class-oli-vig-settings.php:346
+#: includes/class-oli-vig-settings.php
 msgid "Slide"
 msgstr "Glissement"
 
-#: includes/class-oli-vig-settings.php:348
-msgid "Animation when switching between images"
-msgstr "Animation lors du changement d'image"
+#: includes/class-oli-vig-settings.php
+msgid "Animation when switching images in carousel mode. Honors prefers-reduced-motion."
+msgstr "Animation lors du changement d'image en mode carrousel. Respecte prefers-reduced-motion."
+
+#: includes/class-oli-vig-settings.php
+msgid "Gallery width"
+msgstr "Largeur de la galerie"
+
+#: includes/class-oli-vig-settings.php
+msgid "Leave 100% to follow the theme."
+msgstr "Laissez 100 % pour suivre le thème."
+
+#: includes/class-oli-vig-settings.php
+msgid "Variation Gallery Settings"
+msgstr "Paramètres de galerie de variation"
+
+#: includes/class-oli-vig-settings.php
+msgid "Variation Gallery"
+msgstr "Galerie de variation"
+
+#: includes/class-oli-vig-settings.php
+msgid "Settings"
+msgstr "Réglages"
+
+#: includes/class-oli-vig-importer.php
+msgid "%d variation found."
+msgid_plural "%d variations found."
+msgstr[0] "%d variation trouvée."
+msgstr[1] "%d variations trouvées."
+
+#: includes/class-oli-vig-importer.php
+msgid "Preview"
+msgstr "Prévisualiser"
+
+#: includes/class-oli-vig-importer.php
+msgid "Import"
+msgstr "Importer"
+
+#: includes/class-oli-vig-importer.php
+msgid "%d variation imported. Original data was not modified."
+msgid_plural "%d variations imported. Original data was not modified."
+msgstr[0] "%d variation importée. Les données d'origine n'ont pas été modifiées."
+msgstr[1] "%d variations importées. Les données d'origine n'ont pas été modifiées."
+
+#: includes/class-oli-vig-importer.php
+msgid "You do not have permission to perform this action."
+msgstr "Vous n'avez pas la permission d'effectuer cette action."
+
+#: includes/class-oli-vig-importer.php
+msgid "Invalid nonce."
+msgstr "Nonce invalide."
+
+#: includes/class-oli-vig-ajax.php
+msgid "Invalid variation ID"
+msgstr "ID de variation invalide"
 
 #: includes/class-oli-vig-main.php
 msgid "Previous"
@@ -238,3 +221,11 @@ msgstr "Suivant"
 #: includes/class-oli-vig-main.php
 msgid "Close"
 msgstr "Fermer"
+
+#: includes/class-oli-vig-main.php
+msgid "Image lightbox"
+msgstr "Visionneuse d'images"
+
+#: includes/class-oli-vig-main.php
+msgid "Show image %1$d of %2$d"
+msgstr "Afficher l'image %1$d sur %2$d"

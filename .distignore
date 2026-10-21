@@ -1,0 +1,22 @@
+# Development and packaging files excluded from the WordPress.org ZIP.
+.git
+.github
+.gitignore
+.gitattributes
+.distignore
+tests
+bin
+node_modules
+vendor
+phpcs.xml
+phpcs.xml.dist
+phpunit.xml
+phpunit.xml.dist
+composer.json
+composer.lock
+package.json
+package-lock.json
+CHANGELOG.md
+PROJECT_SUMMARY.md
+README.md
+TESTING.md

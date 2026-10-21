@@ -5,6 +5,30 @@ All notable changes to Oli Variation Images Gallery for WooCommerce will be docu
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.0] - 2026-10-21
+
+### Added
+- WooCommerce → Settings → Products → Variation galleries section (`woocommerce_get_sections_products` / `woocommerce_get_settings_products`)
+- Collapsed Advanced block for reset, preload, transition, and gallery width
+- Keyboard move controls and empty state on the variation gallery field
+- Accessible storefront thumbnails (`button`, `aria-label`, `aria-current`) and polite live announcements
+- Lightbox focus trap with Escape and restored focus
+- `.distignore` and `.gitattributes` `export-ignore` for WordPress.org ZIP packaging
+
+### Changed
+- Settings live under Products instead of a standalone options page; the old submenu and plugin Settings link point at the new section
+- Thumbnail columns show only in Grid mode (default from `woocommerce_product_thumbnails_columns`, else 4)
+- Zoom and lightbox defaults follow the theme’s `wc-product-gallery-zoom` / `wc-product-gallery-lightbox` support
+- Transition effect shows only in Carousel mode and honors `prefers-reduced-motion`
+- Import submenu removed; a notice with Preview / Import appears only when third-party variation data is found
+- Import result uses `_n()`: “%d variations imported. Original data was not modified.”
+- Boolean settings are stored as real booleans
+
+### Fixed
+- Variation field `label for` and `aria-describedby` are associated with the gallery input
+
+[0.2.0]: https://github.com/olivierbigras/Oli-Variation-Images-Gallery-for-WooCommerce/releases/tag/0.2.0
+
 ## [0.1.2] - 2026-10-21
 
 ### Added

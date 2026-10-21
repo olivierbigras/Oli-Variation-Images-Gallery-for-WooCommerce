@@ -58,7 +58,7 @@ class Oli_VIG_Frontend {
 		$classes[] = 'oli-vig-transition-' . sanitize_html_class( $settings['transition_effect'] );
 		$classes[] = 'oli-vig-columns-' . $columns;
 
-		if ( 'yes' === $settings['enable_zoom'] ) {
+		if ( ! empty( $settings['enable_zoom'] ) ) {
 			$classes[] = 'oli-vig-zoom-enabled';
 		}
 

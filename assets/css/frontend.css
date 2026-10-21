@@ -175,6 +175,29 @@ ol.flex-control-nav.mode-slider::-webkit-scrollbar-thumb:hover {
 	background: #666;
 }
 
+.oli-vig-thumb-button {
+	display: block;
+	width: 100%;
+	padding: 0;
+	border: 2px solid #ddd;
+	border-radius: 4px;
+	overflow: hidden;
+	cursor: pointer;
+	background: #fff;
+	line-height: 0;
+	transition: border-color 0.2s, opacity 0.2s;
+}
+
+.oli-vig-thumb-button:hover,
+.oli-vig-thumb-button:focus {
+	border-color: #999;
+	opacity: 0.8;
+}
+
+.oli-vig-thumb-button[aria-current="true"] {
+	border-color: #000;
+}
+
 .oli-vig-thumbnail {
 	flex: 0 0 auto;
 	border: 2px solid #ddd;
@@ -458,4 +481,27 @@ ol.flex-control-nav.mode-slider::-webkit-scrollbar-thumb:hover {
 @keyframes oli-vig-spin {
 	0% { transform: rotate(0deg); }
 	100% { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.oli-vig-transition-fade .oli-vig-main-image img,
+	.oli-vig-transition-fade .woocommerce-product-gallery__image img,
+	.oli-vig-transition-slide .oli-vig-main-image img,
+	.oli-vig-transition-slide .woocommerce-product-gallery__image img,
+	.oli-vig-main-image img,
+	.oli-vig-thumbnail,
+	.oli-vig-thumb-button,
+	.oli-vig-lightbox-close,
+	.oli-vig-lightbox-prev,
+	.oli-vig-lightbox-next,
+	.oli-vig-slider-arrow {
+		transition: none !important;
+		animation: none !important;
+	}
+
+	.flex-control-thumbs.mode-slider,
+	ol.flex-control-nav.mode-slider,
+	.oli-vig-thumbnails.mode-slider {
+		scroll-behavior: auto;
+	}
 }

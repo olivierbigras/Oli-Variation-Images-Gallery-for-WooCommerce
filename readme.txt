@@ -4,7 +4,7 @@ Tags: woocommerce, variations, gallery, product images, variable products
 Requires at least: 6.5
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 0.1.2
+Stable tag: 0.2.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -24,8 +24,8 @@ Oli Variation Images Gallery for WooCommerce allows you to add unlimited additio
 * **Lightbox**: Full-screen image viewing with keyboard and touch navigation
 * **Mobile Optimized**: Touch-friendly swipe gestures on mobile devices
 * **Performance**: REST/AJAX lazy loading for products with many variations
-* **Settings Page**: Configure thumbnail position, columns, carousel mode, fade/slide transitions, zoom, lightbox, and more
-* **Import Tool**: One-click migration from RadiusTheme Variation Images Gallery plugin
+* **Settings**: Configure thumbnail position, columns, carousel mode, fade/slide transitions, zoom, lightbox, and more under WooCommerce → Settings → Products → Variation galleries
+* **Import**: Preview and import variation galleries from another plugin when that data is detected
 
 = Perfect For =
 
@@ -67,14 +67,14 @@ If a future release adds an optional remote feature, it will be opt-in and docum
 
 1. Upload the plugin files to `/wp-content/plugins/oli-variation-images-gallery/`, or install through the WordPress plugin repository
 2. Activate the plugin through the 'Plugins' screen in WordPress
-3. Go to WooCommerce → Variation Gallery to configure settings
-4. Edit a variable product and add images to variations in the "Variation Gallery Images" section
+3. Go to WooCommerce → Settings → Products → Variation galleries to configure settings
+4. Edit a variable product and add images to variations in the "Variation gallery images" section
 
 = Importing from RadiusTheme Plugin =
 
 1. Keep the RadiusTheme plugin active (data will be preserved)
-2. Go to WooCommerce → Import Gallery Data
-3. Click "Run Import" (or use dry run to preview)
+2. Open WooCommerce → Settings → Products → Variation galleries
+3. If other plugin data is found, use Preview or Import (original data is not modified)
 4. Alternatively, use WP-CLI: `wp oli-vig import`
 
 == Frequently Asked Questions ==
@@ -97,7 +97,7 @@ This version focuses on image galleries. Video support may be added in future up
 
 = Is the lightbox accessible? =
 
-Yes, the lightbox includes keyboard navigation (arrow keys, Escape) and proper focus management.
+Yes. The lightbox traps focus, closes with Escape, and restores focus. Thumbnails are buttons with an accessible name, the active image is marked with aria-current, and image changes are announced politely.
 
 == Screenshots ==
 
@@ -108,6 +108,16 @@ Yes, the lightbox includes keyboard navigation (arrow keys, Escape) and proper f
 5. Lightbox: Full-screen image viewing with navigation
 
 == Changelog ==
+
+= 0.2.0 - 2026-10-21 =
+* Settings moved to WooCommerce → Settings → Products → Variation galleries
+* Visible fields: position, mode, columns (Grid only), zoom and lightbox (theme defaults)
+* Advanced (collapsed): reset on clear, preload (page-weight help), transition (Carousel only, reduced motion), gallery width
+* Import submenu removed; notice with Preview / Import only when other-plugin data is found
+* Variation field: linked label/help, Add images, keyboard move, remove aria-label, empty state
+* Storefront: thumbnail buttons, live announcements, carousel arrow keys, lightbox focus trap
+* Boolean settings stored as real booleans (yes/no migrated)
+* .distignore / export-ignore packaging
 
 = 0.1.2 - 2026-10-21 =
 * WordPress.org readiness: External services section, no inline CSS, versioned option upgrade, uninstall cleanup
@@ -138,6 +148,9 @@ Yes, the lightbox includes keyboard navigation (arrow keys, Escape) and proper f
 * HPOS compatibility
 
 == Upgrade Notice ==
+
+= 0.2.0 =
+Settings move to WooCommerce → Settings → Products → Variation galleries. Existing `oli_vig_settings` keys are kept; yes/no values become booleans.
 
 = 0.1.2 =
 WordPress.org guideline polish. Existing settings and variation galleries are kept.
