@@ -166,7 +166,6 @@ class Oli_VIG_Settings {
 			array(
 				'title' => __( 'Advanced', 'oli-variation-images-gallery' ),
 				'type'  => 'oli_vig_details_start',
-				'id'    => 'oli_vig_advanced_start',
 			),
 			array(
 				'title'   => __( 'Reset gallery on clear', 'oli-variation-images-gallery' ),
@@ -210,7 +209,6 @@ class Oli_VIG_Settings {
 			),
 			array(
 				'type' => 'oli_vig_details_end',
-				'id'   => 'oli_vig_advanced_end',
 			),
 		);
 	}

@@ -102,6 +102,7 @@ class Oli_VIG_Main {
 					'next'      => __( 'Next', 'oli-variation-images-gallery' ),
 					'close'     => __( 'Close', 'oli-variation-images-gallery' ),
 					'lightbox'  => __( 'Image lightbox', 'oli-variation-images-gallery' ),
+					/* translators: 1: current image number, 2: total images */
 					'showImage' => __( 'Show image %1$d of %2$d', 'oli-variation-images-gallery' ),
 				),
 			)
@@ -119,6 +120,7 @@ class Oli_VIG_Main {
 		$columns = 4;
 
 		if ( function_exists( 'apply_filters' ) ) {
+			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Read the core WooCommerce thumbnail columns filter.
 			$columns = absint( apply_filters( 'woocommerce_product_thumbnails_columns', 4 ) );
 		}
 

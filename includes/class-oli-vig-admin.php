@@ -81,6 +81,7 @@ class Oli_VIG_Admin {
 			array(
 				'mediaTitle'  => __( 'Add Images to Variation Gallery', 'oli-variation-images-gallery' ),
 				'mediaButton' => __( 'Add to gallery', 'oli-variation-images-gallery' ),
+				/* translators: %s: image title or filename */
 				'removeImage' => __( 'Remove image %s', 'oli-variation-images-gallery' ),
 				'moveLeft'    => __( 'Move image left', 'oli-variation-images-gallery' ),
 				'moveRight'   => __( 'Move image right', 'oli-variation-images-gallery' ),
@@ -121,7 +122,12 @@ class Oli_VIG_Admin {
 			return;
 		}
 
-		$label = $this->get_image_label( $image_id );
+		$label        = $this->get_image_label( $image_id );
+		$remove_label = sprintf(
+			/* translators: %s: image title or filename */
+			__( 'Remove image %s', 'oli-variation-images-gallery' ),
+			$label
+		);
 		?>
 		<li class="oli-vig-gallery-image" data-attachment-id="<?php echo esc_attr( $image_id ); ?>">
 			<img src="<?php echo esc_url( $image_url ); ?>" alt="" />
@@ -129,15 +135,7 @@ class Oli_VIG_Admin {
 				<button type="button" class="oli-vig-move-image oli-vig-move-left" <?php disabled( 0 === $index ); ?> aria-label="<?php esc_attr_e( 'Move image left', 'oli-variation-images-gallery' ); ?>">
 					<span class="dashicons dashicons-arrow-left-alt2" aria-hidden="true"></span>
 				</button>
-				<button type="button" class="oli-vig-remove-image" aria-label="<?php
-					echo esc_attr(
-						sprintf(
-							/* translators: %s: image title or filename */
-							__( 'Remove image %s', 'oli-variation-images-gallery' ),
-							$label
-						)
-					);
-				?>">
+				<button type="button" class="oli-vig-remove-image" aria-label="<?php echo esc_attr( $remove_label ); ?>">
 					<span class="dashicons dashicons-no-alt" aria-hidden="true"></span>
 				</button>
 				<button type="button" class="oli-vig-move-image oli-vig-move-right" <?php disabled( $index >= ( $total - 1 ) ); ?> aria-label="<?php esc_attr_e( 'Move image right', 'oli-variation-images-gallery' ); ?>">
