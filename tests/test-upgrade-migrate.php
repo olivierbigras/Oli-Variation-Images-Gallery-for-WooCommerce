@@ -112,5 +112,48 @@ oli_vig_upgrade_assert(
 	'migration still deletes the leftover option when the prefixed key already exists'
 );
 
-echo 'All upgrade migration tests passed.' . PHP_EOL;
+echo 'All leftover-option migration tests passed.' . PHP_EOL;
+
+oli_vig_upgrade_assert( true === oli_vig_to_bool( 'yes' ), 'oli_vig_to_bool maps yes to true' );
+oli_vig_upgrade_assert( false === oli_vig_to_bool( 'no' ), 'oli_vig_to_bool maps no to false' );
+oli_vig_upgrade_assert( true === oli_vig_to_bool( true ), 'oli_vig_to_bool keeps true' );
+oli_vig_upgrade_assert( false === oli_vig_to_bool( false ), 'oli_vig_to_bool keeps false' );
+oli_vig_upgrade_assert( true === oli_vig_to_bool( '1' ), 'oli_vig_to_bool maps 1 to true' );
+oli_vig_upgrade_assert( false === oli_vig_to_bool( '0' ), 'oli_vig_to_bool maps 0 to false' );
+oli_vig_upgrade_assert(
+	array( 'enable_zoom', 'enable_lightbox', 'preload_images', 'reset_on_clear' ) === oli_vig_boolean_setting_keys(),
+	'boolean setting keys stay inside oli_vig_settings'
+);
+
+$GLOBALS['oli_vig_test_options'] = array(
+	'oli_vig_settings' => array(
+		'thumbnail_position' => 'bottom',
+		'enable_zoom'        => 'yes',
+		'enable_lightbox'    => 'no',
+		'preload_images'     => 'yes',
+		'reset_on_clear'     => 'no',
+	),
+);
+
+oli_vig_migrate_boolean_settings();
+
+$migrated = $GLOBALS['oli_vig_test_options']['oli_vig_settings'];
+oli_vig_upgrade_assert( true === $migrated['enable_zoom'], 'yes becomes boolean true' );
+oli_vig_upgrade_assert( false === $migrated['enable_lightbox'], 'no becomes boolean false' );
+oli_vig_upgrade_assert( true === $migrated['preload_images'], 'preload yes becomes true' );
+oli_vig_upgrade_assert( false === $migrated['reset_on_clear'], 'reset no becomes false' );
+oli_vig_upgrade_assert( 'bottom' === $migrated['thumbnail_position'], 'non-boolean keys are unchanged' );
+
+$GLOBALS['oli_vig_test_options'] = array(
+	'oli_vig_settings' => array(
+		'enable_zoom' => true,
+	),
+);
+oli_vig_migrate_boolean_settings();
+oli_vig_upgrade_assert(
+	true === $GLOBALS['oli_vig_test_options']['oli_vig_settings']['enable_zoom'],
+	'already-boolean values are left as booleans'
+);
+
+echo 'All boolean migration tests passed.' . PHP_EOL;
 exit( 0 );

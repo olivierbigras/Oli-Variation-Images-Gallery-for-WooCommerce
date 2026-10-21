@@ -1,0 +1,20 @@
+# Exclude development files from git-archive exports. Keep readme.txt.
+/tests export-ignore
+/bin export-ignore
+/.github export-ignore
+/.gitignore export-ignore
+/.gitattributes export-ignore
+/.distignore export-ignore
+phpcs.xml export-ignore
+phpcs.xml.dist export-ignore
+phpunit.xml export-ignore
+phpunit.xml.dist export-ignore
+composer.json export-ignore
+composer.lock export-ignore
+package.json export-ignore
+package-lock.json export-ignore
+/node_modules export-ignore
+CHANGELOG.md export-ignore
+PROJECT_SUMMARY.md export-ignore
+README.md export-ignore
+TESTING.md export-ignore

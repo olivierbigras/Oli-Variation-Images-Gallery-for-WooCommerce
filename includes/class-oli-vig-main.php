@@ -91,38 +91,113 @@ class Oli_VIG_Main {
 				'thumbnailPosition' => $settings['thumbnail_position'],
 				'thumbnailColumns'  => intval( $settings['thumbnail_columns'] ),
 				'galleryWidth'      => max( 50, min( 100, intval( $settings['gallery_width'] ) ) ),
-				'enableZoom'        => ( 'yes' === $settings['enable_zoom'] ),
-				'enableLightbox'    => ( 'yes' === $settings['enable_lightbox'] ),
-				'resetOnClear'      => ( 'yes' === $settings['reset_on_clear'] ),
-				'preloadImages'     => ( 'yes' === $settings['preload_images'] ),
+				'enableZoom'        => (bool) $settings['enable_zoom'],
+				'enableLightbox'    => (bool) $settings['enable_lightbox'],
+				'resetOnClear'      => (bool) $settings['reset_on_clear'],
+				'preloadImages'     => (bool) $settings['preload_images'],
 				'thumbnailMode'     => $settings['thumbnail_mode'],
 				'transitionEffect'  => $settings['transition_effect'],
 				'i18n'              => array(
-					'previous' => __( 'Previous', 'oli-variation-images-gallery' ),
-					'next'     => __( 'Next', 'oli-variation-images-gallery' ),
-					'close'    => __( 'Close', 'oli-variation-images-gallery' ),
+					'previous'  => __( 'Previous', 'oli-variation-images-gallery' ),
+					'next'      => __( 'Next', 'oli-variation-images-gallery' ),
+					'close'     => __( 'Close', 'oli-variation-images-gallery' ),
+					'lightbox'  => __( 'Image lightbox', 'oli-variation-images-gallery' ),
+					/* translators: 1: current image number, 2: total images */
+					'showImage' => __( 'Show image %1$d of %2$d', 'oli-variation-images-gallery' ),
 				),
 			)
 		);
 	}
 
 	/**
+	 * Default thumbnail column count.
+	 *
+	 * Uses the WooCommerce `woocommerce_product_thumbnails_columns` filter, else 4.
+	 *
+	 * @return int
+	 */
+	public static function get_default_thumbnail_columns() {
+		$columns = 4;
+
+		if ( function_exists( 'apply_filters' ) ) {
+			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Read the core WooCommerce thumbnail columns filter.
+			$columns = absint( apply_filters( 'woocommerce_product_thumbnails_columns', 4 ) );
+		}
+
+		if ( $columns < 1 ) {
+			$columns = 4;
+		}
+
+		return max( 1, min( 8, $columns ) );
+	}
+
+	/**
 	 * Default plugin settings.
+	 *
+	 * Zoom and lightbox follow the active theme's `wc-product-gallery-*` support.
 	 *
 	 * @return array
 	 */
 	public static function get_default_settings() {
+		$enable_zoom     = false;
+		$enable_lightbox = false;
+
+		if ( function_exists( 'current_theme_supports' ) ) {
+			$enable_zoom     = (bool) current_theme_supports( 'wc-product-gallery-zoom' );
+			$enable_lightbox = (bool) current_theme_supports( 'wc-product-gallery-lightbox' );
+		}
+
 		return array(
 			'thumbnail_position' => 'bottom',
-			'thumbnail_columns'  => 4,
-			'enable_zoom'        => 'yes',
-			'enable_lightbox'    => 'yes',
+			'thumbnail_columns'  => self::get_default_thumbnail_columns(),
+			'enable_zoom'        => $enable_zoom,
+			'enable_lightbox'    => $enable_lightbox,
 			'gallery_width'      => 100,
-			'preload_images'     => 'yes',
-			'reset_on_clear'     => 'yes',
+			'preload_images'     => true,
+			'reset_on_clear'     => true,
 			'thumbnail_mode'     => 'grid',
 			'transition_effect'  => 'none',
 		);
+	}
+
+	/**
+	 * Normalize stored settings (legacy yes/no becomes a real boolean).
+	 *
+	 * @param array $settings Raw merged settings.
+	 * @return array
+	 */
+	public static function normalize_settings( $settings ) {
+		if ( ! is_array( $settings ) ) {
+			$settings = array();
+		}
+
+		foreach ( oli_vig_boolean_setting_keys() as $key ) {
+			if ( array_key_exists( $key, $settings ) ) {
+				$settings[ $key ] = oli_vig_to_bool( $settings[ $key ] );
+			}
+		}
+
+		if ( isset( $settings['thumbnail_columns'] ) ) {
+			$settings['thumbnail_columns'] = max( 1, min( 8, absint( $settings['thumbnail_columns'] ) ) );
+		}
+
+		if ( isset( $settings['gallery_width'] ) ) {
+			$settings['gallery_width'] = max( 50, min( 100, absint( $settings['gallery_width'] ) ) );
+		}
+
+		if ( isset( $settings['thumbnail_position'] ) && ! in_array( $settings['thumbnail_position'], array( 'bottom', 'left', 'right' ), true ) ) {
+			$settings['thumbnail_position'] = 'bottom';
+		}
+
+		if ( isset( $settings['thumbnail_mode'] ) && ! in_array( $settings['thumbnail_mode'], array( 'grid', 'slider' ), true ) ) {
+			$settings['thumbnail_mode'] = 'grid';
+		}
+
+		if ( isset( $settings['transition_effect'] ) && ! in_array( $settings['transition_effect'], array( 'none', 'fade', 'slide' ), true ) ) {
+			$settings['transition_effect'] = 'none';
+		}
+
+		return $settings;
 	}
 
 	/**
@@ -135,7 +210,7 @@ class Oli_VIG_Main {
 		if ( ! is_array( $saved ) ) {
 			$saved = array();
 		}
-		return wp_parse_args( $saved, self::get_default_settings() );
+		return self::normalize_settings( wp_parse_args( $saved, self::get_default_settings() ) );
 	}
 
 	/**

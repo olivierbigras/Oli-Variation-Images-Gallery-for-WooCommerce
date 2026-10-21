@@ -23,6 +23,46 @@ function oli_vig_legacy_option_map() {
 }
 
 /**
+ * Setting keys stored as real booleans.
+ *
+ * @return string[]
+ */
+function oli_vig_boolean_setting_keys() {
+	return array(
+		'enable_zoom',
+		'enable_lightbox',
+		'preload_images',
+		'reset_on_clear',
+	);
+}
+
+/**
+ * Convert a stored setting value to a real boolean.
+ *
+ * Accepts the legacy yes/no strings plus common truthy/falsey forms.
+ *
+ * @param mixed $value Raw value.
+ * @return bool
+ */
+function oli_vig_to_bool( $value ) {
+	if ( is_bool( $value ) ) {
+		return $value;
+	}
+
+	if ( is_int( $value ) || is_float( $value ) ) {
+		return 0 !== (int) $value;
+	}
+
+	if ( ! is_string( $value ) ) {
+		return ! empty( $value );
+	}
+
+	$value = strtolower( trim( $value ) );
+
+	return in_array( $value, array( '1', 'yes', 'true', 'on' ), true );
+}
+
+/**
  * Copy leftover unprefixed options to oli_vig_* keys, then delete the old keys.
  *
  * @param array<string,string>|null $map Optional map override (for tests).
@@ -52,6 +92,37 @@ function oli_vig_migrate_legacy_options( $map = null ) {
 }
 
 /**
+ * Convert yes/no boolean settings in oli_vig_settings to real booleans.
+ *
+ * The option key stays `oli_vig_settings`. Only the stored value type changes.
+ */
+function oli_vig_migrate_boolean_settings() {
+	$settings = get_option( 'oli_vig_settings', null );
+	if ( ! is_array( $settings ) ) {
+		return;
+	}
+
+	$changed = false;
+
+	foreach ( oli_vig_boolean_setting_keys() as $key ) {
+		if ( ! array_key_exists( $key, $settings ) ) {
+			continue;
+		}
+
+		if ( is_bool( $settings[ $key ] ) ) {
+			continue;
+		}
+
+		$settings[ $key ] = oli_vig_to_bool( $settings[ $key ] );
+		$changed          = true;
+	}
+
+	if ( $changed ) {
+		update_option( 'oli_vig_settings', $settings );
+	}
+}
+
+/**
  * Run versioned upgrades once per installed version.
  */
 function oli_vig_maybe_upgrade() {
@@ -61,5 +132,6 @@ function oli_vig_maybe_upgrade() {
 	}
 
 	oli_vig_migrate_legacy_options();
+	oli_vig_migrate_boolean_settings();
 	update_option( 'oli_vig_version', OLI_VIG_VERSION );
 }

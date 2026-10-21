@@ -13,8 +13,17 @@
 
 .oli-vig-variation-gallery-wrapper label {
 	display: block;
-	margin-bottom: 10px;
+	margin-bottom: 6px;
 	font-weight: 600;
+}
+
+.oli-vig-variation-gallery-wrapper .description {
+	margin: 0 0 10px;
+}
+
+.oli-vig-empty-state {
+	margin: 0 0 12px;
+	color: #646970;
 }
 
 .oli-vig-gallery-container {
@@ -51,36 +60,69 @@
 	object-fit: cover;
 }
 
-.oli-vig-gallery-image .oli-vig-remove-image {
+.oli-vig-image-actions {
 	position: absolute;
-	top: 0;
-	right: 0;
-	width: 24px;
-	height: 24px;
+	inset: 0;
+	display: flex;
+	align-items: flex-end;
+	justify-content: space-between;
+	padding: 2px;
+	background: linear-gradient(to top, rgba(0, 0, 0, 0.55), transparent 60%);
+	opacity: 0;
+	transition: opacity 0.2s;
+}
+
+.oli-vig-gallery-image:hover .oli-vig-image-actions,
+.oli-vig-gallery-image:focus-within .oli-vig-image-actions {
+	opacity: 1;
+}
+
+.oli-vig-image-actions button {
+	width: 22px;
+	height: 22px;
 	padding: 0;
 	border: none;
-	background: rgba(0, 0, 0, 0.7);
+	background: rgba(0, 0, 0, 0.75);
 	color: #fff;
 	cursor: pointer;
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	opacity: 0;
-	transition: opacity 0.2s;
 }
 
-.oli-vig-gallery-image:hover .oli-vig-remove-image {
-	opacity: 1;
+.oli-vig-image-actions button:hover,
+.oli-vig-image-actions button:focus {
+	background: rgba(0, 0, 0, 0.95);
 }
 
-.oli-vig-gallery-image .oli-vig-remove-image:hover {
-	background: rgba(0, 0, 0, 0.9);
+.oli-vig-image-actions button:disabled {
+	opacity: 0.35;
+	cursor: not-allowed;
 }
 
-.oli-vig-gallery-image .oli-vig-remove-image .dashicons {
+.oli-vig-image-actions .dashicons {
 	font-size: 16px;
 	width: 16px;
 	height: 16px;
+}
+
+.oli-vig-advanced {
+	margin: 16px 0;
+	padding: 4px 12px 8px;
+	background: #fff;
+	border: 1px solid #c3c4c7;
+}
+
+.oli-vig-advanced-summary {
+	cursor: pointer;
+	font-weight: 600;
+	padding: 10px 0;
+}
+
+.oli-vig-import-notice .oli-vig-import-actions {
+	display: flex;
+	gap: 8px;
+	margin: 8px 0 4px;
 }
 
 .oli-vig-add-images {

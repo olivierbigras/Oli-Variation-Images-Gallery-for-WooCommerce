@@ -3,7 +3,7 @@
  * Plugin Name: Oli Variation Images Gallery for WooCommerce
  * Plugin URI: https://github.com/olivierbigras/Oli-Variation-Images-Gallery-for-WooCommerce
  * Description: Add unlimited gallery images per product variation with thumbnail gallery, zoom, and lightbox support. Includes one-click importer from RadiusTheme Variation Images Gallery.
- * Version: 0.1.2
+ * Version: 0.2.0
  * Author: Olivier Bigras
  * Author URI: https://olivierbigras.com/
  * License: GPL v2 or later
@@ -24,7 +24,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'OLI_VIG_VERSION', '0.1.2' );
+define( 'OLI_VIG_VERSION', '0.2.0' );
 define( 'OLI_VIG_PLUGIN_FILE', __FILE__ );
 define( 'OLI_VIG_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'OLI_VIG_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
@@ -103,5 +103,6 @@ function oli_vig_activate() {
 	add_option( 'oli_vig_settings', Oli_VIG_Main::get_default_settings() );
 	add_option( 'oli_vig_version', OLI_VIG_VERSION );
 	oli_vig_migrate_legacy_options();
+	oli_vig_migrate_boolean_settings();
 }
 register_activation_hook( __FILE__, 'oli_vig_activate' );
