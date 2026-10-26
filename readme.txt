@@ -4,7 +4,7 @@ Tags: variations, gallery, product images, variable products, thumbnails
 Requires at least: 6.5
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.0.0
+Stable tag: 1.0.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -27,10 +27,11 @@ Oli Variation Gallery for WooCommerce lets you attach several extra images to ea
 
 = Import existing gallery meta =
 
-If another plugin stored variation galleries under the `rtwpvg_images` meta key, you can copy that data in one click. Source meta is never deleted. A dry-run count is shown on the import screen and via WP-CLI.
+If another plugin stored variation galleries under the `rtwpvg_images` meta key, you can copy that data in one click. Source meta is never deleted. A dry-run count is shown on the import screen and via WP-CLI. Existing non-empty galleries are not overwritten unless you pass `--force` or check the overwrite box.
 
 	wp oli-vig import --dry-run
 	wp oli-vig import
+	wp oli-vig import --force
 
 = Requirements =
 
@@ -65,7 +66,7 @@ This plugin does not connect to any external service at runtime.
 1. Go to WooCommerce → Import Gallery Data
 2. Review the dry-run count
 3. Optionally check Dry run, then click Run Import
-4. Or use WP-CLI: `wp oli-vig import --dry-run` then `wp oli-vig import`
+4. Or use WP-CLI: `wp oli-vig import --dry-run` then `wp oli-vig import`. Add `--force` only if you want to overwrite galleries edited after a previous import.
 
 == Frequently Asked Questions ==
 
@@ -75,11 +76,11 @@ Yes. The plugin rebuilds the default gallery slides and re-initializes zoom, lig
 
 = What happens when a variation has no extra images? =
 
-The gallery falls back to the main product gallery.
+The variation’s own image replaces the main image and the rest of the main gallery is kept. If the variation has no image either, the main gallery is shown.
 
 = Is the importer safe to run more than once? =
 
-Yes. It is idempotent: already-matching variations are skipped, and source meta is never deleted.
+Yes. Already-matching variations are skipped, existing non-empty galleries are left unchanged unless you force an overwrite, and source meta is never deleted.
 
 = Does it support video galleries? =
 
@@ -98,6 +99,16 @@ Email oli@olivierbigras.com or open an issue on the plugin's GitHub repository.
 
 == Changelog ==
 
+= 1.0.1 - 2026-10-26 =
+* Save variation galleries when only images change (Save changes enables correctly)
+* Variation-only images replace the main image like the default gallery
+* Clean gallery re-init so zoom has one trigger and the lightbox can close
+* WP-CLI `wp oli-vig import` is registered outside wp-admin
+* Horizontal drag-and-drop in the variation panel
+* Usable left/right thumbnail size
+* Importer does not overwrite edited galleries unless `--force` is used
+* Default thumbnail columns follow the theme or WooCommerce default
+
 = 1.0.0 - 2026-10-26 =
 * First release under the oli-variation-gallery slug and text domain
 * Default gallery integration (zoom, lightbox, slider)
@@ -115,6 +126,9 @@ Email oli@olivierbigras.com or open an issue on the plugin's GitHub repository.
 * Initial preview
 
 == Upgrade Notice ==
+
+= 1.0.1 =
+Fixes variation saving, gallery fallback, lightbox re-init, and WP-CLI import.
 
 = 1.0.0 =
 Renamed to Oli Variation Gallery for WooCommerce (slug oli-variation-gallery). Re-activate after updating. Existing `_oli_vig_gallery_images` meta is kept.

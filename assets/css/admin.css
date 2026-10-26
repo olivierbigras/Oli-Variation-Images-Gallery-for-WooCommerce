@@ -22,23 +22,24 @@
 }
 
 .oli-vig-gallery-images {
-	display: flex;
-	flex-wrap: wrap;
-	gap: 10px;
 	margin: 0 0 15px;
 	padding: 0;
 	list-style: none;
+	overflow: hidden;
 }
 
 .oli-vig-gallery-image {
 	position: relative;
+	float: left;
 	width: 80px;
 	height: 80px;
+	margin: 0 10px 10px 0;
 	border: 2px solid #ddd;
 	border-radius: 4px;
 	overflow: hidden;
 	cursor: move;
 	background: #fff;
+	box-sizing: border-box;
 }
 
 .oli-vig-gallery-image:hover {
@@ -96,4 +97,5 @@
 	border: 2px dashed #2271b1;
 	background: #f0f0f1;
 	visibility: visible !important;
+	float: left;
 }

@@ -44,6 +44,24 @@ oli_vig_test_assert_same(
 	'keep extra images when there is no featured image'
 );
 
+oli_vig_test_assert_same(
+	array( 99, 2, 3 ),
+	Oli_VIG_Images::compose_fallback_ids( 99, array( 1, 2, 3 ) ),
+	'variation image replaces the first parent gallery image'
+);
+
+oli_vig_test_assert_same(
+	array( 1, 2, 3 ),
+	Oli_VIG_Images::compose_fallback_ids( 0, array( 1, 2, 3 ) ),
+	'keep the parent gallery when the variation has no image'
+);
+
+oli_vig_test_assert_same(
+	array( 99 ),
+	Oli_VIG_Images::compose_fallback_ids( 99, array() ),
+	'variation image alone when the parent gallery is empty'
+);
+
 oli_vig_test_assert(
 	'_oli_vig_gallery_images' === Oli_VIG_Images::META_KEY,
 	'meta key is prefixed'

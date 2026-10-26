@@ -5,6 +5,23 @@ All notable changes to Oli Variation Gallery for WooCommerce are documented in t
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.1] - 2026-10-26
+
+### Fixed
+- Variation image changes now trigger `change` and mark the variation as needing an update so Save changes works
+- A variation with its own image and no extra gallery shows that image plus the main gallery thumbs
+- Gallery destroy/re-init removes zoom triggers and PhotoSwipe handlers so one magnifier remains and the lightbox can close
+- WP-CLI `wp oli-vig import` is registered when `WP_CLI` is defined, not only in wp-admin
+- Horizontal drag reorders admin thumbnails
+- Left/right thumbnails keep a readable minimum width
+
+### Changed
+- Importer skips existing non-empty galleries unless `--force` or the overwrite checkbox is used
+- Adding an image that is already in the variation gallery does not duplicate it in the admin UI
+- Default thumbnail columns follow the theme or WooCommerce default (0) instead of hardcoding 4
+
+[1.0.1]: https://github.com/olivierbigras/Oli-Variation-Images-Gallery-for-WooCommerce/releases/tag/1.0.1
+
 ## [1.0.0] - 2026-10-26
 
 ### Added

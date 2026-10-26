@@ -25,7 +25,7 @@ require_once dirname( __DIR__ ) . '/includes/class-oli-vig-settings.php';
 
 $defaults = Oli_VIG_Main::get_default_settings();
 oli_vig_test_assert( isset( $defaults['thumbnail_position'] ), 'defaults include thumbnail_position' );
-oli_vig_test_assert( 4 === $defaults['thumbnail_columns'], 'default columns is 4' );
+oli_vig_test_assert( 0 === $defaults['thumbnail_columns'], 'default columns is theme default (0)' );
 
 $clean = Oli_VIG_Settings::sanitize(
 	array(
@@ -56,7 +56,10 @@ $invalid = Oli_VIG_Settings::sanitize(
 );
 
 oli_vig_test_assert_same( 'bottom', $invalid['thumbnail_position'], 'invalid position falls back' );
-oli_vig_test_assert_same( 1, $invalid['thumbnail_columns'], 'columns floor at 1' );
+oli_vig_test_assert_same( 0, $invalid['thumbnail_columns'], 'zero columns means theme default' );
+
+$theme = Oli_VIG_Settings::sanitize( array() );
+oli_vig_test_assert_same( 0, $theme['thumbnail_columns'], 'missing columns uses theme default' );
 oli_vig_test_assert_same( 100, $invalid['gallery_width'], 'width cap at 100' );
 oli_vig_test_assert_same( 'no', $invalid['enable_zoom'], 'missing checkbox is no' );
 

@@ -86,8 +86,12 @@ oli_vig_test_assert(
 	'idempotent skip when IDs already match'
 );
 oli_vig_test_assert(
-	Oli_VIG_Images::should_import( array( 101 ), array( 101, 202 ) ),
-	'import when destination differs'
+	! Oli_VIG_Images::should_import( array( 101 ), array( 101, 202 ) ),
+	'do not overwrite a non-empty destination without force'
+);
+oli_vig_test_assert(
+	Oli_VIG_Images::should_import( array( 101 ), array( 101, 202 ), true ),
+	'overwrite a non-empty destination with force'
 );
 oli_vig_test_assert(
 	! Oli_VIG_Images::should_import( array( 5 ), array() ),

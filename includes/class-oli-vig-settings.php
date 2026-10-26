@@ -173,9 +173,12 @@ class Oli_VIG_Settings {
 			? $input['thumbnail_position']
 			: $defaults['thumbnail_position'];
 
-		$sanitized['thumbnail_columns'] = isset( $input['thumbnail_columns'] )
-			? max( 1, min( 8, absint( $input['thumbnail_columns'] ) ) )
-			: $defaults['thumbnail_columns'];
+		if ( isset( $input['thumbnail_columns'] ) ) {
+			$columns                        = absint( $input['thumbnail_columns'] );
+			$sanitized['thumbnail_columns'] = ( 0 === $columns ) ? 0 : max( 1, min( 8, $columns ) );
+		} else {
+			$sanitized['thumbnail_columns'] = $defaults['thumbnail_columns'];
+		}
 
 		$sanitized['enable_zoom'] = ! empty( $input['enable_zoom'] ) ? 'yes' : 'no';
 
@@ -254,9 +257,13 @@ class Oli_VIG_Settings {
 		$settings = Oli_VIG_Main::get_settings();
 		$value    = absint( $settings['thumbnail_columns'] );
 		?>
-		<input type="number" name="oli_vig_settings[thumbnail_columns]" id="oli_vig_thumbnail_columns"
-			value="<?php echo esc_attr( (string) $value ); ?>" min="1" max="8" />
-		<p class="description"><?php esc_html_e( 'Number of thumbnail columns (1-8).', 'oli-variation-gallery' ); ?></p>
+		<select name="oli_vig_settings[thumbnail_columns]" id="oli_vig_thumbnail_columns">
+			<option value="0" <?php selected( $value, 0 ); ?>><?php esc_html_e( 'Theme default', 'oli-variation-gallery' ); ?></option>
+			<?php for ( $columns = 1; $columns <= 8; $columns++ ) : ?>
+				<option value="<?php echo esc_attr( (string) $columns ); ?>" <?php selected( $value, $columns ); ?>><?php echo esc_html( (string) $columns ); ?></option>
+			<?php endfor; ?>
+		</select>
+		<p class="description"><?php esc_html_e( 'Use the theme or WooCommerce default (for example Storefront uses 5), or choose 1–8.', 'oli-variation-gallery' ); ?></p>
 		<?php
 	}
 

@@ -46,6 +46,9 @@
 					if (!attachment || !attachment.id) {
 						return;
 					}
+					if (galleryList.find('.oli-vig-gallery-image[data-attachment-id="' + attachment.id + '"]').length) {
+						return;
+					}
 					var thumbSrc = (attachment.sizes && attachment.sizes.thumbnail) ? attachment.sizes.thumbnail.url : attachment.url;
 					var $item = $('<li/>', {
 						'class': 'oli-vig-gallery-image',
@@ -85,16 +88,19 @@
 			}
 
 			galleryList.sortable({
-				items: '.oli-vig-gallery-image',
+				items: 'li.oli-vig-gallery-image',
 				cursor: 'move',
 				scrollSensitivity: 40,
 				forcePlaceholderSize: true,
 				forceHelperSize: false,
 				helper: 'clone',
 				opacity: 0.65,
+				tolerance: 'pointer',
 				placeholder: 'oli-vig-gallery-image ui-sortable-placeholder',
 				start: function(event, ui) {
 					ui.item.addClass('oli-vig-gallery-image-dragging');
+					ui.placeholder.width(ui.item.width());
+					ui.placeholder.height(ui.item.height());
 				},
 				stop: function(event, ui) {
 					ui.item.removeClass('oli-vig-gallery-image-dragging');
@@ -108,17 +114,29 @@
 			galleryList.data('sortable-initialized', true);
 		}
 
+		function markVariationNeedsUpdate(input) {
+			var $variation = input.closest('.woocommerce_variation');
+			if ($variation.length) {
+				$variation.addClass('variation-needs-update');
+			}
+			$('button.cancel-variation-changes, button.save-variation-changes').prop('disabled', false);
+			$('#variable_product_options').trigger('woocommerce_variations_input_changed');
+		}
+
 		function updateGalleryInput(galleryList, input) {
 			var imageIds = [];
+			var seen = {};
 
 			galleryList.find('.oli-vig-gallery-image').each(function() {
 				var id = parseInt($(this).attr('data-attachment-id'), 10);
-				if (id > 0) {
+				if (id > 0 && !seen[id]) {
+					seen[id] = true;
 					imageIds.push(id);
 				}
 			});
 
-			input.val(imageIds.join(','));
+			input.val(imageIds.join(',')).trigger('change');
+			markVariationNeedsUpdate(input);
 		}
 	});
 

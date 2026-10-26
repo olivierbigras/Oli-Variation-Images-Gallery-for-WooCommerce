@@ -225,7 +225,7 @@ class Oli_VIG_Importer {
 
 			<div class="card">
 				<h2><?php esc_html_e( 'Import existing variation gallery meta', 'oli-variation-gallery' ); ?></h2>
-				<p><?php esc_html_e( 'This tool copies variation gallery images stored under the rtwpvg_images meta key (and native variation gallery IDs when present) into this plugin. Source meta is never deleted. Running the import more than once is safe.', 'oli-variation-gallery' ); ?></p>
+				<p><?php esc_html_e( 'This tool copies variation gallery images stored under the rtwpvg_images meta key (and native variation gallery IDs when present) into this plugin. Source meta is never deleted. Running the import more than once is safe: existing non-empty galleries are left unchanged unless you force an overwrite.', 'oli-variation-gallery' ); ?></p>
 				<p>
 					<?php
 					echo esc_html(
@@ -251,6 +251,13 @@ class Oli_VIG_Importer {
 						</p>
 
 						<p>
+							<label>
+								<input type="checkbox" name="force" value="1" />
+								<?php esc_html_e( 'Force overwrite of existing galleries that were edited after a previous import', 'oli-variation-gallery' ); ?>
+							</label>
+						</p>
+
+						<p>
 							<?php submit_button( __( 'Run Import', 'oli-variation-gallery' ), 'primary', 'submit', false ); ?>
 						</p>
 					</form>
@@ -263,8 +270,10 @@ class Oli_VIG_Importer {
 				<h2><?php esc_html_e( 'WP-CLI Command', 'oli-variation-gallery' ); ?></h2>
 				<p><?php esc_html_e( 'Preview the dry-run count:', 'oli-variation-gallery' ); ?></p>
 				<pre>wp oli-vig import --dry-run</pre>
-				<p><?php esc_html_e( 'Import (idempotent):', 'oli-variation-gallery' ); ?></p>
+				<p><?php esc_html_e( 'Import (idempotent; does not overwrite edited galleries):', 'oli-variation-gallery' ); ?></p>
 				<pre>wp oli-vig import</pre>
+				<p><?php esc_html_e( 'Overwrite existing non-empty galleries:', 'oli-variation-gallery' ); ?></p>
+				<pre>wp oli-vig import --force</pre>
 			</div>
 		</div>
 		<?php
@@ -293,7 +302,8 @@ class Oli_VIG_Importer {
 		}
 
 		$dry_run = ! empty( $_POST['dry_run'] );
-		$result  = $this->run_import( $dry_run );
+		$force   = ! empty( $_POST['force'] );
+		$result  = $this->run_import( $dry_run, $force );
 
 		$redirect_url = add_query_arg(
 			array(
@@ -316,12 +326,14 @@ class Oli_VIG_Importer {
 	 *
 	 * Reads rtwpvg_images (serialized attachment-ID arrays) and, when present,
 	 * native `_product_image_gallery` on variations. Never deletes source meta.
-	 * Already-matching destinations are skipped.
+	 * Already-matching destinations are skipped. Non-empty destinations are
+	 * skipped unless $force is true.
 	 *
 	 * @param bool $dry_run Whether to run in dry-run mode.
+	 * @param bool $force   Overwrite existing non-empty galleries.
 	 * @return array{found:int,imported:int,skipped:int}
 	 */
-	public function run_import( $dry_run = false ) {
+	public function run_import( $dry_run = false, $force = false ) {
 		$found    = 0;
 		$imported = 0;
 		$skipped  = 0;
@@ -339,7 +351,7 @@ class Oli_VIG_Importer {
 			++$found;
 
 			$existing = Oli_VIG_Images::get_ids( $variation_id );
-			if ( ! Oli_VIG_Images::should_import( $existing, $image_ids ) ) {
+			if ( ! Oli_VIG_Images::should_import( $existing, $image_ids, $force ) ) {
 				++$skipped;
 				continue;
 			}
@@ -438,6 +450,12 @@ class Oli_VIG_Importer {
 						'description' => 'Preview import without making changes',
 						'optional'    => true,
 					),
+					array(
+						'type'        => 'flag',
+						'name'        => 'force',
+						'description' => 'Overwrite existing non-empty galleries',
+						'optional'    => true,
+					),
 				),
 			)
 		);
@@ -452,10 +470,11 @@ class Oli_VIG_Importer {
 	public function cli_import( $args, $assoc_args ) {
 		unset( $args );
 		$dry_run = isset( $assoc_args['dry-run'] );
+		$force   = isset( $assoc_args['force'] );
 
 		WP_CLI::log( 'Starting import from rtwpvg_images meta...' );
 
-		$result = $this->run_import( $dry_run );
+		$result = $this->run_import( $dry_run, $force );
 
 		if ( $dry_run ) {
 			WP_CLI::success(

@@ -13,7 +13,7 @@ Add several gallery images per product variation. The default product gallery sw
 - Several gallery images per variation from the variation edit panel (media modal, drag to reorder)
 - Product page gallery swap with fallback to the main gallery
 - Works with the default gallery: zoom, lightbox, and slider
-- Thumbnail position (bottom / left / right) and columns (1-8)
+- Thumbnail position (bottom / left / right) and columns (theme default or 1-8)
 - REST API and Store API exposure
 - HPOS compatible
 - One-click, idempotent importer for `rtwpvg_images` (dry-run count + WP-CLI)
@@ -38,9 +38,10 @@ Existing `rtwpvg_images` meta (array of attachment IDs) can be copied without de
 ```bash
 wp oli-vig import --dry-run
 wp oli-vig import
+wp oli-vig import --force
 ```
 
-The import screen also shows a dry-run count before you click Run Import.
+The import screen also shows a dry-run count before you click Run Import. Existing non-empty galleries are not overwritten unless you pass `--force` or check the overwrite box.
 
 ## Development
 

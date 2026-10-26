@@ -53,11 +53,14 @@ class Oli_VIG_Frontend {
 	 */
 	public function gallery_classes( $classes ) {
 		$settings = Oli_VIG_Main::get_settings();
-		$columns  = max( 1, min( 8, absint( $settings['thumbnail_columns'] ) ) );
+		$columns  = absint( $settings['thumbnail_columns'] );
 
 		$classes[] = 'oli-vig-gallery';
 		$classes[] = 'oli-vig-thumbs-' . sanitize_html_class( $settings['thumbnail_position'] );
-		$classes[] = 'oli-vig-columns-' . $columns;
+
+		if ( $columns >= 1 ) {
+			$classes[] = 'oli-vig-columns-' . max( 1, min( 8, $columns ) );
+		}
 
 		return $classes;
 	}
@@ -69,9 +72,14 @@ class Oli_VIG_Frontend {
 	 * @return int
 	 */
 	public function thumbnail_columns( $columns ) {
-		unset( $columns );
 		$settings = Oli_VIG_Main::get_settings();
-		return max( 1, min( 8, absint( $settings['thumbnail_columns'] ) ) );
+		$set      = absint( $settings['thumbnail_columns'] );
+
+		if ( $set < 1 ) {
+			return $columns;
+		}
+
+		return max( 1, min( 8, $set ) );
 	}
 
 	/**

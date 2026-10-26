@@ -26,18 +26,28 @@
 .woocommerce-product-gallery.oli-vig-thumbs-right .flex-viewport,
 .woocommerce-product-gallery.oli-vig-thumbs-left .woocommerce-product-gallery__wrapper,
 .woocommerce-product-gallery.oli-vig-thumbs-right .woocommerce-product-gallery__wrapper {
-	flex: 1 1 0;
+	flex: 1 1 auto;
 	min-width: 0;
 }
 
 .woocommerce-product-gallery.oli-vig-thumbs-left ol.flex-control-nav.flex-control-thumbs,
 .woocommerce-product-gallery.oli-vig-thumbs-right ol.flex-control-nav.flex-control-thumbs {
 	display: flex;
+	flex: 0 0 88px;
 	flex-direction: column;
-	width: 18%;
+	width: 88px;
+	min-width: 72px;
+	max-width: 22%;
 	margin: 0;
 	padding: 0;
 	list-style: none;
+}
+
+.woocommerce-product-gallery.oli-vig-thumbs-left ol.flex-control-nav.flex-control-thumbs li img,
+.woocommerce-product-gallery.oli-vig-thumbs-right ol.flex-control-nav.flex-control-thumbs li img {
+	display: block;
+	width: 100%;
+	height: auto;
 }
 
 .woocommerce-product-gallery.oli-vig-thumbs-left ol.flex-control-nav.flex-control-thumbs li,

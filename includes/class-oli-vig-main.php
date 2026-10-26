@@ -48,9 +48,12 @@ class Oli_VIG_Main {
 		if ( is_admin() ) {
 			Oli_VIG_Admin::instance();
 			Oli_VIG_Settings::instance();
-			Oli_VIG_Importer::instance();
 		} else {
 			Oli_VIG_Frontend::instance();
+		}
+
+		if ( is_admin() || ( defined( 'WP_CLI' ) && WP_CLI ) ) {
+			Oli_VIG_Importer::instance();
 		}
 
 		Oli_VIG_Ajax::instance();
@@ -109,7 +112,7 @@ class Oli_VIG_Main {
 	public static function get_default_settings() {
 		return array(
 			'thumbnail_position' => 'bottom',
-			'thumbnail_columns'  => 4,
+			'thumbnail_columns'  => 0,
 			'enable_zoom'        => 'yes',
 			'enable_lightbox'    => 'yes',
 			'gallery_width'      => 100,

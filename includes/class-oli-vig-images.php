@@ -128,19 +128,54 @@ class Oli_VIG_Images {
 	}
 
 	/**
+	 * Native fallback: variation image replaces the first parent-gallery image.
+	 *
+	 * @param int   $variation_image_id Variation featured image ID.
+	 * @param mixed $parent_gallery_ids Parent product gallery IDs including featured.
+	 * @return int[]
+	 */
+	public static function compose_fallback_ids( $variation_image_id, $parent_gallery_ids ) {
+		$parent             = self::sanitize_ids( $parent_gallery_ids );
+		$variation_image_id = absint( $variation_image_id );
+
+		if ( empty( $parent ) ) {
+			return $variation_image_id > 0 ? array( $variation_image_id ) : array();
+		}
+
+		if ( $variation_image_id > 0 ) {
+			$parent[0] = $variation_image_id;
+		}
+
+		return self::sanitize_ids( $parent );
+	}
+
+	/**
 	 * Whether source IDs should be written over the existing stored IDs.
+	 *
+	 * A non-empty destination is left alone unless $force is true, so a later
+	 * import does not overwrite galleries edited after the first run.
 	 *
 	 * @param mixed $existing_ids Currently stored IDs.
 	 * @param mixed $source_ids   Incoming IDs.
+	 * @param bool  $force        Overwrite a non-empty destination.
 	 * @return bool
 	 */
-	public static function should_import( $existing_ids, $source_ids ) {
+	public static function should_import( $existing_ids, $source_ids, $force = false ) {
 		$source_ids = self::sanitize_ids( $source_ids );
 		if ( empty( $source_ids ) ) {
 			return false;
 		}
 
-		return self::sanitize_ids( $existing_ids ) !== $source_ids;
+		$existing_ids = self::sanitize_ids( $existing_ids );
+		if ( $existing_ids === $source_ids ) {
+			return false;
+		}
+
+		if ( ! empty( $existing_ids ) && ! $force ) {
+			return false;
+		}
+
+		return true;
 	}
 
 	/**

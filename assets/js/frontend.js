@@ -10,7 +10,7 @@
 	var OliVIG = {
 		originalGallery: [],
 		currentGallery: [],
-		requestToken: 0,
+		renderedSignature: '',
 
 		init: function() {
 			if (typeof oliVigSettings === 'undefined') {
@@ -18,6 +18,7 @@
 			}
 
 			this.storeOriginalGallery();
+			this.renderedSignature = this.gallerySignature(this.originalGallery);
 			this.applyLayout();
 			this.bindEvents();
 			this.preloadVariationImages();
@@ -25,6 +26,15 @@
 
 		gallery: function() {
 			return $('.woocommerce-product-gallery').first();
+		},
+
+		gallerySignature: function(images) {
+			if (!images || !images.length) {
+				return '';
+			}
+			return $.map(images, function(image) {
+				return String(image.id || 0) + ':' + (image.full_src || image.src || '');
+			}).join('|');
 		},
 
 		applyLayout: function() {
@@ -42,19 +52,21 @@
 
 			var columns = parseInt(oliVigSettings.thumbnailColumns, 10);
 			if (isNaN(columns)) {
-				columns = 4;
+				columns = 0;
 			}
-			columns = Math.max(1, Math.min(8, columns));
 
-			$gallery.removeClass(function(index, className) {
-				return (className.match(/(^|\s)(oli-vig-columns-|columns-|woocommerce-product-gallery--columns-)\S+/g) || []).join(' ');
-			});
+			if (columns >= 1) {
+				columns = Math.max(1, Math.min(8, columns));
+				$gallery.removeClass(function(index, className) {
+					return (className.match(/(^|\s)(oli-vig-columns-|columns-|woocommerce-product-gallery--columns-)\S+/g) || []).join(' ');
+				});
+				$gallery.addClass('oli-vig-columns-' + columns);
+				$gallery.addClass('columns-' + columns);
+				$gallery.addClass('woocommerce-product-gallery--columns-' + columns);
+				$gallery.attr('data-columns', columns);
+			}
+
 			$gallery.addClass('oli-vig-gallery');
-			$gallery.addClass('oli-vig-columns-' + columns);
-			$gallery.addClass('columns-' + columns);
-			$gallery.addClass('woocommerce-product-gallery--columns-' + columns);
-			$gallery.attr('data-columns', columns);
-
 			$gallery.removeClass('oli-vig-thumbs-bottom oli-vig-thumbs-left oli-vig-thumbs-right');
 			$gallery.addClass('oli-vig-thumbs-' + (oliVigSettings.thumbnailPosition || 'bottom'));
 		},
@@ -62,11 +74,11 @@
 		bindEvents: function() {
 			var self = this;
 
-			$(document.body).on('found_variation', '.variations_form', function(event, variation) {
+			$(document.body).on('found_variation.oli-vig', '.variations_form', function(event, variation) {
 				self.onVariationChange(variation);
 			});
 
-			$(document.body).on('reset_data hide_variation', '.variations_form', function() {
+			$(document.body).on('reset_data.oli-vig hide_variation.oli-vig', '.variations_form', function() {
 				if (oliVigSettings.resetOnClear) {
 					self.resetToOriginalGallery();
 				}
@@ -108,6 +120,52 @@
 			this.currentGallery = this.originalGallery.slice();
 		},
 
+		normalizeVariationImage: function(image) {
+			if (!image || typeof image !== 'object') {
+				return null;
+			}
+
+			var src = image.src || image.url || '';
+			var full = image.full_src || image.full || src;
+			if (!src && !full) {
+				return null;
+			}
+
+			return {
+				id: parseInt(image.id || image.image_id || '0', 10) || 0,
+				src: src || full,
+				src_w: parseInt(image.src_w || '0', 10) || 0,
+				src_h: parseInt(image.src_h || '0', 10) || 0,
+				srcset: image.srcset || '',
+				sizes: image.sizes || '',
+				full_src: full || src,
+				full_src_w: parseInt(image.full_src_w || '0', 10) || 0,
+				full_src_h: parseInt(image.full_src_h || '0', 10) || 0,
+				thumb_src: image.gallery_thumbnail_src || image.thumb_src || image.thumb || src || full,
+				thumb_src_w: parseInt(image.gallery_thumbnail_src_w || image.thumb_src_w || '0', 10) || 0,
+				thumb_src_h: parseInt(image.gallery_thumbnail_src_h || image.thumb_src_h || '0', 10) || 0,
+				alt: image.alt || '',
+				title: image.title || '',
+				thumb_alt: image.alt || ''
+			};
+		},
+
+		galleryFromVariationImage: function(variation) {
+			var images = this.originalGallery.slice();
+			var image = this.normalizeVariationImage(variation && variation.image);
+
+			if (!image) {
+				return images;
+			}
+
+			if (images.length) {
+				images[0] = image;
+				return images;
+			}
+
+			return [image];
+		},
+
 		onVariationChange: function(variation) {
 			if (!variation) {
 				return;
@@ -118,36 +176,9 @@
 				return;
 			}
 
-			if (variation.variation_id) {
-				this.fetchGallery(variation.variation_id);
-				return;
-			}
-
-			if (oliVigSettings.resetOnClear) {
-				this.resetToOriginalGallery();
-			}
-		},
-
-		fetchGallery: function(variationId) {
-			var self = this;
-			var token = ++this.requestToken;
-
-			$.post(oliVigSettings.ajaxUrl, {
-				action: 'oli_vig_get_variation_gallery',
-				nonce: oliVigSettings.nonce,
-				variation_id: variationId
-			}).done(function(response) {
-				if (token !== self.requestToken) {
-					return;
-				}
-				if (response && response.success && response.data && response.data.gallery && response.data.gallery.length) {
-					self.replaceGallery(response.data.gallery);
-					return;
-				}
-				if (oliVigSettings.resetOnClear) {
-					self.resetToOriginalGallery();
-				}
-			});
+			// Extra gallery is empty or omitted: keep native behaviour (variation image + parent thumbs).
+			// found_variation already includes image + oli_vig_gallery, so do not AJAX.
+			this.replaceGallery(this.galleryFromVariationImage(variation));
 		},
 
 		replaceGallery: function(images) {
@@ -168,7 +199,33 @@
 			this.renderGallery(this.currentGallery);
 		},
 
+		closePhotoswipe: function() {
+			var $pswp = $('.pswp');
+			if (!$pswp.length) {
+				return;
+			}
+
+			$pswp.removeClass('pswp--open pswp--animate_opacity pswp--visible pswp--zoom-allowed pswp--notouch');
+			$pswp.attr('aria-hidden', 'true');
+			$('body').removeClass('pswp-open');
+		},
+
 		destroyGallery: function($gallery) {
+			this.closePhotoswipe();
+
+			$gallery.off('.wc-product-gallery');
+			$gallery.off('.oli-vig');
+			$gallery.off('click');
+			$gallery.find('.woocommerce-product-gallery__image a').off('click');
+			$gallery.find('.woocommerce-product-gallery__trigger').off('click').remove();
+
+			$gallery.find('.woocommerce-product-gallery__image').each(function() {
+				var $image = $(this);
+				$image.trigger('zoom.destroy');
+				$image.removeData('zoom');
+			});
+			$gallery.find('.zoomImg').remove();
+
 			if ($gallery.data('flexslider')) {
 				try {
 					$gallery.flexslider('destroy');
@@ -178,11 +235,9 @@
 				$gallery.removeData('flexslider');
 			}
 
-			$gallery.find('.zoomImg').remove();
 			$gallery.find('.flex-viewport').children().unwrap();
 			$gallery.find('ol.flex-control-nav, ul.flex-direction-nav').remove();
 			$gallery.removeClass('flexslider');
-			$gallery.off('.wc-product-gallery');
 			$gallery.removeData('wc_product_gallery');
 		},
 
@@ -223,6 +278,11 @@
 		},
 
 		renderGallery: function(images) {
+			var signature = this.gallerySignature(images);
+			if (signature && signature === this.renderedSignature) {
+				return;
+			}
+
 			var $gallery = this.gallery();
 			if (!$gallery.length) {
 				return;
@@ -242,12 +302,15 @@
 			});
 
 			this.applyLayout();
+			$gallery.find('.woocommerce-product-gallery__trigger').remove();
 
 			if (typeof $.fn.wc_product_gallery === 'function') {
 				$gallery.wc_product_gallery();
 			}
 
-			$gallery.trigger('woocommerce_gallery_init', [images]);
+			$gallery.find('.woocommerce-product-gallery__trigger').slice(1).remove();
+			this.renderedSignature = signature;
+			$gallery.trigger('woocommerce_gallery_init.oli-vig', [images]);
 		},
 
 		preloadVariationImages: function() {
