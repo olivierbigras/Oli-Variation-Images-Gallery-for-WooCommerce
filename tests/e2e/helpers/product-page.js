@@ -1,10 +1,5 @@
-function svgUri(label, color) {
-	const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120"><rect width="120" height="120" fill="${color}"/><text x="10" y="68" fill="#fff" font-size="18">${label}</text></svg>`;
-	return `data:image/svg+xml,${encodeURIComponent(svg)}`;
-}
-
 function image(id, label, color) {
-	const src = svgUri(label, color);
+	const src = `/tests/e2e/helpers/pixel.svg?id=${id}&label=${encodeURIComponent(label)}&color=${encodeURIComponent(color)}`;
 	return {
 		id,
 		src,
@@ -42,7 +37,7 @@ function slideMarkup(img, isFirst) {
 	</div>`;
 }
 
-export const IMAGES = {
+const IMAGES = {
 	parent: image(1, 'Parent', '#1d4ed8'),
 	parentExtra: image(2, 'Parent extra', '#0f766e'),
 	redA: image(11, 'Red A', '#b91c1c'),
@@ -53,7 +48,7 @@ export const IMAGES = {
 	blueC: image(23, 'Blue C', '#3b82f6'),
 };
 
-export function buildCatalog() {
+function buildCatalog() {
 	return {
 		parent: [IMAGES.parent],
 		parentWide: [IMAGES.parent, IMAGES.parentExtra],
@@ -90,7 +85,7 @@ function variationPayload(id, color, images) {
 	};
 }
 
-export function buildProductPage({ assets, flexsliderEnabled, parentImages }) {
+function buildProductPage({ assets, flexsliderEnabled, parentImages }) {
 	const catalog = buildCatalog();
 	const slides = parentImages || catalog.parent;
 	const variations = [
@@ -192,6 +187,13 @@ export function buildProductPage({ assets, flexsliderEnabled, parentImages }) {
 		<p>Sorry, this product is unavailable. Please choose a different combination.</p>
 	</script>
 	<script>
+		window.wp = window.wp || {
+			template: function() {
+				return function() {
+					return '';
+				};
+			}
+		};
 		window.wc_single_product_params = ${JSON.stringify(params)};
 		window.wc_add_to_cart_variation_params = {
 			wc_ajax_url: '/?wc-ajax=%%endpoint%%',
@@ -211,6 +213,8 @@ export function buildProductPage({ assets, flexsliderEnabled, parentImages }) {
 </html>`;
 }
 
-export function gallerySourcesFrom(htmlImages) {
-	return htmlImages;
-}
+module.exports = {
+	IMAGES,
+	buildCatalog,
+	buildProductPage,
+};

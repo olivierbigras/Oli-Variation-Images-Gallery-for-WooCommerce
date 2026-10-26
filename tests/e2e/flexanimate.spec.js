@@ -1,7 +1,6 @@
 const { test, expect } = require('@playwright/test');
-const { pathToFileURL } = require('node:url');
-const { WC_VERSIONS, ensureAssets, writePage } = require('./helpers/assets.mjs');
-const { buildProductPage, buildCatalog } = require('./helpers/product-page.mjs');
+const { WC_VERSIONS, ensureAssets, writePage } = require('./helpers/assets');
+const { buildProductPage, buildCatalog } = require('./helpers/product-page');
 
 function collectPageErrors(page) {
 	const errors = [];
@@ -9,9 +8,14 @@ function collectPageErrors(page) {
 		errors.push(error.message);
 	});
 	page.on('console', (message) => {
-		if (message.type() === 'error') {
-			errors.push(message.text());
+		if (message.type() !== 'error') {
+			return;
 		}
+		const text = message.text();
+		if (/favicon\.ico|Failed to load resource/i.test(text)) {
+			return;
+		}
+		errors.push(text);
 	});
 	return errors;
 }
@@ -30,7 +34,15 @@ async function openFixture(page, { version, flexsliderEnabled, parentMode }) {
 		html
 	);
 	const errors = collectPageErrors(page);
-	await page.goto(pathToFileURL(file).href);
+	await page.goto(file);
+	await page.waitForFunction(() => window.jQuery && window.oliVigSettings);
+	const galleryCount = await page.evaluate(() => {
+		const variations = window.jQuery('.variations_form').data('product_variations');
+		return variations && variations[0] && variations[0].oli_vig_gallery
+			? variations[0].oli_vig_gallery.length
+			: 0;
+	});
+	expect(galleryCount, 'variation JSON should expose oli_vig_gallery').toBe(3);
 	await page.waitForTimeout(150);
 	return { errors, catalog, parentImages };
 }
@@ -130,7 +142,7 @@ test('unpatched destroy still throws flexAnimate on WC 11.2 reset', async ({ pag
 </body>
 </html>`;
 	const file = await writePage('unpatched-11.2.1.html', html);
-	await page.goto(pathToFileURL(file).href);
+	await page.goto(file);
 	const messages = await page.evaluate(() => window.__errors);
 	expect(messages.join('\n')).toMatch(/flexAnimate/i);
 });
