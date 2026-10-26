@@ -98,5 +98,26 @@ oli_vig_test_assert(
 	'do not import empty source'
 );
 
+oli_vig_test_assert_same(
+	'matched',
+	Oli_VIG_Images::import_skip_reason( array( 101, 202 ), array( 101, 202 ) ),
+	'skip reason is matched when IDs are identical'
+);
+oli_vig_test_assert_same(
+	'existing',
+	Oli_VIG_Images::import_skip_reason( array( 101 ), array( 101, 202 ) ),
+	'skip reason is existing when a non-empty gallery would be overwritten'
+);
+oli_vig_test_assert_same(
+	'',
+	Oli_VIG_Images::import_skip_reason( array( 101 ), array( 101, 202 ), true ),
+	'no skip reason when force overwrites an existing gallery'
+);
+oli_vig_test_assert_same(
+	'',
+	Oli_VIG_Images::import_skip_reason( array(), array( 101, 202 ) ),
+	'no skip reason when the destination is empty'
+);
+
 echo 'All importer tests passed.' . PHP_EOL;
 exit( 0 );

@@ -174,16 +174,18 @@ class Oli_VIG_Importer {
 			return;
 		}
 
-		$import_status  = '';
-		$imported_count = 0;
-		$found_count    = 0;
-		$skipped_count  = 0;
+		$import_status          = '';
+		$imported_count         = 0;
+		$found_count            = 0;
+		$skipped_count          = 0;
+		$skipped_existing_count = 0;
 
 		if ( isset( $_GET['_wpnonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_GET['_wpnonce'] ) ), 'oli_vig_import_result' ) ) {
-			$import_status  = isset( $_GET['import_status'] ) ? sanitize_key( wp_unslash( $_GET['import_status'] ) ) : '';
-			$imported_count = isset( $_GET['imported_count'] ) ? absint( wp_unslash( $_GET['imported_count'] ) ) : 0;
-			$found_count    = isset( $_GET['found_count'] ) ? absint( wp_unslash( $_GET['found_count'] ) ) : 0;
-			$skipped_count  = isset( $_GET['skipped_count'] ) ? absint( wp_unslash( $_GET['skipped_count'] ) ) : 0;
+			$import_status          = isset( $_GET['import_status'] ) ? sanitize_key( wp_unslash( $_GET['import_status'] ) ) : '';
+			$imported_count         = isset( $_GET['imported_count'] ) ? absint( wp_unslash( $_GET['imported_count'] ) ) : 0;
+			$found_count            = isset( $_GET['found_count'] ) ? absint( wp_unslash( $_GET['found_count'] ) ) : 0;
+			$skipped_count          = isset( $_GET['skipped_count'] ) ? absint( wp_unslash( $_GET['skipped_count'] ) ) : 0;
+			$skipped_existing_count = isset( $_GET['skipped_existing_count'] ) ? absint( wp_unslash( $_GET['skipped_existing_count'] ) ) : 0;
 		}
 
 		$preview = $this->count_source_variations();
@@ -197,10 +199,11 @@ class Oli_VIG_Importer {
 						<?php
 						echo esc_html(
 							sprintf(
-								/* translators: 1: imported count, 2: already-matching count */
-								__( 'Import complete. Imported gallery data for %1$d variations. %2$d already matched and were skipped.', 'oli-variation-gallery' ),
+								/* translators: 1: imported count, 2: already-matching count, 3: existing-gallery skip count */
+								__( 'Import complete. Imported gallery data for %1$d variations. %2$d already matched and were skipped. %3$d skipped (existing gallery, use --force).', 'oli-variation-gallery' ),
 								$imported_count,
-								$skipped_count
+								$skipped_count,
+								$skipped_existing_count
 							)
 						);
 						?>
@@ -212,10 +215,11 @@ class Oli_VIG_Importer {
 						<?php
 						echo esc_html(
 							sprintf(
-								/* translators: 1: found count, 2: already-matching count */
-								__( 'Dry run complete. Found %1$d variations with gallery data. %2$d already match and would be skipped.', 'oli-variation-gallery' ),
+								/* translators: 1: found count, 2: already-matching count, 3: existing-gallery skip count */
+								__( 'Dry run complete. Found %1$d variations with gallery data. %2$d already match and would be skipped. %3$d skipped (existing gallery, use --force).', 'oli-variation-gallery' ),
 								$found_count,
-								$skipped_count
+								$skipped_count,
+								$skipped_existing_count
 							)
 						);
 						?>
@@ -282,7 +286,7 @@ class Oli_VIG_Importer {
 	/**
 	 * Count variations that have importable source meta.
 	 *
-	 * @return array{found:int,imported:int,skipped:int}
+	 * @return array{found:int,imported:int,skipped:int,skipped_existing:int}
 	 */
 	public function count_source_variations() {
 		return $this->run_import( true );
@@ -307,12 +311,13 @@ class Oli_VIG_Importer {
 
 		$redirect_url = add_query_arg(
 			array(
-				'page'           => 'oli-variation-gallery-importer',
-				'import_status'  => $dry_run ? 'dry_run' : 'success',
-				'imported_count' => $result['imported'],
-				'found_count'    => $result['found'],
-				'skipped_count'  => $result['skipped'],
-				'_wpnonce'       => wp_create_nonce( 'oli_vig_import_result' ),
+				'page'                   => 'oli-variation-gallery-importer',
+				'import_status'          => $dry_run ? 'dry_run' : 'success',
+				'imported_count'         => $result['imported'],
+				'found_count'            => $result['found'],
+				'skipped_count'          => $result['skipped'],
+				'skipped_existing_count' => $result['skipped_existing'],
+				'_wpnonce'               => wp_create_nonce( 'oli_vig_import_result' ),
 			),
 			admin_url( 'admin.php' )
 		);
@@ -331,13 +336,14 @@ class Oli_VIG_Importer {
 	 *
 	 * @param bool $dry_run Whether to run in dry-run mode.
 	 * @param bool $force   Overwrite existing non-empty galleries.
-	 * @return array{found:int,imported:int,skipped:int}
+	 * @return array{found:int,imported:int,skipped:int,skipped_existing:int}
 	 */
 	public function run_import( $dry_run = false, $force = false ) {
-		$found    = 0;
-		$imported = 0;
-		$skipped  = 0;
-		$seen     = array();
+		$found            = 0;
+		$imported         = 0;
+		$skipped          = 0;
+		$skipped_existing = 0;
+		$seen             = array();
 
 		foreach ( $this->query_source_rows() as $row ) {
 			$variation_id = isset( $row['post_id'] ) ? absint( $row['post_id'] ) : 0;
@@ -351,7 +357,19 @@ class Oli_VIG_Importer {
 			++$found;
 
 			$existing = Oli_VIG_Images::get_ids( $variation_id );
-			if ( ! Oli_VIG_Images::should_import( $existing, $image_ids, $force ) ) {
+			$reason   = Oli_VIG_Images::import_skip_reason( $existing, $image_ids, $force );
+
+			if ( 'matched' === $reason ) {
+				++$skipped;
+				continue;
+			}
+
+			if ( 'existing' === $reason ) {
+				++$skipped_existing;
+				continue;
+			}
+
+			if ( '' !== $reason ) {
 				++$skipped;
 				continue;
 			}
@@ -363,9 +381,10 @@ class Oli_VIG_Importer {
 		}
 
 		return array(
-			'found'    => $found,
-			'imported' => $imported,
-			'skipped'  => $skipped,
+			'found'            => $found,
+			'imported'         => $imported,
+			'skipped'          => $skipped,
+			'skipped_existing' => $skipped_existing,
 		);
 	}
 
@@ -479,9 +498,10 @@ class Oli_VIG_Importer {
 		if ( $dry_run ) {
 			WP_CLI::success(
 				sprintf(
-					'Dry run complete. Found %d variations with gallery data. %d already match and would be skipped.',
+					'Dry run complete. Found %d variations with gallery data. %d already match and would be skipped. %d skipped (existing gallery, use --force).',
 					$result['found'],
-					$result['skipped']
+					$result['skipped'],
+					$result['skipped_existing']
 				)
 			);
 			return;
@@ -489,9 +509,10 @@ class Oli_VIG_Importer {
 
 		WP_CLI::success(
 			sprintf(
-				'Import complete. Imported gallery data for %d variations. %d already matched and were skipped.',
+				'Import complete. Imported gallery data for %d variations. %d already matched and were skipped. %d skipped (existing gallery, use --force).',
 				$result['imported'],
-				$result['skipped']
+				$result['skipped'],
+				$result['skipped_existing']
 			)
 		);
 	}

@@ -161,21 +161,34 @@ class Oli_VIG_Images {
 	 * @return bool
 	 */
 	public static function should_import( $existing_ids, $source_ids, $force = false ) {
+		return ( '' === self::import_skip_reason( $existing_ids, $source_ids, $force ) );
+	}
+
+	/**
+	 * Why a source row should not be imported.
+	 *
+	 * @param mixed $existing_ids Currently stored IDs.
+	 * @param mixed $source_ids   Incoming IDs.
+	 * @param bool  $force        Overwrite a non-empty destination.
+	 * @return string Empty string when the row should be imported. `matched`,
+	 *                `existing`, or `empty_source` otherwise.
+	 */
+	public static function import_skip_reason( $existing_ids, $source_ids, $force = false ) {
 		$source_ids = self::sanitize_ids( $source_ids );
 		if ( empty( $source_ids ) ) {
-			return false;
+			return 'empty_source';
 		}
 
 		$existing_ids = self::sanitize_ids( $existing_ids );
 		if ( $existing_ids === $source_ids ) {
-			return false;
+			return 'matched';
 		}
 
 		if ( ! empty( $existing_ids ) && ! $force ) {
-			return false;
+			return 'existing';
 		}
 
-		return true;
+		return '';
 	}
 
 	/**

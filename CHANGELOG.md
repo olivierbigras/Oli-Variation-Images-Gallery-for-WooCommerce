@@ -5,6 +5,17 @@ All notable changes to Oli Variation Gallery for WooCommerce are documented in t
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.2] - 2026-10-26
+
+### Fixed
+- Left/right thumbnail column stays 72–88px beside the main image (nowrap flex, Storefront-specific width rules overridden without `!important`)
+- Below 768px, left/right positions fall back to a bottom thumbnail row
+
+### Changed
+- Importer reports “skipped (existing gallery, use --force)” separately from “already matched”
+
+[1.0.2]: https://github.com/olivierbigras/Oli-Variation-Images-Gallery-for-WooCommerce/releases/tag/1.0.2
+
 ## [1.0.1] - 2026-10-26
 
 ### Fixed

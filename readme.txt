@@ -4,7 +4,7 @@ Tags: variations, gallery, product images, variable products, thumbnails
 Requires at least: 6.5
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.0.1
+Stable tag: 1.0.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -99,6 +99,10 @@ Email oli@olivierbigras.com or open an issue on the plugin's GitHub repository.
 
 == Changelog ==
 
+= 1.0.2 - 2026-10-26 =
+* Left and right thumbnails stay beside the main image at desktop widths
+* Importer reports existing galleries separately: skipped (existing gallery, use --force)
+
 = 1.0.1 - 2026-10-26 =
 * Save variation galleries when only images change (Save changes enables correctly)
 * Variation-only images replace the main image like the default gallery
@@ -126,6 +130,9 @@ Email oli@olivierbigras.com or open an issue on the plugin's GitHub repository.
 * Initial preview
 
 == Upgrade Notice ==
+
+= 1.0.2 =
+Fixes left/right thumbnail layout on Storefront and similar themes.
 
 = 1.0.1 =
 Fixes variation saving, gallery fallback, lightbox re-init, and WP-CLI import.
