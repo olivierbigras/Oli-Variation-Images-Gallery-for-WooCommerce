@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
-<ruleset name="Oli Variation Images Gallery">
-	<description>PHP_CodeSniffer configuration for Oli Variation Images Gallery</description>
+<ruleset name="Oli Variation Gallery">
+	<description>PHPCS WordPress-Extra for Oli Variation Gallery for WooCommerce</description>
 
 	<file>.</file>
 
@@ -16,15 +16,17 @@
 	<arg name="extensions" value="php"/>
 	<arg name="parallel" value="8"/>
 
-	<rule ref="WordPress">
+	<rule ref="WordPress-Extra">
 		<exclude name="Generic.Arrays.DisallowShortArraySyntax"/>
 		<exclude name="Universal.Arrays.DisallowShortArraySyntax"/>
+		<exclude name="WordPress.Files.FileName.InvalidClassFileName"/>
+		<exclude name="WordPress.Files.FileName.NotHyphenatedLowercase"/>
 	</rule>
 
 	<rule ref="WordPress.WP.I18n">
 		<properties>
 			<property name="text_domain" type="array">
-				<element value="oli-variation-images-gallery"/>
+				<element value="oli-variation-gallery"/>
 			</property>
 		</properties>
 	</rule>
@@ -43,15 +45,9 @@
 		<properties>
 			<property name="custom_capabilities" type="array">
 				<element value="manage_woocommerce"/>
+				<element value="edit_products"/>
+				<element value="edit_product"/>
 			</property>
 		</properties>
-	</rule>
-
-	<rule ref="WordPress.Files.FileName.InvalidClassFileName">
-		<exclude-pattern>*/includes/*</exclude-pattern>
-	</rule>
-
-	<rule ref="WordPress.Files.FileName.NotHyphenatedLowercase">
-		<exclude-pattern>*/includes/*</exclude-pattern>
 	</rule>
 </ruleset>

@@ -1,0 +1,12 @@
+.git
+.github
+.gitignore
+.distignore
+.pcpignore
+composer.json
+composer.lock
+phpcs.xml
+tests
+vendor
+PROJECT_SUMMARY.md
+TESTING.md

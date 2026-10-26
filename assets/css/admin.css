@@ -1,7 +1,7 @@
 /**
- * Admin styles
+ * Admin styles.
  *
- * @package Oli_Variation_Images_Gallery
+ * @package Oli_Variation_Gallery
  */
 
 .oli-vig-variation-gallery-wrapper {
@@ -25,7 +25,7 @@
 	display: flex;
 	flex-wrap: wrap;
 	gap: 10px;
-	margin: 0 0 15px 0;
+	margin: 0 0 15px;
 	padding: 0;
 	list-style: none;
 }
@@ -66,10 +66,10 @@
 	align-items: center;
 	justify-content: center;
 	opacity: 0;
-	transition: opacity 0.2s;
 }
 
-.oli-vig-gallery-image:hover .oli-vig-remove-image {
+.oli-vig-gallery-image:hover .oli-vig-remove-image,
+.oli-vig-gallery-image .oli-vig-remove-image:focus {
 	opacity: 1;
 }
 
@@ -81,10 +81,6 @@
 	font-size: 16px;
 	width: 16px;
 	height: 16px;
-}
-
-.oli-vig-add-images {
-	display: inline-block;
 }
 
 .oli-vig-gallery-image-dragging {

@@ -12,7 +12,7 @@ jobs:
 
     strategy:
       matrix:
-        php-version: ['7.4', '8.0', '8.1', '8.2']
+        php-version: ['7.4', '8.0', '8.1', '8.2', '8.3']
 
     name: PHP ${{ matrix.php-version }} Checks
 
@@ -31,14 +31,10 @@ jobs:
       run: composer install --no-interaction --prefer-dist
 
     - name: PHP Lint
-      run: |
-        set -euo pipefail
-        while IFS= read -r -d '' file; do
-          php -l "$file"
-        done < <(find . -path ./vendor -prune -o -name '*.php' -print0)
+      run: composer lint
 
-    - name: Run PHPCS
+    - name: Run PHPCS WordPress-Extra
       run: vendor/bin/phpcs
 
-    - name: Importer unit tests
-      run: php tests/test-importer.php
+    - name: Unit tests
+      run: composer test

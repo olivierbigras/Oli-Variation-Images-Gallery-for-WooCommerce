@@ -2,7 +2,7 @@
 /**
  * Silence is golden.
  *
- * @package Oli_Variation_Images_Gallery
+ * @package Oli_Variation_Gallery
  */
 
 if ( ! defined( 'ABSPATH' ) ) {

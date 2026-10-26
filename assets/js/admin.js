@@ -1,20 +1,18 @@
 /**
- * Admin scripts
+ * Admin scripts.
  *
- * @package Oli_Variation_Images_Gallery
+ * @package Oli_Variation_Gallery
  */
 
 (function($) {
 	'use strict';
 
-	$(document).ready(function() {
-		// Initialize gallery for existing variations
+	$(function() {
 		$('.oli-vig-gallery-images').each(function() {
 			initGallery($(this));
 		});
 
-		// Initialize gallery for newly added variations
-		$(document).on('woocommerce_variations_loaded', function() {
+		$(document).on('woocommerce_variations_loaded woocommerce_variations_added', function() {
 			$('.oli-vig-gallery-images').each(function() {
 				if (!$(this).data('sortable-initialized')) {
 					initGallery($(this));
@@ -22,7 +20,6 @@
 			});
 		});
 
-		// Add images button
 		$(document).on('click', '.oli-vig-add-images', function(e) {
 			e.preventDefault();
 
@@ -35,14 +32,20 @@
 				button: {
 					text: oliVigAdmin.mediaButton
 				},
+				library: {
+					type: 'image'
+				},
 				multiple: true
 			});
 
 			frame.on('select', function() {
 				var selection = frame.state().get('selection');
-				
+
 				selection.each(function(attachment) {
 					attachment = attachment.toJSON();
+					if (!attachment || !attachment.id) {
+						return;
+					}
 					var thumbSrc = (attachment.sizes && attachment.sizes.thumbnail) ? attachment.sizes.thumbnail.url : attachment.url;
 					var $item = $('<li/>', {
 						'class': 'oli-vig-gallery-image',
@@ -50,8 +53,11 @@
 					});
 					$item.append($('<img/>', { src: thumbSrc, alt: '' }));
 					$item.append(
-						$('<button/>', { type: 'button', 'class': 'oli-vig-remove-image' })
-							.append($('<span/>', { 'class': 'dashicons dashicons-no-alt' }))
+						$('<button/>', {
+							type: 'button',
+							'class': 'oli-vig-remove-image',
+							'aria-label': oliVigAdmin.removeText || 'Remove'
+						}).append($('<span/>', { 'class': 'dashicons dashicons-no-alt' }))
 					);
 					galleryList.append($item);
 				});
@@ -62,21 +68,17 @@
 			frame.open();
 		});
 
-		// Remove image button
 		$(document).on('click', '.oli-vig-remove-image', function(e) {
 			e.preventDefault();
-			
+
 			var imageItem = $(this).closest('.oli-vig-gallery-image');
 			var galleryList = imageItem.closest('.oli-vig-gallery-images');
 			var input = imageItem.closest('.oli-vig-variation-gallery-wrapper').find('.oli-vig-gallery-images-input');
-			
+
 			imageItem.remove();
 			updateGalleryInput(galleryList, input);
 		});
 
-		/**
-		 * Initialize sortable gallery
-		 */
 		function initGallery(galleryList) {
 			if (galleryList.data('sortable-initialized')) {
 				return;
@@ -106,16 +108,16 @@
 			galleryList.data('sortable-initialized', true);
 		}
 
-		/**
-		 * Update gallery input with current image IDs
-		 */
 		function updateGalleryInput(galleryList, input) {
 			var imageIds = [];
-			
+
 			galleryList.find('.oli-vig-gallery-image').each(function() {
-				imageIds.push($(this).data('attachment-id'));
+				var id = parseInt($(this).attr('data-attachment-id'), 10);
+				if (id > 0) {
+					imageIds.push(id);
+				}
 			});
-			
+
 			input.val(imageIds.join(','));
 		}
 	});

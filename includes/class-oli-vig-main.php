@@ -1,8 +1,8 @@
 <?php
 /**
- * Main plugin class
+ * Main plugin class.
  *
- * @package Oli_Variation_Images_Gallery
+ * @package Oli_Variation_Gallery
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -10,19 +10,19 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Main plugin class
+ * Plugin orchestrator.
  */
 class Oli_VIG_Main {
 
 	/**
-	 * Single instance
+	 * Single instance.
 	 *
-	 * @var Oli_VIG_Main
+	 * @var Oli_VIG_Main|null
 	 */
 	private static $instance = null;
 
 	/**
-	 * Get instance
+	 * Get instance.
 	 *
 	 * @return Oli_VIG_Main
 	 */
@@ -30,18 +30,19 @@ class Oli_VIG_Main {
 		if ( is_null( self::$instance ) ) {
 			self::$instance = new self();
 		}
+
 		return self::$instance;
 	}
 
 	/**
-	 * Constructor
+	 * Constructor.
 	 */
 	private function __construct() {
 		$this->init_hooks();
 	}
 
 	/**
-	 * Initialize hooks
+	 * Initialize hooks.
 	 */
 	private function init_hooks() {
 		if ( is_admin() ) {
@@ -53,15 +54,16 @@ class Oli_VIG_Main {
 		}
 
 		Oli_VIG_Ajax::instance();
+		Oli_VIG_Rest::instance();
 
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_frontend_assets' ) );
 	}
 
 	/**
-	 * Enqueue frontend assets
+	 * Enqueue frontend assets on product pages.
 	 */
 	public function enqueue_frontend_assets() {
-		if ( ! is_product() ) {
+		if ( ! function_exists( 'is_product' ) || ! is_product() ) {
 			return;
 		}
 
@@ -75,7 +77,7 @@ class Oli_VIG_Main {
 		wp_enqueue_script(
 			'oli-vig-frontend',
 			OLI_VIG_PLUGIN_URL . 'assets/js/frontend.js',
-			array( 'jquery', 'wc-add-to-cart-variation' ),
+			array( 'jquery', 'wc-add-to-cart-variation', 'wc-single-product' ),
 			OLI_VIG_VERSION,
 			true
 		);
@@ -89,19 +91,12 @@ class Oli_VIG_Main {
 				'ajaxUrl'           => admin_url( 'admin-ajax.php' ),
 				'nonce'             => wp_create_nonce( 'oli_vig_nonce' ),
 				'thumbnailPosition' => $settings['thumbnail_position'],
-				'thumbnailColumns'  => intval( $settings['thumbnail_columns'] ),
-				'galleryWidth'      => max( 50, min( 100, intval( $settings['gallery_width'] ) ) ),
+				'thumbnailColumns'  => absint( $settings['thumbnail_columns'] ),
+				'galleryWidth'      => max( 50, min( 100, absint( $settings['gallery_width'] ) ) ),
 				'enableZoom'        => ( 'yes' === $settings['enable_zoom'] ),
 				'enableLightbox'    => ( 'yes' === $settings['enable_lightbox'] ),
 				'resetOnClear'      => ( 'yes' === $settings['reset_on_clear'] ),
 				'preloadImages'     => ( 'yes' === $settings['preload_images'] ),
-				'thumbnailMode'     => $settings['thumbnail_mode'],
-				'transitionEffect'  => $settings['transition_effect'],
-				'i18n'              => array(
-					'previous' => __( 'Previous', 'oli-variation-images-gallery' ),
-					'next'     => __( 'Next', 'oli-variation-images-gallery' ),
-					'close'    => __( 'Close', 'oli-variation-images-gallery' ),
-				),
 			)
 		);
 	}
@@ -109,7 +104,7 @@ class Oli_VIG_Main {
 	/**
 	 * Default plugin settings.
 	 *
-	 * @return array
+	 * @return array<string,mixed>
 	 */
 	public static function get_default_settings() {
 		return array(
@@ -120,52 +115,40 @@ class Oli_VIG_Main {
 			'gallery_width'      => 100,
 			'preload_images'     => 'yes',
 			'reset_on_clear'     => 'yes',
-			'thumbnail_mode'     => 'grid',
-			'transition_effect'  => 'none',
 		);
 	}
 
 	/**
 	 * Get merged plugin settings.
 	 *
-	 * @return array
+	 * @return array<string,mixed>
 	 */
 	public static function get_settings() {
 		$saved = get_option( 'oli_vig_settings', array() );
 		if ( ! is_array( $saved ) ) {
 			$saved = array();
 		}
+
 		return wp_parse_args( $saved, self::get_default_settings() );
 	}
 
 	/**
-	 * Get variation gallery images
+	 * Get variation gallery images.
 	 *
 	 * @param int $variation_id Variation ID.
-	 * @return array
+	 * @return int[]
 	 */
 	public static function get_variation_gallery_images( $variation_id ) {
-		$image_ids = get_post_meta( $variation_id, '_oli_vig_gallery_images', true );
-
-		if ( empty( $image_ids ) || ! is_array( $image_ids ) ) {
-			return array();
-		}
-
-		return array_map( 'intval', $image_ids );
+		return Oli_VIG_Images::get_ids( $variation_id );
 	}
 
 	/**
-	 * Save variation gallery images
+	 * Save variation gallery images.
 	 *
 	 * @param int   $variation_id Variation ID.
-	 * @param array $image_ids Image IDs.
+	 * @param mixed $image_ids    Image IDs.
 	 */
 	public static function save_variation_gallery_images( $variation_id, $image_ids ) {
-		if ( ! is_array( $image_ids ) ) {
-			$image_ids = array();
-		}
-
-		$image_ids = array_filter( array_map( 'intval', $image_ids ) );
-		update_post_meta( $variation_id, '_oli_vig_gallery_images', $image_ids );
+		Oli_VIG_Images::save_ids( $variation_id, $image_ids );
 	}
 }

@@ -1,104 +1,34 @@
 # Changelog
 
-All notable changes to Oli Variation Images Gallery for WooCommerce will be documented in this file.
+All notable changes to Oli Variation Gallery for WooCommerce are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## 2026-10-23
-
-### Modifié
-- composer.json et fr_FR.po (Last-Translator) : courriel remplacé par oli@olivierbigras.com.
-
-## [0.1.2] - 2026-10-21
+## [1.0.0] - 2026-10-26
 
 ### Added
-- `== External services ==` section in `readme.txt` (no remote calls at runtime)
-- Versioned upgrade that copies leftover unprefixed options to `oli_vig_*` then deletes the old keys
-- `uninstall.php` removes `oli_vig_settings` and `oli_vig_version` (gallery meta is left in place)
-- `license.txt` (GPL v2 or later)
-- `Requires Plugins: woocommerce` header
-- Localized previous / next / close labels for slider and lightbox
+- Plugin slug and text domain `oli-variation-gallery`
+- Default gallery integration: rebuild slides and re-init zoom, lightbox, and slider
+- REST API field `oli_vig_gallery_ids` on product variations
+- Store API namespace `oli-variation-gallery` with variation gallery IDs
+- Idempotent one-click importer for `rtwpvg_images` with an on-screen dry-run count
+- WP-CLI: `wp oli-vig import [--dry-run]`
+- Standalone tests for importer, image helpers, settings, REST schema, and upgrades
 
 ### Changed
-- Gallery width is applied via a CSS custom property from localized settings (no `wp_add_inline_style`)
-- Settings page uses `manage_woocommerce` for the options form (shop managers can save)
-- Thumbnail column setting is applied to the WooCommerce product gallery
-- WC tested up to 11.2
+- Author URI is https://github.com/olivierbigras
+- Plugin URI remains the GitHub repository (not identical to the Author URI)
+- Thumbnail position and columns apply to the default gallery
+- Zoom and lightbox settings map to the default gallery filters
+- Admin notices only appear on this plugin's screens (WooCommerce-missing notice on Plugins)
 
-### Fixed
-- Admin sortable no longer writes inline styles
-- Admin/frontend gallery markup is built with jQuery attributes instead of string HTML
-- AJAX gallery lookup rejects non-variation IDs and unpublished parent products
-
-[0.1.2]: https://github.com/olivierbigras/Oli-Variation-Images-Gallery-for-WooCommerce/releases/tag/0.1.2
-
-## [0.1.1] - 2026-10-20
-
-### Added
-- Thumbnail slider/carousel mode (scrollable strip with prev/next arrows)
-- Fade and slide transitions for the main gallery image
-- Standalone unit test for the RadiusTheme importer using the real serialized `rtwpvg_images` format
-
-### Fixed
-- Importer now parses RadiusTheme `rtwpvg_images` as a PHP-serialized array of attachment IDs (the format `update_post_meta()` actually stores)
-- Importer also reads WooCommerce native `_product_image_gallery` on variations (RadiusTheme copies IDs there on WC 11.1+)
-- Source RadiusTheme/WooCommerce meta is never deleted
-- Yoda conditions and other WordPress PHPCS violations
-- GitHub Actions PHP lint no longer fails when every file is clean
-- GitHub URLs updated after the owner rename to olivierbigras
-
-## [0.1.0] - 2024-10-19
-
-### Added
-- Initial release of the plugin
-- Unlimited gallery images per product variation
-- Drag and drop interface for reordering images in admin
-- Automatic gallery swap when variation is selected
-- Gallery reset when variation is cleared (configurable)
-- Thumbnail gallery with configurable position (bottom, left, right)
-- Configurable thumbnail columns (1-8)
-- Image zoom on hover (optional)
-- Lightbox for full-screen image viewing
-- Keyboard navigation in lightbox (arrow keys, Escape)
-- Mobile touch swipe support for image navigation
-- Slider arrows for gallery navigation
-- Settings page under WooCommerce menu
-- Configurable gallery width (50-100%)
-- Image preloading option for faster switching
-- REST/AJAX lazy loading for products with many variations
-- Import tool for migrating from RadiusTheme Variation Images Gallery plugin
-- Dry run option for import preview
-- WP-CLI import command: `wp oli-vig import [--dry-run]`
-- HPOS (High-Performance Order Storage) compatibility declared
-- Full internationalization support
-- French (fr_FR) translation included
-- Plugin Check (PCP) compliant code
-- No external API calls or CDN dependencies
-- No tracking or upsells
-- Proper sanitization, escaping, and nonce verification
-- Prefix oli_vig_ for functions and Oli_VIG for classes
+### Removed
+- Bundled `.po` / `.pot` files and `load_plugin_textdomain()`
+- Custom lightbox, click-to-zoom, and replacement slider that overrode the default gallery
 
 ### Security
-- All user inputs properly sanitized
-- All outputs properly escaped
-- Nonce verification on all forms
-- Capability checks for admin actions
-- No external dependencies or CDN calls
+- Sanitization, escaping, nonces, and capability checks on admin and AJAX paths
+- Variation-save nonce accepts both product-update and AJAX variation-save fields
 
-### Performance
-- Lazy loading of variation images via AJAX
-- Image preloading option for instant switching
-- Optimized for products with many variations
-- No performance impact on non-variable products
-
-### Compatibility
-- WordPress 6.5+
-- WooCommerce 9.0+
-- PHP 7.4+
-- HPOS compatible
-- Works with classic WooCommerce product templates
-- Compatible with most popular themes
-
-[0.1.1]: https://github.com/olivierbigras/Oli-Variation-Images-Gallery-for-WooCommerce/releases/tag/0.1.1
-[0.1.0]: https://github.com/olivierbigras/Oli-Variation-Images-Gallery-for-WooCommerce/releases/tag/0.1.0
+[1.0.0]: https://github.com/olivierbigras/Oli-Variation-Images-Gallery-for-WooCommerce/releases/tag/1.0.0

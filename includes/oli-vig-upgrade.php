@@ -2,7 +2,7 @@
 /**
  * Versioned option upgrades.
  *
- * @package Oli_Variation_Images_Gallery
+ * @package Oli_Variation_Gallery
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -11,10 +11,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 /**
  * Legacy option key map (old => prefixed).
- *
- * Early drafts never shipped public unprefixed options. The map stays so a
- * future rename can copy values to `oli_vig_*` keys and delete the old ones
- * without data loss.
  *
  * @return array<string,string>
  */

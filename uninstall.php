@@ -2,7 +2,7 @@
 /**
  * Uninstall cleanup.
  *
- * @package Oli_Variation_Images_Gallery
+ * @package Oli_Variation_Gallery
  */
 
 if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
