@@ -90,7 +90,7 @@ class Oli_VIG_Settings {
 
 		add_settings_field(
 			'thumbnail_position',
-			__( 'Thumbnail Position', 'oli-variation-gallery' ),
+			'<label for="oli_vig_thumbnail_position">' . esc_html__( 'Thumbnail Position', 'oli-variation-gallery' ) . '</label>',
 			array( $this, 'render_thumbnail_position_field' ),
 			'oli-variation-gallery-settings',
 			'oli_vig_gallery_section'
@@ -98,7 +98,7 @@ class Oli_VIG_Settings {
 
 		add_settings_field(
 			'thumbnail_columns',
-			__( 'Thumbnail Columns', 'oli-variation-gallery' ),
+			'<label for="oli_vig_thumbnail_columns">' . esc_html__( 'Thumbnail Columns', 'oli-variation-gallery' ) . '</label>',
 			array( $this, 'render_thumbnail_columns_field' ),
 			'oli-variation-gallery-settings',
 			'oli_vig_gallery_section'
@@ -122,7 +122,7 @@ class Oli_VIG_Settings {
 
 		add_settings_field(
 			'gallery_width',
-			__( 'Gallery Width (%)', 'oli-variation-gallery' ),
+			'<label for="oli_vig_gallery_width">' . esc_html__( 'Gallery Width (%)', 'oli-variation-gallery' ) . '</label>',
 			array( $this, 'render_gallery_width_field' ),
 			'oli-variation-gallery-settings',
 			'oli_vig_gallery_section'

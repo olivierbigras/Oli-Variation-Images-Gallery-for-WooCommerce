@@ -43,6 +43,7 @@ class Oli_VIG_Frontend {
 		add_filter( 'woocommerce_product_thumbnails_columns', array( $this, 'thumbnail_columns' ) );
 		add_filter( 'woocommerce_single_product_zoom_enabled', array( $this, 'filter_zoom_enabled' ) );
 		add_filter( 'woocommerce_single_product_photoswipe_enabled', array( $this, 'filter_lightbox_enabled' ) );
+		add_filter( 'woocommerce_gallery_image_html_attachment_image_params', array( $this, 'gallery_image_attrs' ), 10, 4 );
 	}
 
 	/**
@@ -126,5 +127,40 @@ class Oli_VIG_Frontend {
 		$data['oli_vig_gallery'] = Oli_VIG_Images::get_variation_gallery( $variation );
 
 		return $data;
+	}
+
+	/**
+	 * Give gallery images an accessible name when the attachment alt is empty.
+	 *
+	 * @param array  $params        Image attributes.
+	 * @param int    $attachment_id Attachment ID.
+	 * @param string $image_size    Image size.
+	 * @param bool   $main_image    Whether this is the main image.
+	 * @return array
+	 */
+	public function gallery_image_attrs( $params, $attachment_id, $image_size, $main_image ) {
+		unset( $image_size, $main_image );
+
+		if ( ! is_array( $params ) ) {
+			$params = array();
+		}
+
+		if ( ! empty( $params['alt'] ) ) {
+			return $params;
+		}
+
+		$title = '';
+		if ( function_exists( 'get_the_title' ) ) {
+			$title = (string) get_the_title( $attachment_id );
+			if ( '' === $title && function_exists( 'is_product' ) && is_product() ) {
+				$title = (string) get_the_title();
+			}
+		}
+
+		if ( '' !== $title ) {
+			$params['alt'] = $title;
+		}
+
+		return $params;
 	}
 }

@@ -17,6 +17,7 @@
 				if (!$(this).data('sortable-initialized')) {
 					initGallery($(this));
 				}
+				updateMoveButtons($(this));
 			});
 		});
 
@@ -50,19 +51,8 @@
 						return;
 					}
 					var thumbSrc = (attachment.sizes && attachment.sizes.thumbnail) ? attachment.sizes.thumbnail.url : attachment.url;
-					var $item = $('<li/>', {
-						'class': 'oli-vig-gallery-image',
-						'data-attachment-id': attachment.id
-					});
-					$item.append($('<img/>', { src: thumbSrc, alt: '' }));
-					$item.append(
-						$('<button/>', {
-							type: 'button',
-							'class': 'oli-vig-remove-image',
-							'aria-label': oliVigAdmin.removeText || 'Remove'
-						}).append($('<span/>', { 'class': 'dashicons dashicons-no-alt' }))
-					);
-					galleryList.append($item);
+					var filename = attachment.filename || attachment.name || String(attachment.id);
+					galleryList.append(buildGalleryItem(attachment.id, thumbSrc, filename));
 				});
 
 				updateGalleryInput(galleryList, input);
@@ -81,6 +71,73 @@
 			imageItem.remove();
 			updateGalleryInput(galleryList, input);
 		});
+
+		$(document).on('click', '.oli-vig-move-left, .oli-vig-move-right', function(e) {
+			e.preventDefault();
+
+			var button = $(this);
+			if (button.is(':disabled')) {
+				return;
+			}
+
+			var imageItem = button.closest('.oli-vig-gallery-image');
+			var galleryList = imageItem.closest('.oli-vig-gallery-images');
+			var input = imageItem.closest('.oli-vig-variation-gallery-wrapper').find('.oli-vig-gallery-images-input');
+
+			if (button.hasClass('oli-vig-move-left')) {
+				imageItem.prev('.oli-vig-gallery-image').before(imageItem);
+			} else {
+				imageItem.next('.oli-vig-gallery-image').after(imageItem);
+			}
+
+			updateGalleryInput(galleryList, input);
+			button.trigger('focus');
+		});
+
+		function buildGalleryItem(id, thumbSrc, filename) {
+			var removeLabel = (oliVigAdmin.removeImage || 'Remove image %s').replace('%s', filename);
+			var $item = $('<li/>', {
+				'class': 'oli-vig-gallery-image',
+				'data-attachment-id': id,
+				'data-filename': filename
+			});
+			$item.append($('<img/>', { src: thumbSrc, alt: '' }));
+
+			var $actions = $('<div/>', { 'class': 'oli-vig-image-actions' });
+			$actions.append(
+				$('<button/>', {
+					type: 'button',
+					'class': 'oli-vig-move-image oli-vig-move-left',
+					'aria-label': oliVigAdmin.moveLeft || 'Move image left'
+				}).append($('<span/>', { 'class': 'dashicons dashicons-arrow-left-alt2' }))
+			);
+			$actions.append(
+				$('<button/>', {
+					type: 'button',
+					'class': 'oli-vig-move-image oli-vig-move-right',
+					'aria-label': oliVigAdmin.moveRight || 'Move image right'
+				}).append($('<span/>', { 'class': 'dashicons dashicons-arrow-right-alt2' }))
+			);
+			$actions.append(
+				$('<button/>', {
+					type: 'button',
+					'class': 'oli-vig-remove-image',
+					'aria-label': removeLabel
+				}).append($('<span/>', { 'class': 'dashicons dashicons-no-alt' }))
+			);
+			$item.append($actions);
+
+			return $item;
+		}
+
+		function updateMoveButtons(galleryList) {
+			var items = galleryList.find('.oli-vig-gallery-image');
+			items.each(function(index) {
+				var $item = $(this);
+				$item.find('.oli-vig-move-left').prop('disabled', 0 === index);
+				$item.find('.oli-vig-move-right').prop('disabled', index === items.length - 1);
+			});
+		}
 
 		function initGallery(galleryList) {
 			if (galleryList.data('sortable-initialized')) {
@@ -112,6 +169,7 @@
 			});
 
 			galleryList.data('sortable-initialized', true);
+			updateMoveButtons(galleryList);
 		}
 
 		function markVariationNeedsUpdate(input) {
@@ -137,6 +195,7 @@
 
 			input.val(imageIds.join(',')).trigger('change');
 			markVariationNeedsUpdate(input);
+			updateMoveButtons(galleryList);
 		}
 	});
 

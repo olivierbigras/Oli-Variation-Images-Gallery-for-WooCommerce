@@ -101,6 +101,9 @@ Email oli@olivierbigras.com or open an issue on the plugin's GitHub repository.
 
 = 1.0.2 - 2026-10-26 =
 * Left and right thumbnails stay beside the main image at desktop widths
+* Mobile left/right positions fall back to bottom thumbnails
+* Keyboard-accessible thumbnails and named image links
+* Move left/right buttons and specific Remove labels in the variation panel
 * Importer reports existing galleries separately: skipped (existing gallery, use --force)
 
 = 1.0.1 - 2026-10-26 =
@@ -132,7 +135,7 @@ Email oli@olivierbigras.com or open an issue on the plugin's GitHub repository.
 == Upgrade Notice ==
 
 = 1.0.2 =
-Fixes left/right thumbnail layout on Storefront and similar themes.
+Fixes left/right thumbnail layout, mobile thumbs, and gallery keyboard access.
 
 = 1.0.1 =
 Fixes variation saving, gallery fallback, lightbox re-init, and WP-CLI import.

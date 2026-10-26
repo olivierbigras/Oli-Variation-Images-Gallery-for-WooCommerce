@@ -9,10 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Left/right thumbnail column stays 72–88px beside the main image (nowrap flex, Storefront-specific width rules overridden without `!important`)
-- Below 768px, left/right positions fall back to a bottom thumbnail row
+- Below 768px, left/right positions fall back to a bottom thumbnail row (class swap + CSS)
+- Storefront thumbnails are keyboard buttons with “View image N of M” names
+- Variation gallery images can be reordered with Move left/right buttons
 
 ### Changed
 - Importer reports “skipped (existing gallery, use --force)” separately from “already matched”
+- Empty import screen explains that no other gallery plugin was found and keeps Run Import disabled
+- Settings selects and width field use `<label for>`
+- Lightbox trigger is at least 44×44px on small screens
+- Gallery transitions honor `prefers-reduced-motion`
 
 [1.0.2]: https://github.com/olivierbigras/Oli-Variation-Images-Gallery-for-WooCommerce/releases/tag/1.0.2
 

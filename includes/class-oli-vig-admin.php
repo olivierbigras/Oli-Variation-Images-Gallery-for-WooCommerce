@@ -83,6 +83,10 @@ class Oli_VIG_Admin {
 				'mediaTitle'  => __( 'Add Images to Variation Gallery', 'oli-variation-gallery' ),
 				'mediaButton' => __( 'Add to gallery', 'oli-variation-gallery' ),
 				'removeText'  => __( 'Remove', 'oli-variation-gallery' ),
+				/* translators: %s: image file name */
+				'removeImage' => __( 'Remove image %s', 'oli-variation-gallery' ),
+				'moveLeft'    => __( 'Move image left', 'oli-variation-gallery' ),
+				'moveRight'   => __( 'Move image right', 'oli-variation-gallery' ),
 			)
 		);
 	}
@@ -99,23 +103,49 @@ class Oli_VIG_Admin {
 
 		$variation_id = isset( $variation->ID ) ? absint( $variation->ID ) : 0;
 		$image_ids    = Oli_VIG_Images::get_ids( $variation_id );
+		$label_id     = 'oli-vig-label-' . $variation_id;
+		$count        = count( $image_ids );
+		$index        = 0;
 		?>
 		<div class="form-row form-row-full oli-vig-variation-gallery-wrapper">
-			<label><?php esc_html_e( 'Variation Gallery Images', 'oli-variation-gallery' ); ?></label>
+			<label id="<?php echo esc_attr( $label_id ); ?>"><?php esc_html_e( 'Variation Gallery Images', 'oli-variation-gallery' ); ?></label>
 			<div class="oli-vig-gallery-container">
-				<ul class="oli-vig-gallery-images" data-variation-id="<?php echo esc_attr( (string) $variation_id ); ?>">
+				<ul class="oli-vig-gallery-images" data-variation-id="<?php echo esc_attr( (string) $variation_id ); ?>" aria-labelledby="<?php echo esc_attr( $label_id ); ?>">
 					<?php
 					foreach ( $image_ids as $image_id ) {
 						$image_url = wp_get_attachment_image_url( $image_id, 'thumbnail' );
 						if ( ! $image_url ) {
 							continue;
 						}
+
+						$file     = get_attached_file( $image_id );
+						$filename = $file ? wp_basename( $file ) : (string) get_the_title( $image_id );
+						if ( '' === $filename ) {
+							$filename = (string) $image_id;
+						}
+
+						$remove_label = sprintf(
+							/* translators: %s: image file name */
+							__( 'Remove image %s', 'oli-variation-gallery' ),
+							$filename
+						);
+						$is_first = ( 0 === $index );
+						$is_last  = ( $index === $count - 1 );
+						++$index;
 						?>
-						<li class="oli-vig-gallery-image" data-attachment-id="<?php echo esc_attr( (string) $image_id ); ?>">
+						<li class="oli-vig-gallery-image" data-attachment-id="<?php echo esc_attr( (string) $image_id ); ?>" data-filename="<?php echo esc_attr( $filename ); ?>">
 							<img src="<?php echo esc_url( $image_url ); ?>" alt="" />
-							<button type="button" class="oli-vig-remove-image" aria-label="<?php esc_attr_e( 'Remove', 'oli-variation-gallery' ); ?>">
-								<span class="dashicons dashicons-no-alt"></span>
-							</button>
+							<div class="oli-vig-image-actions">
+								<button type="button" class="oli-vig-move-image oli-vig-move-left" aria-label="<?php esc_attr_e( 'Move image left', 'oli-variation-gallery' ); ?>"<?php disabled( $is_first ); ?>>
+									<span class="dashicons dashicons-arrow-left-alt2"></span>
+								</button>
+								<button type="button" class="oli-vig-move-image oli-vig-move-right" aria-label="<?php esc_attr_e( 'Move image right', 'oli-variation-gallery' ); ?>"<?php disabled( $is_last ); ?>>
+									<span class="dashicons dashicons-arrow-right-alt2"></span>
+								</button>
+								<button type="button" class="oli-vig-remove-image" aria-label="<?php echo esc_attr( $remove_label ); ?>">
+									<span class="dashicons dashicons-no-alt"></span>
+								</button>
+							</div>
 						</li>
 						<?php
 					}

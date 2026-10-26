@@ -85,7 +85,11 @@ class Oli_VIG_Main {
 			true
 		);
 
-		$settings = self::get_settings();
+		$settings     = self::get_settings();
+		$product_name = '';
+		if ( function_exists( 'is_product' ) && is_product() ) {
+			$product_name = get_the_title();
+		}
 
 		wp_localize_script(
 			'oli-vig-frontend',
@@ -100,6 +104,11 @@ class Oli_VIG_Main {
 				'enableLightbox'    => ( 'yes' === $settings['enable_lightbox'] ),
 				'resetOnClear'      => ( 'yes' === $settings['reset_on_clear'] ),
 				'preloadImages'     => ( 'yes' === $settings['preload_images'] ),
+				'productName'       => $product_name,
+				'i18n'              => array(
+					/* translators: 1: current image number, 2: total images */
+					'viewImage' => __( 'View image %1$d of %2$d', 'oli-variation-gallery' ),
+				),
 			)
 		);
 	}

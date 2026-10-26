@@ -242,32 +242,38 @@ class Oli_VIG_Importer {
 					?>
 				</p>
 
-				<?php if ( $preview['found'] > 0 ) : ?>
-					<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
-						<?php wp_nonce_field( 'oli_vig_import', 'oli_vig_import_nonce' ); ?>
-						<input type="hidden" name="action" value="oli_vig_run_import" />
-
-						<p>
-							<label>
-								<input type="checkbox" name="dry_run" value="1" />
-								<?php esc_html_e( 'Dry run (preview only, do not import)', 'oli-variation-gallery' ); ?>
-							</label>
-						</p>
-
-						<p>
-							<label>
-								<input type="checkbox" name="force" value="1" />
-								<?php esc_html_e( 'Force overwrite of existing galleries that were edited after a previous import', 'oli-variation-gallery' ); ?>
-							</label>
-						</p>
-
-						<p>
-							<?php submit_button( __( 'Run Import', 'oli-variation-gallery' ), 'primary', 'submit', false ); ?>
-						</p>
-					</form>
-				<?php else : ?>
-					<p><?php esc_html_e( 'No importable variation gallery data was found.', 'oli-variation-gallery' ); ?></p>
+				<?php if ( $preview['found'] < 1 ) : ?>
+					<p><?php esc_html_e( 'No galleries to import. This tool copies variation images created by another variation gallery plugin (for example Variation Images Gallery). If you have never used one, you have nothing to do.', 'oli-variation-gallery' ); ?></p>
 				<?php endif; ?>
+
+				<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
+					<?php wp_nonce_field( 'oli_vig_import', 'oli_vig_import_nonce' ); ?>
+					<input type="hidden" name="action" value="oli_vig_run_import" />
+
+					<p>
+						<label>
+							<input type="checkbox" name="dry_run" value="1" <?php disabled( $preview['found'] < 1 ); ?> />
+							<?php esc_html_e( 'Dry run (preview only, do not import)', 'oli-variation-gallery' ); ?>
+						</label>
+					</p>
+
+					<p>
+						<label>
+							<input type="checkbox" name="force" value="1" <?php disabled( $preview['found'] < 1 ); ?> />
+							<?php esc_html_e( 'Force overwrite of existing galleries that were edited after a previous import', 'oli-variation-gallery' ); ?>
+						</label>
+					</p>
+
+					<p>
+						<?php
+						$button_atts = array();
+						if ( $preview['found'] < 1 ) {
+							$button_atts['disabled'] = 'disabled';
+						}
+						submit_button( __( 'Run Import', 'oli-variation-gallery' ), 'primary', 'submit', false, $button_atts );
+						?>
+					</p>
+				</form>
 			</div>
 
 			<div class="card">
