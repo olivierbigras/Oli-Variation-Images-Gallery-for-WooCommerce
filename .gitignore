@@ -25,6 +25,10 @@ composer.lock
 node_modules/
 npm-debug.log
 yarn-error.log
+tests/e2e/.cache/
+tests/e2e/test-results/
+tests/e2e/playwright-report/
+tests/e2e/blob-report/
 
 # IDE
 .idea/

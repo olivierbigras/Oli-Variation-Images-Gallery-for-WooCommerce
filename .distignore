@@ -8,5 +8,10 @@ composer.lock
 phpcs.xml
 tests
 vendor
+node_modules
+package.json
+package-lock.json
+playwright.config.js
 PROJECT_SUMMARY.md
 TESTING.md
+artifacts

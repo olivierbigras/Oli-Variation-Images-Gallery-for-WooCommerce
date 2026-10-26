@@ -17,6 +17,7 @@
 				return;
 			}
 
+			this.guardWooCommerceSlider();
 			this.storeOriginalGallery();
 			this.renderedSignature = this.gallerySignature(this.originalGallery);
 			this.applyLayout();
@@ -255,12 +256,79 @@
 			$('body').removeClass('pswp-open');
 		},
 
+		hasFlexslider: function($el) {
+			return !!( $el && $el.length && $el.data('flexslider') );
+		},
+
+		/**
+		 * WooCommerce 11.2 calls flexslider(0) from onResetSlidePosition after
+		 * reset_data / found_variation (20ms timeout). We rebuild the gallery
+		 * and drop the FlexSlider instance, so guard those calls.
+		 */
+		guardWooCommerceSlider: function() {
+			this.guardFlexsliderCommands();
+			this.guardSlidePositionReset();
+		},
+
+		guardFlexsliderCommands: function() {
+			if (typeof $.fn.flexslider !== 'function' || $.fn.flexslider._oliVigGuarded) {
+				return;
+			}
+
+			var original = $.fn.flexslider;
+			var guarded = function(options) {
+				if (options !== undefined && typeof options !== 'object') {
+					var missing = !this.length;
+					this.each(function() {
+						if ($(this).data('flexslider') === undefined) {
+							missing = true;
+							return false;
+						}
+					});
+					if (missing) {
+						return this;
+					}
+				}
+				return original.apply(this, arguments);
+			};
+
+			$.extend(guarded, original);
+			guarded._oliVigGuarded = true;
+			$.fn.flexslider = guarded;
+		},
+
+		guardSlidePositionReset: function() {
+			if (typeof $.fn.wc_maybe_trigger_slide_position_reset !== 'function' || $.fn.wc_maybe_trigger_slide_position_reset._oliVigGuarded) {
+				return;
+			}
+
+			var original = $.fn.wc_maybe_trigger_slide_position_reset;
+			var self = this;
+			var guarded = function(variation) {
+				var $gallery = $(this).closest('.product').find('.woocommerce-product-gallery').first();
+				if ($gallery.hasClass('oli-vig-gallery') && !self.hasFlexslider($gallery)) {
+					var imageId = variation && variation.image_id ? variation.image_id : '';
+					$(this).attr('current-image', imageId);
+					return this;
+				}
+				return original.apply(this, arguments);
+			};
+
+			$.extend(guarded, original);
+			guarded._oliVigGuarded = true;
+			$.fn.wc_maybe_trigger_slide_position_reset = guarded;
+		},
+
 		destroyGallery: function($gallery) {
 			this.closePhotoswipe();
 
 			$gallery.off('.wc-product-gallery');
 			$gallery.off('.oli-vig');
 			$gallery.off('click');
+			// WooCommerce binds these without a namespace; leftover handlers
+			// call flexslider(0) after we have removed the instance.
+			$gallery.off('woocommerce_gallery_reset_slide_position');
+			$gallery.off('woocommerce_gallery_init_zoom');
 			$gallery.find('.woocommerce-product-gallery__image a').off('click');
 			$gallery.find('.woocommerce-product-gallery__trigger').off('click').remove();
 

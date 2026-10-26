@@ -38,3 +38,28 @@ jobs:
 
     - name: Unit tests
       run: composer test
+
+  js-gallery:
+    runs-on: ubuntu-latest
+    name: Flexslider guard (Playwright)
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node
+      uses: actions/setup-node@v4
+      with:
+        node-version: '22'
+        cache: npm
+        cache-dependency-path: tests/e2e/package-lock.json
+
+    - name: Install Playwright
+      working-directory: tests/e2e
+      run: |
+        npm install
+        npx playwright install --with-deps chromium
+
+    - name: Run gallery JavaScript tests
+      working-directory: tests/e2e
+      run: npx playwright test

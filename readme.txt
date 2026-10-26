@@ -4,7 +4,7 @@ Tags: variations, gallery, product images, variable products, thumbnails
 Requires at least: 6.5
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.0.5
+Stable tag: 1.0.6
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -99,6 +99,9 @@ Email oli@olivierbigras.com or open an issue on the plugin's GitHub repository.
 
 == Changelog ==
 
+= 1.0.6 - 2026-10-26 =
+* Fixed a JavaScript console error (flexAnimate) when clearing or changing a variation with WooCommerce 11.2.
+
 = 1.0.5 - 2026-10-26 =
 * Added translation template (POT).
 
@@ -142,6 +145,9 @@ Email oli@olivierbigras.com or open an issue on the plugin's GitHub repository.
 * Initial preview
 
 == Upgrade Notice ==
+
+= 1.0.6 =
+Fixed a JavaScript console error (flexAnimate) when clearing or changing a variation with WooCommerce 11.2.
 
 = 1.0.5 =
 Added translation template (POT).
