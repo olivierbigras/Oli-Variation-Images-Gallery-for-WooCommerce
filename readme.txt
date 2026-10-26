@@ -4,7 +4,7 @@ Tags: variations, gallery, product images, variable products, thumbnails
 Requires at least: 6.5
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.0.3
+Stable tag: 1.0.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -99,6 +99,9 @@ Email oli@olivierbigras.com or open an issue on the plugin's GitHub repository.
 
 == Changelog ==
 
+= 1.0.4 - 2026-10-26 =
+* Mobile gallery thumbnails stay at least 44×44px
+
 = 1.0.3 - 2026-10-26 =
 * Dry-run shows how many variations would be imported and how many would be skipped as an existing gallery
 
@@ -136,6 +139,9 @@ Email oli@olivierbigras.com or open an issue on the plugin's GitHub repository.
 * Initial preview
 
 == Upgrade Notice ==
+
+= 1.0.4 =
+Keeps mobile gallery thumbnails at a 44×44px touch target.
 
 = 1.0.3 =
 Dry-run reports would-import and existing-gallery skip counts.

@@ -5,6 +5,13 @@ All notable changes to Oli Variation Gallery for WooCommerce are documented in t
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.4] - 2026-10-26
+
+### Fixed
+- Mobile bottom-row thumbnails stay at least 44×44px (wrap or scroll inside the gallery, no page overflow)
+
+[1.0.4]: https://github.com/olivierbigras/Oli-Variation-Images-Gallery-for-WooCommerce/releases/tag/1.0.4
+
 ## [1.0.3] - 2026-10-26
 
 ### Changed
