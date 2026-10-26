@@ -410,6 +410,13 @@
 					event.preventDefault();
 					event.stopPropagation();
 					self.goToSlide($gallery, index);
+				}).on('keydown.oli-vig-thumb', function(event) {
+					var key = event.key || event.which;
+					if (key === 'Enter' || key === ' ' || key === 'Spacebar' || key === 13 || key === 32) {
+						event.preventDefault();
+						event.stopPropagation();
+						self.goToSlide($gallery, index);
+					}
 				});
 			});
 
@@ -420,13 +427,16 @@
 		goToSlide: function($gallery, index) {
 			if ($gallery.data('flexslider') && typeof $gallery.flexslider === 'function') {
 				$gallery.flexslider(index);
-				return;
+			} else {
+				var $img = $gallery.find('.flex-control-thumbs li').eq(index).find('img').first();
+				if ($img.length) {
+					$img.trigger('click');
+				}
 			}
 
-			var $img = $gallery.find('.flex-control-thumbs li').eq(index).find('img').first();
-			if ($img.length) {
-				$img.trigger('click');
-			}
+			$gallery.find('.flex-control-thumbs button.oli-vig-thumb').each(function(buttonIndex) {
+				$(this).attr('aria-current', buttonIndex === index ? 'true' : 'false');
+			});
 		},
 
 		updateThumbState: function($gallery) {
