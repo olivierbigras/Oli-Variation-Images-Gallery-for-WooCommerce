@@ -118,6 +118,12 @@ oli_vig_test_assert_same(
 	Oli_VIG_Images::import_skip_reason( array(), array( 101, 202 ) ),
 	'no skip reason when the destination is empty'
 );
+oli_vig_test_assert(
+	Oli_VIG_Images::should_import( array(), array( 101, 202 ) )
+	&& ! Oli_VIG_Images::should_import( array( 101 ), array( 101, 202 ) )
+	&& 'existing' === Oli_VIG_Images::import_skip_reason( array( 101 ), array( 101, 202 ) ),
+	'dry-run can tally would-import separately from existing-gallery skips'
+);
 
 echo 'All importer tests passed.' . PHP_EOL;
 exit( 0 );

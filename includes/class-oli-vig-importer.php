@@ -215,9 +215,10 @@ class Oli_VIG_Importer {
 						<?php
 						echo esc_html(
 							sprintf(
-								/* translators: 1: found count, 2: already-matching count, 3: existing-gallery skip count */
-								__( 'Dry run complete. Found %1$d variations with gallery data. %2$d already match and would be skipped. %3$d skipped (existing gallery, use --force).', 'oli-variation-gallery' ),
+								/* translators: 1: found count, 2: would-import count, 3: already-matching count, 4: existing-gallery skip count */
+								__( 'Dry run complete. Found %1$d variations with gallery data. %2$d would be imported. %3$d already match and would be skipped. %4$d skipped (existing gallery, use --force).', 'oli-variation-gallery' ),
 								$found_count,
+								$imported_count,
 								$skipped_count,
 								$skipped_existing_count
 							)
@@ -234,9 +235,12 @@ class Oli_VIG_Importer {
 					<?php
 					echo esc_html(
 						sprintf(
-							/* translators: %d: number of variations with importable source meta */
-							__( 'Dry-run count: %d variations currently have importable gallery data.', 'oli-variation-gallery' ),
-							$preview['found']
+							/* translators: 1: found count, 2: would-import count, 3: already-matching count, 4: existing-gallery skip count */
+							__( 'Dry-run count: %1$d variations currently have importable gallery data. %2$d would be imported. %3$d already match. %4$d skipped (existing gallery, use --force).', 'oli-variation-gallery' ),
+							$preview['found'],
+							$preview['imported'],
+							$preview['skipped'],
+							$preview['skipped_existing']
 						)
 					);
 					?>
@@ -382,8 +386,9 @@ class Oli_VIG_Importer {
 
 			if ( ! $dry_run ) {
 				Oli_VIG_Images::save_ids( $variation_id, $image_ids );
-				++$imported;
 			}
+
+			++$imported;
 		}
 
 		return array(
@@ -504,8 +509,9 @@ class Oli_VIG_Importer {
 		if ( $dry_run ) {
 			WP_CLI::success(
 				sprintf(
-					'Dry run complete. Found %d variations with gallery data. %d already match and would be skipped. %d skipped (existing gallery, use --force).',
+					'Dry run complete. Found %d variations with gallery data. %d would be imported. %d already match and would be skipped. %d skipped (existing gallery, use --force).',
 					$result['found'],
+					$result['imported'],
 					$result['skipped'],
 					$result['skipped_existing']
 				)

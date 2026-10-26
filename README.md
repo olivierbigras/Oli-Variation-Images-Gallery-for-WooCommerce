@@ -41,7 +41,7 @@ wp oli-vig import
 wp oli-vig import --force
 ```
 
-The import screen also shows a dry-run count before you click Run Import. Existing non-empty galleries are not overwritten unless you pass `--force` or check the overwrite box.
+The import screen and `wp oli-vig import --dry-run` show how many variations would be imported and how many would be skipped as an existing gallery. Existing non-empty galleries are not overwritten unless you pass `--force` or check the overwrite box.
 
 ## Development
 

@@ -5,6 +5,13 @@ All notable changes to Oli Variation Gallery for WooCommerce are documented in t
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.3] - 2026-10-26
+
+### Changed
+- Dry-run (admin and WP-CLI) reports how many variations would be imported and how many would be skipped as an existing gallery
+
+[1.0.3]: https://github.com/olivierbigras/Oli-Variation-Images-Gallery-for-WooCommerce/releases/tag/1.0.3
+
 ## [1.0.2] - 2026-10-26
 
 ### Fixed

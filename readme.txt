@@ -4,7 +4,7 @@ Tags: variations, gallery, product images, variable products, thumbnails
 Requires at least: 6.5
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.0.2
+Stable tag: 1.0.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -99,6 +99,9 @@ Email oli@olivierbigras.com or open an issue on the plugin's GitHub repository.
 
 == Changelog ==
 
+= 1.0.3 - 2026-10-26 =
+* Dry-run shows how many variations would be imported and how many would be skipped as an existing gallery
+
 = 1.0.2 - 2026-10-26 =
 * Left and right thumbnails stay beside the main image at desktop widths
 * Mobile left/right positions fall back to bottom thumbnails
@@ -133,6 +136,9 @@ Email oli@olivierbigras.com or open an issue on the plugin's GitHub repository.
 * Initial preview
 
 == Upgrade Notice ==
+
+= 1.0.3 =
+Dry-run reports would-import and existing-gallery skip counts.
 
 = 1.0.2 =
 Fixes left/right thumbnail layout, mobile thumbs, and gallery keyboard access.

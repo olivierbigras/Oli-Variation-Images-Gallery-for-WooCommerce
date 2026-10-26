@@ -3,7 +3,7 @@
  * Plugin Name: Oli Variation Gallery for WooCommerce
  * Plugin URI: https://github.com/olivierbigras/Oli-Variation-Images-Gallery-for-WooCommerce
  * Description: Add several gallery images per product variation. The product gallery swaps to the selected variation and falls back to the main gallery.
- * Version: 1.0.2
+ * Version: 1.0.3
  * Author: Olivier Bigras
  * Author URI: https://github.com/olivierbigras
  * License: GPL v2 or later
@@ -24,7 +24,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'OLI_VIG_VERSION', '1.0.2' );
+define( 'OLI_VIG_VERSION', '1.0.3' );
 define( 'OLI_VIG_PLUGIN_FILE', __FILE__ );
 define( 'OLI_VIG_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'OLI_VIG_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
