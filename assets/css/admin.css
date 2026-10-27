@@ -1,7 +1,7 @@
 /**
- * Admin styles
+ * Admin styles.
  *
- * @package Oli_Variation_Images_Gallery
+ * @package Oli_Variation_Gallery
  */
 
 .oli-vig-variation-gallery-wrapper {
@@ -22,69 +22,77 @@
 }
 
 .oli-vig-gallery-images {
-	display: flex;
-	flex-wrap: wrap;
-	gap: 10px;
-	margin: 0 0 15px 0;
+	margin: 0 0 15px;
 	padding: 0;
 	list-style: none;
+	overflow: hidden;
 }
 
 .oli-vig-gallery-image {
 	position: relative;
+	float: left;
 	width: 80px;
-	height: 80px;
+	margin: 0 10px 10px 0;
 	border: 2px solid #ddd;
 	border-radius: 4px;
 	overflow: hidden;
 	cursor: move;
 	background: #fff;
+	box-sizing: border-box;
 }
 
-.oli-vig-gallery-image:hover {
+.oli-vig-gallery-image:hover,
+.oli-vig-gallery-image:focus-within {
 	border-color: #2271b1;
 }
 
 .oli-vig-gallery-image img {
-	width: 100%;
-	height: 100%;
+	display: block;
+	width: 80px;
+	height: 80px;
 	object-fit: cover;
 }
 
-.oli-vig-gallery-image .oli-vig-remove-image {
-	position: absolute;
-	top: 0;
-	right: 0;
-	width: 24px;
-	height: 24px;
+.oli-vig-image-actions {
+	display: flex;
+	justify-content: space-between;
+	background: #1d2327;
+}
+
+.oli-vig-image-actions button {
+	flex: 1 1 auto;
+	min-width: 24px;
+	min-height: 24px;
 	padding: 0;
 	border: none;
-	background: rgba(0, 0, 0, 0.7);
+	background: transparent;
 	color: #fff;
 	cursor: pointer;
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	opacity: 0;
-	transition: opacity 0.2s;
 }
 
-.oli-vig-gallery-image:hover .oli-vig-remove-image {
-	opacity: 1;
+.oli-vig-image-actions button:hover,
+.oli-vig-image-actions button:focus {
+	background: #2271b1;
+	outline: none;
 }
 
-.oli-vig-gallery-image .oli-vig-remove-image:hover {
-	background: rgba(0, 0, 0, 0.9);
+.oli-vig-image-actions button:focus {
+	box-shadow: inset 0 0 0 2px #fff;
 }
 
-.oli-vig-gallery-image .oli-vig-remove-image .dashicons {
+.oli-vig-image-actions button:disabled {
+	opacity: 0.35;
+	cursor: default;
+	background: transparent;
+}
+
+.oli-vig-image-actions .dashicons {
 	font-size: 16px;
 	width: 16px;
 	height: 16px;
-}
-
-.oli-vig-add-images {
-	display: inline-block;
 }
 
 .oli-vig-gallery-image-dragging {
@@ -100,4 +108,6 @@
 	border: 2px dashed #2271b1;
 	background: #f0f0f1;
 	visibility: visible !important;
+	float: left;
+	min-height: 104px;
 }

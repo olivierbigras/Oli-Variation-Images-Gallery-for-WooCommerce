@@ -1,8 +1,8 @@
 <?php
 /**
- * Settings page
+ * Settings page.
  *
- * @package Oli_Variation_Images_Gallery
+ * @package Oli_Variation_Gallery
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -10,19 +10,19 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Settings class
+ * Settings class.
  */
 class Oli_VIG_Settings {
 
 	/**
-	 * Single instance
+	 * Single instance.
 	 *
-	 * @var Oli_VIG_Settings
+	 * @var Oli_VIG_Settings|null
 	 */
 	private static $instance = null;
 
 	/**
-	 * Get instance
+	 * Get instance.
 	 *
 	 * @return Oli_VIG_Settings
 	 */
@@ -30,11 +30,12 @@ class Oli_VIG_Settings {
 		if ( is_null( self::$instance ) ) {
 			self::$instance = new self();
 		}
+
 		return self::$instance;
 	}
 
 	/**
-	 * Constructor
+	 * Constructor.
 	 */
 	private function __construct() {
 		add_action( 'admin_menu', array( $this, 'add_settings_page' ), 99 );
@@ -52,13 +53,13 @@ class Oli_VIG_Settings {
 	}
 
 	/**
-	 * Add settings page
+	 * Add settings page.
 	 */
 	public function add_settings_page() {
 		add_submenu_page(
 			'woocommerce',
-			__( 'Variation Gallery Settings', 'oli-variation-images-gallery' ),
-			__( 'Variation Gallery', 'oli-variation-images-gallery' ),
+			__( 'Variation Gallery Settings', 'oli-variation-gallery' ),
+			__( 'Variation Gallery', 'oli-variation-gallery' ),
 			'manage_woocommerce',
 			'oli-variation-gallery-settings',
 			array( $this, 'render_settings_page' )
@@ -66,7 +67,7 @@ class Oli_VIG_Settings {
 	}
 
 	/**
-	 * Register settings
+	 * Register settings.
 	 */
 	public function register_settings() {
 		register_setting(
@@ -82,14 +83,14 @@ class Oli_VIG_Settings {
 
 		add_settings_section(
 			'oli_vig_gallery_section',
-			__( 'Gallery Settings', 'oli-variation-images-gallery' ),
+			__( 'Gallery Settings', 'oli-variation-gallery' ),
 			array( $this, 'render_gallery_section' ),
 			'oli-variation-gallery-settings'
 		);
 
 		add_settings_field(
 			'thumbnail_position',
-			__( 'Thumbnail Position', 'oli-variation-images-gallery' ),
+			'<label for="oli_vig_thumbnail_position">' . esc_html__( 'Thumbnail Position', 'oli-variation-gallery' ) . '</label>',
 			array( $this, 'render_thumbnail_position_field' ),
 			'oli-variation-gallery-settings',
 			'oli_vig_gallery_section'
@@ -97,7 +98,7 @@ class Oli_VIG_Settings {
 
 		add_settings_field(
 			'thumbnail_columns',
-			__( 'Thumbnail Columns', 'oli-variation-images-gallery' ),
+			'<label for="oli_vig_thumbnail_columns">' . esc_html__( 'Thumbnail Columns', 'oli-variation-gallery' ) . '</label>',
 			array( $this, 'render_thumbnail_columns_field' ),
 			'oli-variation-gallery-settings',
 			'oli_vig_gallery_section'
@@ -105,7 +106,7 @@ class Oli_VIG_Settings {
 
 		add_settings_field(
 			'enable_zoom',
-			__( 'Enable Zoom', 'oli-variation-images-gallery' ),
+			__( 'Enable Zoom', 'oli-variation-gallery' ),
 			array( $this, 'render_enable_zoom_field' ),
 			'oli-variation-gallery-settings',
 			'oli_vig_gallery_section'
@@ -113,7 +114,7 @@ class Oli_VIG_Settings {
 
 		add_settings_field(
 			'enable_lightbox',
-			__( 'Enable Lightbox', 'oli-variation-images-gallery' ),
+			__( 'Enable Lightbox', 'oli-variation-gallery' ),
 			array( $this, 'render_enable_lightbox_field' ),
 			'oli-variation-gallery-settings',
 			'oli_vig_gallery_section'
@@ -121,7 +122,7 @@ class Oli_VIG_Settings {
 
 		add_settings_field(
 			'gallery_width',
-			__( 'Gallery Width (%)', 'oli-variation-images-gallery' ),
+			'<label for="oli_vig_gallery_width">' . esc_html__( 'Gallery Width (%)', 'oli-variation-gallery' ) . '</label>',
 			array( $this, 'render_gallery_width_field' ),
 			'oli-variation-gallery-settings',
 			'oli_vig_gallery_section'
@@ -129,7 +130,7 @@ class Oli_VIG_Settings {
 
 		add_settings_field(
 			'preload_images',
-			__( 'Preload Images', 'oli-variation-images-gallery' ),
+			__( 'Preload Images', 'oli-variation-gallery' ),
 			array( $this, 'render_preload_images_field' ),
 			'oli-variation-gallery-settings',
 			'oli_vig_gallery_section'
@@ -137,81 +138,81 @@ class Oli_VIG_Settings {
 
 		add_settings_field(
 			'reset_on_clear',
-			__( 'Reset Gallery on Clear', 'oli-variation-images-gallery' ),
+			__( 'Reset Gallery on Clear', 'oli-variation-gallery' ),
 			array( $this, 'render_reset_on_clear_field' ),
-			'oli-variation-gallery-settings',
-			'oli_vig_gallery_section'
-		);
-
-		add_settings_field(
-			'thumbnail_mode',
-			__( 'Thumbnail Mode', 'oli-variation-images-gallery' ),
-			array( $this, 'render_thumbnail_mode_field' ),
-			'oli-variation-gallery-settings',
-			'oli_vig_gallery_section'
-		);
-
-		add_settings_field(
-			'transition_effect',
-			__( 'Transition Effect', 'oli-variation-images-gallery' ),
-			array( $this, 'render_transition_effect_field' ),
 			'oli-variation-gallery-settings',
 			'oli_vig_gallery_section'
 		);
 	}
 
 	/**
-	 * Sanitize settings
+	 * Sanitize settings.
 	 *
-	 * @param array $input Raw input data.
-	 * @return array
+	 * @param mixed $input Raw input data.
+	 * @return array<string,mixed>
 	 */
 	public function sanitize_settings( $input ) {
+		static $oli_vig_notice_added = false;
+		if ( ! $oli_vig_notice_added && function_exists( 'add_settings_error' ) ) {
+			// Stored by options.php and shown by settings_errors() after the redirect, so the page never reads $_GET.
+			add_settings_error(
+				'oli_vig_messages',
+				'oli_vig_message',
+				__( 'Settings saved successfully.', 'oli-variation-gallery' ),
+				'updated'
+			);
+			$oli_vig_notice_added = true;
+		}
+
+		return self::sanitize( $input );
+	}
+
+	/**
+	 * Sanitize settings without requiring an instance.
+	 *
+	 * @param mixed $input Raw input data.
+	 * @return array<string,mixed>
+	 */
+	public static function sanitize( $input ) {
+		if ( ! is_array( $input ) ) {
+			$input = array();
+		}
+
+		$defaults  = Oli_VIG_Main::get_default_settings();
 		$sanitized = array();
 
 		$sanitized['thumbnail_position'] = isset( $input['thumbnail_position'] ) && in_array( $input['thumbnail_position'], array( 'bottom', 'left', 'right' ), true )
 			? $input['thumbnail_position']
-			: 'bottom';
+			: $defaults['thumbnail_position'];
 
-		$sanitized['thumbnail_columns'] = isset( $input['thumbnail_columns'] ) ? max( 1, min( 8, intval( $input['thumbnail_columns'] ) ) ) : 4;
+		if ( isset( $input['thumbnail_columns'] ) ) {
+			$columns                        = absint( $input['thumbnail_columns'] );
+			$sanitized['thumbnail_columns'] = ( 0 === $columns ) ? 0 : max( 1, min( 8, $columns ) );
+		} else {
+			$sanitized['thumbnail_columns'] = $defaults['thumbnail_columns'];
+		}
 
 		$sanitized['enable_zoom'] = ! empty( $input['enable_zoom'] ) ? 'yes' : 'no';
 
 		$sanitized['enable_lightbox'] = ! empty( $input['enable_lightbox'] ) ? 'yes' : 'no';
 
-		$sanitized['gallery_width'] = isset( $input['gallery_width'] ) ? max( 50, min( 100, intval( $input['gallery_width'] ) ) ) : 100;
+		$sanitized['gallery_width'] = isset( $input['gallery_width'] )
+			? max( 50, min( 100, absint( $input['gallery_width'] ) ) )
+			: $defaults['gallery_width'];
 
 		$sanitized['preload_images'] = ! empty( $input['preload_images'] ) ? 'yes' : 'no';
 
 		$sanitized['reset_on_clear'] = ! empty( $input['reset_on_clear'] ) ? 'yes' : 'no';
 
-		$sanitized['thumbnail_mode'] = isset( $input['thumbnail_mode'] ) && in_array( $input['thumbnail_mode'], array( 'grid', 'slider' ), true )
-			? $input['thumbnail_mode']
-			: 'grid';
-
-		$sanitized['transition_effect'] = isset( $input['transition_effect'] ) && in_array( $input['transition_effect'], array( 'none', 'fade', 'slide' ), true )
-			? $input['transition_effect']
-			: 'none';
-
 		return $sanitized;
 	}
 
 	/**
-	 * Render settings page
+	 * Render settings page.
 	 */
 	public function render_settings_page() {
 		if ( ! current_user_can( 'manage_woocommerce' ) ) {
 			return;
-		}
-
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Display-only flag set by the Settings API after options.php.
-		if ( isset( $_GET['settings-updated'] ) ) {
-			add_settings_error(
-				'oli_vig_messages',
-				'oli_vig_message',
-				__( 'Settings saved successfully.', 'oli-variation-images-gallery' ),
-				'updated'
-			);
 		}
 
 		settings_errors( 'oli_vig_messages' );
@@ -230,137 +231,110 @@ class Oli_VIG_Settings {
 	}
 
 	/**
-	 * Render gallery section description
+	 * Render gallery section description.
 	 */
 	public function render_gallery_section() {
-		echo '<p>' . esc_html__( 'Configure how variation galleries are displayed on product pages.', 'oli-variation-images-gallery' ) . '</p>';
+		echo '<p>' . esc_html__( 'Configure how variation galleries are displayed on product pages. Zoom, lightbox, and the image slider use the default gallery.', 'oli-variation-gallery' ) . '</p>';
 	}
 
 	/**
-	 * Render thumbnail position field
+	 * Render thumbnail position field.
 	 */
 	public function render_thumbnail_position_field() {
 		$settings = Oli_VIG_Main::get_settings();
 		$value    = $settings['thumbnail_position'];
 		?>
 		<select name="oli_vig_settings[thumbnail_position]" id="oli_vig_thumbnail_position">
-			<option value="bottom" <?php selected( $value, 'bottom' ); ?>><?php esc_html_e( 'Bottom', 'oli-variation-images-gallery' ); ?></option>
-			<option value="left" <?php selected( $value, 'left' ); ?>><?php esc_html_e( 'Left', 'oli-variation-images-gallery' ); ?></option>
-			<option value="right" <?php selected( $value, 'right' ); ?>><?php esc_html_e( 'Right', 'oli-variation-images-gallery' ); ?></option>
+			<option value="bottom" <?php selected( $value, 'bottom' ); ?>><?php esc_html_e( 'Bottom', 'oli-variation-gallery' ); ?></option>
+			<option value="left" <?php selected( $value, 'left' ); ?>><?php esc_html_e( 'Left', 'oli-variation-gallery' ); ?></option>
+			<option value="right" <?php selected( $value, 'right' ); ?>><?php esc_html_e( 'Right', 'oli-variation-gallery' ); ?></option>
 		</select>
 		<?php
 	}
 
 	/**
-	 * Render thumbnail columns field
+	 * Render thumbnail columns field.
 	 */
 	public function render_thumbnail_columns_field() {
 		$settings = Oli_VIG_Main::get_settings();
-		$value    = intval( $settings['thumbnail_columns'] );
+		$value    = absint( $settings['thumbnail_columns'] );
 		?>
-		<input type="number" name="oli_vig_settings[thumbnail_columns]" id="oli_vig_thumbnail_columns"
-			value="<?php echo esc_attr( $value ); ?>" min="1" max="8" />
-		<p class="description"><?php esc_html_e( 'Number of thumbnail columns (1-8)', 'oli-variation-images-gallery' ); ?></p>
+		<select name="oli_vig_settings[thumbnail_columns]" id="oli_vig_thumbnail_columns">
+			<option value="0" <?php selected( $value, 0 ); ?>><?php esc_html_e( 'Theme default', 'oli-variation-gallery' ); ?></option>
+			<?php for ( $columns = 1; $columns <= 8; $columns++ ) : ?>
+				<option value="<?php echo esc_attr( (string) $columns ); ?>" <?php selected( $value, $columns ); ?>><?php echo esc_html( (string) $columns ); ?></option>
+			<?php endfor; ?>
+		</select>
+		<p class="description"><?php esc_html_e( 'Use the theme or WooCommerce default (for example Storefront uses 5), or choose 1–8.', 'oli-variation-gallery' ); ?></p>
 		<?php
 	}
 
 	/**
-	 * Render enable zoom field
+	 * Render enable zoom field.
 	 */
 	public function render_enable_zoom_field() {
 		$settings = Oli_VIG_Main::get_settings();
-		$checked  = 'yes' === $settings['enable_zoom'];
+		$checked  = ( 'yes' === $settings['enable_zoom'] );
 		?>
 		<label>
 			<input type="checkbox" name="oli_vig_settings[enable_zoom]" value="yes" <?php checked( $checked ); ?> />
-			<?php esc_html_e( 'Enable image zoom on hover', 'oli-variation-images-gallery' ); ?>
+			<?php esc_html_e( 'Use the default product image zoom.', 'oli-variation-gallery' ); ?>
 		</label>
 		<?php
 	}
 
 	/**
-	 * Render enable lightbox field
+	 * Render enable lightbox field.
 	 */
 	public function render_enable_lightbox_field() {
 		$settings = Oli_VIG_Main::get_settings();
-		$checked  = 'yes' === $settings['enable_lightbox'];
+		$checked  = ( 'yes' === $settings['enable_lightbox'] );
 		?>
 		<label>
 			<input type="checkbox" name="oli_vig_settings[enable_lightbox]" value="yes" <?php checked( $checked ); ?> />
-			<?php esc_html_e( 'Enable lightbox when clicking images', 'oli-variation-images-gallery' ); ?>
+			<?php esc_html_e( 'Use the default product image lightbox.', 'oli-variation-gallery' ); ?>
 		</label>
 		<?php
 	}
 
 	/**
-	 * Render gallery width field
+	 * Render gallery width field.
 	 */
 	public function render_gallery_width_field() {
 		$settings = Oli_VIG_Main::get_settings();
-		$value    = intval( $settings['gallery_width'] );
+		$value    = absint( $settings['gallery_width'] );
 		?>
 		<input type="number" name="oli_vig_settings[gallery_width]" id="oli_vig_gallery_width"
-			value="<?php echo esc_attr( $value ); ?>" min="50" max="100" />
-		<p class="description"><?php esc_html_e( 'Gallery width as percentage (50-100%)', 'oli-variation-images-gallery' ); ?></p>
+			value="<?php echo esc_attr( (string) $value ); ?>" min="50" max="100" />
+		<p class="description"><?php esc_html_e( 'Gallery width as a percentage (50-100%).', 'oli-variation-gallery' ); ?></p>
 		<?php
 	}
 
 	/**
-	 * Render preload images field
+	 * Render preload images field.
 	 */
 	public function render_preload_images_field() {
 		$settings = Oli_VIG_Main::get_settings();
-		$checked  = 'yes' === $settings['preload_images'];
+		$checked  = ( 'yes' === $settings['preload_images'] );
 		?>
 		<label>
 			<input type="checkbox" name="oli_vig_settings[preload_images]" value="yes" <?php checked( $checked ); ?> />
-			<?php esc_html_e( 'Preload variation images for faster switching', 'oli-variation-images-gallery' ); ?>
+			<?php esc_html_e( 'Preload variation images for faster switching.', 'oli-variation-gallery' ); ?>
 		</label>
 		<?php
 	}
 
 	/**
-	 * Render reset on clear field
+	 * Render reset on clear field.
 	 */
 	public function render_reset_on_clear_field() {
 		$settings = Oli_VIG_Main::get_settings();
-		$checked  = 'yes' === $settings['reset_on_clear'];
+		$checked  = ( 'yes' === $settings['reset_on_clear'] );
 		?>
 		<label>
 			<input type="checkbox" name="oli_vig_settings[reset_on_clear]" value="yes" <?php checked( $checked ); ?> />
-			<?php esc_html_e( 'Reset to parent gallery when variation is cleared', 'oli-variation-images-gallery' ); ?>
+			<?php esc_html_e( 'Reset to the main gallery when the variation is cleared.', 'oli-variation-gallery' ); ?>
 		</label>
-		<?php
-	}
-
-	/**
-	 * Render thumbnail mode field
-	 */
-	public function render_thumbnail_mode_field() {
-		$settings = Oli_VIG_Main::get_settings();
-		$value    = $settings['thumbnail_mode'];
-		?>
-		<select name="oli_vig_settings[thumbnail_mode]" id="oli_vig_thumbnail_mode">
-			<option value="grid" <?php selected( $value, 'grid' ); ?>><?php esc_html_e( 'Grid (static)', 'oli-variation-images-gallery' ); ?></option>
-			<option value="slider" <?php selected( $value, 'slider' ); ?>><?php esc_html_e( 'Slider (carousel)', 'oli-variation-images-gallery' ); ?></option>
-		</select>
-		<p class="description"><?php esc_html_e( 'Display thumbnails as a static grid or scrollable carousel', 'oli-variation-images-gallery' ); ?></p>
-		<?php
-	}
-
-	/**
-	 * Render transition effect field
-	 */
-	public function render_transition_effect_field() {
-		$settings = Oli_VIG_Main::get_settings();
-		$value    = $settings['transition_effect'];
-		?>
-		<select name="oli_vig_settings[transition_effect]" id="oli_vig_transition_effect">
-			<option value="none" <?php selected( $value, 'none' ); ?>><?php esc_html_e( 'None (instant)', 'oli-variation-images-gallery' ); ?></option>
-			<option value="fade" <?php selected( $value, 'fade' ); ?>><?php esc_html_e( 'Fade', 'oli-variation-images-gallery' ); ?></option>
-			<option value="slide" <?php selected( $value, 'slide' ); ?>><?php esc_html_e( 'Slide', 'oli-variation-images-gallery' ); ?></option>
-		</select>
-		<p class="description"><?php esc_html_e( 'Animation when switching between images', 'oli-variation-images-gallery' ); ?></p>
 		<?php
 	}
 }

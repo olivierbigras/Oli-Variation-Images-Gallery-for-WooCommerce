@@ -2,7 +2,7 @@
 /**
  * Uninstall cleanup.
  *
- * @package Oli_Variation_Images_Gallery
+ * @package Oli_Variation_Gallery
  */
 
 if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
@@ -13,3 +13,4 @@ delete_option( 'oli_vig_settings' );
 delete_option( 'oli_vig_version' );
 
 // Variation gallery image IDs (_oli_vig_gallery_images) are product content and are left in place.
+// See the FAQ "What happens to my variation galleries when I delete the plugin?" in readme.txt.

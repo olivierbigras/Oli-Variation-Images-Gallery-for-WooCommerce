@@ -1,13 +1,13 @@
 {
-    "name": "olivierbigras/oli-variation-images-gallery",
-    "description": "Add unlimited gallery images per product variation with thumbnail gallery, zoom, and lightbox support",
+    "name": "olivierbigras/oli-variation-gallery",
+    "description": "Add several gallery images per product variation and swap the default product gallery.",
     "type": "wordpress-plugin",
     "license": "GPL-2.0-or-later",
     "authors": [
         {
             "name": "Olivier Bigras",
             "email": "oli@olivierbigras.com",
-            "homepage": "https://olivierbigras.com"
+            "homepage": "https://github.com/olivierbigras"
         }
     ],
     "require": {
@@ -16,13 +16,13 @@
     "require-dev": {
         "dealerdirect/phpcodesniffer-composer-installer": "^1.0",
         "squizlabs/php_codesniffer": "^3.7",
-        "wp-coding-standards/wpcs": "^3.0"
+        "wp-coding-standards/wpcs": "^3.1"
     },
     "scripts": {
         "lint": "find . -path ./vendor -prune -o -name '*.php' -print0 | xargs -0 -n1 php -l",
         "phpcs": "phpcs",
         "phpcbf": "phpcbf",
-        "test": "php tests/test-importer.php && php tests/test-upgrade-migrate.php"
+        "test": "php tests/run.php"
     },
     "config": {
         "allow-plugins": {

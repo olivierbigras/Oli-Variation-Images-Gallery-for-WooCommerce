@@ -12,7 +12,7 @@ jobs:
 
     strategy:
       matrix:
-        php-version: ['7.4', '8.0', '8.1', '8.2']
+        php-version: ['7.4', '8.0', '8.1', '8.2', '8.3', '8.4']
 
     name: PHP ${{ matrix.php-version }} Checks
 
@@ -31,14 +31,35 @@ jobs:
       run: composer install --no-interaction --prefer-dist
 
     - name: PHP Lint
-      run: |
-        set -euo pipefail
-        while IFS= read -r -d '' file; do
-          php -l "$file"
-        done < <(find . -path ./vendor -prune -o -name '*.php' -print0)
+      run: composer lint
 
-    - name: Run PHPCS
+    - name: Run PHPCS WordPress-Extra
       run: vendor/bin/phpcs
 
-    - name: Importer unit tests
-      run: php tests/test-importer.php
+    - name: Unit tests
+      run: composer test
+
+  js-gallery:
+    runs-on: ubuntu-latest
+    name: Flexslider guard (Playwright)
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node
+      uses: actions/setup-node@v4
+      with:
+        node-version: '22'
+        cache: npm
+        cache-dependency-path: tests/e2e/package-lock.json
+
+    - name: Install Playwright
+      working-directory: tests/e2e
+      run: |
+        npm install
+        npx playwright install --with-deps chromium
+
+    - name: Run gallery JavaScript tests
+      working-directory: tests/e2e
+      run: npx playwright test

@@ -1,8 +1,8 @@
 <?php
 /**
- * Frontend functionality
+ * Frontend gallery integration.
  *
- * @package Oli_Variation_Images_Gallery
+ * @package Oli_Variation_Gallery
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -10,19 +10,19 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Frontend class
+ * Frontend class.
  */
 class Oli_VIG_Frontend {
 
 	/**
-	 * Single instance
+	 * Single instance.
 	 *
-	 * @var Oli_VIG_Frontend
+	 * @var Oli_VIG_Frontend|null
 	 */
 	private static $instance = null;
 
 	/**
-	 * Get instance
+	 * Get instance.
 	 *
 	 * @return Oli_VIG_Frontend
 	 */
@@ -30,78 +30,137 @@ class Oli_VIG_Frontend {
 		if ( is_null( self::$instance ) ) {
 			self::$instance = new self();
 		}
+
 		return self::$instance;
 	}
 
 	/**
-	 * Constructor
+	 * Constructor.
 	 */
 	private function __construct() {
 		add_filter( 'woocommerce_available_variation', array( $this, 'add_variation_gallery_data' ), 10, 3 );
 		add_filter( 'woocommerce_single_product_image_gallery_classes', array( $this, 'gallery_classes' ) );
+		add_filter( 'woocommerce_product_thumbnails_columns', array( $this, 'thumbnail_columns' ) );
+		add_filter( 'woocommerce_single_product_zoom_enabled', array( $this, 'filter_zoom_enabled' ) );
+		add_filter( 'woocommerce_single_product_photoswipe_enabled', array( $this, 'filter_lightbox_enabled' ) );
+		add_filter( 'woocommerce_gallery_image_html_attachment_image_params', array( $this, 'gallery_image_attrs' ), 10, 4 );
 	}
 
 	/**
-	 * Add layout classes to the WooCommerce gallery wrapper.
+	 * Add layout classes to the default gallery wrapper.
 	 *
 	 * @param array $classes Gallery classes.
 	 * @return array
 	 */
 	public function gallery_classes( $classes ) {
 		$settings = Oli_VIG_Main::get_settings();
-
-		$columns = max( 1, min( 8, intval( $settings['thumbnail_columns'] ) ) );
+		$columns  = absint( $settings['thumbnail_columns'] );
 
 		$classes[] = 'oli-vig-gallery';
 		$classes[] = 'oli-vig-thumbs-' . sanitize_html_class( $settings['thumbnail_position'] );
-		$classes[] = 'oli-vig-thumbs-mode-' . sanitize_html_class( $settings['thumbnail_mode'] );
-		$classes[] = 'oli-vig-transition-' . sanitize_html_class( $settings['transition_effect'] );
-		$classes[] = 'oli-vig-columns-' . $columns;
 
-		if ( 'yes' === $settings['enable_zoom'] ) {
-			$classes[] = 'oli-vig-zoom-enabled';
+		if ( $columns >= 1 ) {
+			$classes[] = 'oli-vig-columns-' . max( 1, min( 8, $columns ) );
 		}
 
 		return $classes;
 	}
 
 	/**
-	 * Add variation gallery data to available variations
+	 * Thumbnail column count for the default gallery.
 	 *
-	 * @param array                $data Variation data.
-	 * @param WC_Product           $product Product object.
+	 * @param int $columns Current columns.
+	 * @return int
+	 */
+	public function thumbnail_columns( $columns ) {
+		$settings = Oli_VIG_Main::get_settings();
+		$set      = absint( $settings['thumbnail_columns'] );
+
+		if ( $set < 1 ) {
+			return $columns;
+		}
+
+		return max( 1, min( 8, $set ) );
+	}
+
+	/**
+	 * Map the zoom setting onto the default gallery.
+	 *
+	 * @param bool $enabled Whether zoom is enabled.
+	 * @return bool
+	 */
+	public function filter_zoom_enabled( $enabled ) {
+		if ( ! function_exists( 'is_product' ) || ! is_product() ) {
+			return $enabled;
+		}
+
+		$settings = Oli_VIG_Main::get_settings();
+		return ( 'yes' === $settings['enable_zoom'] );
+	}
+
+	/**
+	 * Map the lightbox setting onto the default Photoswipe gallery.
+	 *
+	 * @param bool $enabled Whether Photoswipe is enabled.
+	 * @return bool
+	 */
+	public function filter_lightbox_enabled( $enabled ) {
+		if ( ! function_exists( 'is_product' ) || ! is_product() ) {
+			return $enabled;
+		}
+
+		$settings = Oli_VIG_Main::get_settings();
+		return ( 'yes' === $settings['enable_lightbox'] );
+	}
+
+	/**
+	 * Add variation gallery data to available variations.
+	 *
+	 * @param array                $data      Variation data.
+	 * @param WC_Product           $product   Product object.
 	 * @param WC_Product_Variation $variation Variation object.
 	 * @return array
 	 */
 	public function add_variation_gallery_data( $data, $product, $variation ) {
-		$variation_id = $variation->get_id();
-		$image_ids    = Oli_VIG_Main::get_variation_gallery_images( $variation_id );
+		unset( $product );
 
-		$gallery_images = array();
+		$data['oli_vig_gallery'] = Oli_VIG_Images::get_variation_gallery( $variation );
 
-		if ( ! empty( $image_ids ) ) {
-			foreach ( $image_ids as $image_id ) {
-				$image_url = wp_get_attachment_image_url( $image_id, 'woocommerce_single' );
-				$thumb_url = wp_get_attachment_image_url( $image_id, 'woocommerce_thumbnail' );
-				$full_url  = wp_get_attachment_image_url( $image_id, 'full' );
+		return $data;
+	}
 
-				if ( $image_url ) {
-					$gallery_images[] = array(
-						'id'     => $image_id,
-						'url'    => $image_url,
-						'thumb'  => $thumb_url ? $thumb_url : $image_url,
-						'full'   => $full_url ? $full_url : $image_url,
-						'alt'    => sanitize_text_field( (string) get_post_meta( $image_id, '_wp_attachment_image_alt', true ) ),
-						'title'  => sanitize_text_field( get_the_title( $image_id ) ),
-						'srcset' => wp_get_attachment_image_srcset( $image_id, 'woocommerce_single' ),
-						'sizes'  => wp_get_attachment_image_sizes( $image_id, 'woocommerce_single' ),
-					);
-				}
+	/**
+	 * Give gallery images an accessible name when the attachment alt is empty.
+	 *
+	 * @param array  $params        Image attributes.
+	 * @param int    $attachment_id Attachment ID.
+	 * @param string $image_size    Image size.
+	 * @param bool   $main_image    Whether this is the main image.
+	 * @return array
+	 */
+	public function gallery_image_attrs( $params, $attachment_id, $image_size, $main_image ) {
+		unset( $image_size, $main_image );
+
+		if ( ! is_array( $params ) ) {
+			$params = array();
+		}
+
+		if ( ! empty( $params['alt'] ) ) {
+			return $params;
+		}
+
+		$title = '';
+		if ( function_exists( 'get_the_title' ) ) {
+			$title = (string) get_the_title( $attachment_id );
+			if ( '' === $title && function_exists( 'is_product' ) && is_product() ) {
+				$title = (string) get_the_title();
 			}
 		}
 
-		$data['oli_vig_gallery'] = $gallery_images;
+		if ( '' !== $title ) {
+			$params['alt'] = $title;
+		}
 
-		return $data;
+		return $params;
 	}
 }

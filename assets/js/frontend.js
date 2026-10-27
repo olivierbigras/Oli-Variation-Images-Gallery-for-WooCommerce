@@ -1,33 +1,68 @@
 /**
- * Frontend scripts
+ * Frontend scripts — swap the default product gallery for a variation.
  *
- * @package Oli_Variation_Images_Gallery
+ * @package Oli_Variation_Gallery
  */
 
 (function($) {
 	'use strict';
 
 	var OliVIG = {
-		currentGallery: [],
-		currentIndex: 0,
 		originalGallery: [],
-		lightboxOpen: false,
-		touchStartX: 0,
-		touchEndX: 0,
+		currentGallery: [],
+		renderedSignature: '',
 
 		init: function() {
 			if (typeof oliVigSettings === 'undefined') {
 				return;
 			}
 
-			this.bindEvents();
+			this.guardWooCommerceSlider();
 			this.storeOriginalGallery();
+			this.renderedSignature = this.gallerySignature(this.originalGallery);
 			this.applyLayout();
-			this.initTouchSupport();
+			this.bindEvents();
+			this.bindViewport();
+			this.preloadVariationImages();
+			this.enhanceWhenReady();
+		},
+
+		gallery: function() {
+			return $('.woocommerce-product-gallery').first();
+		},
+
+		prefersReducedMotion: function() {
+			return !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+		},
+
+		isNarrowViewport: function() {
+			return !!(window.matchMedia && window.matchMedia('(max-width: 767px)').matches);
+		},
+
+		resolvedPosition: function() {
+			var position = oliVigSettings.thumbnailPosition || 'bottom';
+			if (this.isNarrowViewport() && (position === 'left' || position === 'right')) {
+				return 'bottom';
+			}
+			return position;
+		},
+
+		viewImageLabel: function(index, total) {
+			var template = (oliVigSettings.i18n && oliVigSettings.i18n.viewImage) ? oliVigSettings.i18n.viewImage : 'View image %1$d of %2$d';
+			return template.replace('%1$d', String(index)).replace('%2$d', String(total));
+		},
+
+		gallerySignature: function(images) {
+			if (!images || !images.length) {
+				return '';
+			}
+			return $.map(images, function(image) {
+				return String(image.id || 0) + ':' + (image.full_src || image.src || '');
+			}).join('|');
 		},
 
 		applyLayout: function() {
-			var $gallery = $('.woocommerce-product-gallery');
+			var $gallery = this.gallery();
 			if (!$gallery.length) {
 				return;
 			}
@@ -37,523 +72,555 @@
 				width = 100;
 			}
 			width = Math.max(50, Math.min(100, width));
-			document.documentElement.style.setProperty('--oli-vig-gallery-width', width + '%');
+			$gallery[0].style.setProperty('--oli-vig-gallery-width', width + '%');
 
 			var columns = parseInt(oliVigSettings.thumbnailColumns, 10);
 			if (isNaN(columns)) {
-				columns = 4;
-			}
-			columns = Math.max(1, Math.min(8, columns));
-			$gallery.removeClass(function(index, className) {
-				return (className.match(/(^|\s)oli-vig-columns-\S+/g) || []).join(' ');
-			});
-			$gallery.addClass('oli-vig-columns-' + columns);
-
-			$gallery.removeClass('oli-vig-transition-fade oli-vig-transition-slide oli-vig-transition-none');
-			$gallery.addClass('oli-vig-transition-' + (oliVigSettings.transitionEffect || 'none'));
-
-			if (oliVigSettings.enableZoom) {
-				$gallery.addClass('oli-vig-zoom-enabled');
+				columns = 0;
 			}
 
-			var $thumbs = $gallery.find('.flex-control-thumbs, ol.flex-control-nav');
-			var position = oliVigSettings.thumbnailPosition || 'bottom';
-			var useSlider = oliVigSettings.thumbnailMode === 'slider' || position === 'left' || position === 'right';
-
-			$thumbs.removeClass('mode-slider mode-grid position-bottom position-left position-right');
-			$thumbs.addClass('position-' + position);
-			$thumbs.addClass(useSlider ? 'mode-slider' : 'mode-grid');
-
-			if (useSlider) {
-				this.initThumbnailSlider($thumbs);
-			}
-		},
-
-		initThumbnailSlider: function($thumbs) {
-			if (!$thumbs.length || $thumbs.parent().hasClass('oli-vig-thumbs-slider-wrap')) {
-				return;
+			if (columns >= 1) {
+				columns = Math.max(1, Math.min(8, columns));
+				$gallery.removeClass(function(index, className) {
+					return (className.match(/(^|\s)(oli-vig-columns-|columns-|woocommerce-product-gallery--columns-)\S+/g) || []).join(' ');
+				});
+				$gallery.addClass('oli-vig-columns-' + columns);
+				$gallery.addClass('columns-' + columns);
+				$gallery.addClass('woocommerce-product-gallery--columns-' + columns);
+				$gallery.attr('data-columns', columns);
 			}
 
-			$thumbs.wrap('<div class="oli-vig-thumbs-slider-wrap"></div>');
-			var $wrap = $thumbs.parent();
-			var labels = oliVigSettings.i18n || {};
-			$wrap.prepend($('<button/>', {
-				type: 'button',
-				'class': 'oli-vig-slider-arrow prev',
-				'aria-label': labels.previous || 'Previous'
-			}).html('&lsaquo;'));
-			$wrap.append($('<button/>', {
-				type: 'button',
-				'class': 'oli-vig-slider-arrow next',
-				'aria-label': labels.next || 'Next'
-			}).html('&rsaquo;'));
-
-			$wrap.on('click', '.oli-vig-slider-arrow.prev', function(e) {
-				e.preventDefault();
-				OliVIG.scrollThumbnails($thumbs, -1);
-			});
-			$wrap.on('click', '.oli-vig-slider-arrow.next', function(e) {
-				e.preventDefault();
-				OliVIG.scrollThumbnails($thumbs, 1);
-			});
-		},
-
-		scrollThumbnails: function($thumbs, direction) {
-			var vertical = $thumbs.hasClass('position-left') || $thumbs.hasClass('position-right');
-			var amount = 120 * direction;
-			if (vertical) {
-				$thumbs.stop().animate({ scrollTop: $thumbs.scrollTop() + amount }, 200);
-			} else {
-				$thumbs.stop().animate({ scrollLeft: $thumbs.scrollLeft() + amount }, 200);
-			}
+			$gallery.addClass('oli-vig-gallery');
+			$gallery.removeClass('oli-vig-thumbs-bottom oli-vig-thumbs-left oli-vig-thumbs-right');
+			$gallery.addClass('oli-vig-thumbs-' + this.resolvedPosition());
 		},
 
 		bindEvents: function() {
 			var self = this;
 
-			// Variation change
-			$('.variations_form').on('found_variation', function(event, variation) {
+			$(document.body).on('found_variation.oli-vig', '.variations_form', function(event, variation) {
 				self.onVariationChange(variation);
 			});
 
-			// Variation reset
-			$('.variations_form').on('reset_data', function() {
+			$(document.body).on('reset_data.oli-vig hide_variation.oli-vig', '.variations_form', function() {
 				if (oliVigSettings.resetOnClear) {
 					self.resetToOriginalGallery();
 				}
 			});
+		},
 
-			// Zoom
-			if (oliVigSettings.enableZoom) {
-				$(document).on('click', '.woocommerce-product-gallery__image', function(e) {
-					if ($(this).hasClass('zoomed')) {
-						$(this).removeClass('zoomed');
-					} else {
-						$('.woocommerce-product-gallery__image').removeClass('zoomed');
-						$(this).addClass('zoomed');
-					}
-				});
+		bindViewport: function() {
+			var self = this;
+			if (!window.matchMedia) {
+				return;
 			}
 
-			// Lightbox
-			if (oliVigSettings.enableLightbox) {
-				this.initLightbox();
+			var media = window.matchMedia('(max-width: 767px)');
+			var onChange = function() {
+				self.applyLayout();
+				if (self.currentGallery.length) {
+					self.renderedSignature = '';
+					self.renderGallery(self.currentGallery);
+				}
+			};
+
+			if (typeof media.addEventListener === 'function') {
+				media.addEventListener('change', onChange);
+			} else if (typeof media.addListener === 'function') {
+				media.addListener(onChange);
 			}
+		},
+
+		readSlide: function($slide) {
+			var $img = $slide.find('img').first();
+			var $link = $slide.find('a').first();
+			var full = $img.attr('data-large_image') || $link.attr('href') || $img.attr('src') || '';
+
+			return {
+				id: parseInt($img.attr('data-id') || $slide.attr('data-attachment-id') || '0', 10) || 0,
+				src: $img.attr('src') || '',
+				src_w: parseInt($img.attr('width') || '0', 10) || 0,
+				src_h: parseInt($img.attr('height') || '0', 10) || 0,
+				srcset: $img.attr('srcset') || '',
+				sizes: $img.attr('sizes') || '',
+				full_src: full,
+				full_src_w: parseInt($img.attr('data-large_image_width') || '0', 10) || 0,
+				full_src_h: parseInt($img.attr('data-large_image_height') || '0', 10) || 0,
+				thumb_src: $slide.attr('data-thumb') || $img.attr('src') || '',
+				thumb_src_w: 0,
+				thumb_src_h: 0,
+				alt: $img.attr('alt') || '',
+				title: $img.attr('title') || '',
+				thumb_alt: $slide.attr('data-thumb-alt') || $img.attr('alt') || ''
+			};
 		},
 
 		storeOriginalGallery: function() {
 			var self = this;
 			this.originalGallery = [];
 
-			$('.woocommerce-product-gallery__wrapper .woocommerce-product-gallery__image').each(function() {
-				var $img = $(this).find('img');
-				var imgData = {
-					url: $img.attr('src'),
-					full: $(this).find('a').attr('href') || $img.attr('src'),
-					alt: $img.attr('alt'),
-					title: $img.attr('title'),
-					srcset: $img.attr('srcset'),
-					sizes: $img.attr('sizes')
-				};
-				self.originalGallery.push(imgData);
+			this.gallery().find('.woocommerce-product-gallery__image').each(function() {
+				self.originalGallery.push(self.readSlide($(this)));
 			});
+
+			this.currentGallery = this.originalGallery.slice();
+		},
+
+		normalizeVariationImage: function(image) {
+			if (!image || typeof image !== 'object') {
+				return null;
+			}
+
+			var src = image.src || image.url || '';
+			var full = image.full_src || image.full || src;
+			if (!src && !full) {
+				return null;
+			}
+
+			return {
+				id: parseInt(image.id || image.image_id || '0', 10) || 0,
+				src: src || full,
+				src_w: parseInt(image.src_w || '0', 10) || 0,
+				src_h: parseInt(image.src_h || '0', 10) || 0,
+				srcset: image.srcset || '',
+				sizes: image.sizes || '',
+				full_src: full || src,
+				full_src_w: parseInt(image.full_src_w || '0', 10) || 0,
+				full_src_h: parseInt(image.full_src_h || '0', 10) || 0,
+				thumb_src: image.gallery_thumbnail_src || image.thumb_src || image.thumb || src || full,
+				thumb_src_w: parseInt(image.gallery_thumbnail_src_w || image.thumb_src_w || '0', 10) || 0,
+				thumb_src_h: parseInt(image.gallery_thumbnail_src_h || image.thumb_src_h || '0', 10) || 0,
+				alt: image.alt || '',
+				title: image.title || '',
+				thumb_alt: image.alt || ''
+			};
+		},
+
+		galleryFromVariationImage: function(variation) {
+			var images = this.originalGallery.slice();
+			var image = this.normalizeVariationImage(variation && variation.image);
+
+			if (!image) {
+				return images;
+			}
+
+			if (images.length) {
+				images[0] = image;
+				return images;
+			}
+
+			return [image];
 		},
 
 		onVariationChange: function(variation) {
-			if (!variation.oli_vig_gallery || variation.oli_vig_gallery.length === 0) {
-				if (oliVigSettings.resetOnClear) {
-					this.resetToOriginalGallery();
-				}
+			if (!variation) {
 				return;
 			}
 
-			this.replaceGallery(variation.oli_vig_gallery);
+			if (variation.oli_vig_gallery && variation.oli_vig_gallery.length) {
+				this.replaceGallery(variation.oli_vig_gallery);
+				return;
+			}
+
+			// Extra gallery is empty or omitted: keep native behaviour (variation image + parent thumbs).
+			// found_variation already includes image + oli_vig_gallery, so do not AJAX.
+			this.replaceGallery(this.galleryFromVariationImage(variation));
 		},
 
 		replaceGallery: function(images) {
-			if (!images || images.length === 0) {
+			if (!images || !images.length) {
 				return;
 			}
 
-			var $gallery = $('.woocommerce-product-gallery__wrapper');
-			var $mainImage = $('.woocommerce-product-gallery__image').first();
-
-			// Replace main image
-			var firstImage = images[0];
-			var $img = $mainImage.find('img');
-			var $link = $mainImage.find('a');
-
-			$img.attr('src', firstImage.url);
-			$img.attr('alt', firstImage.alt || '');
-			$img.attr('title', firstImage.title || '');
-
-			if (firstImage.srcset) {
-				$img.attr('srcset', firstImage.srcset);
-			}
-			if (firstImage.sizes) {
-				$img.attr('sizes', firstImage.sizes);
-			}
-
-			if ($link.length) {
-				$link.attr('href', firstImage.full);
-			}
-
-			// Update thumbnails if they exist
-			this.updateThumbnails(images);
-
-			// Store current gallery for lightbox
 			this.currentGallery = images;
-			this.currentIndex = 0;
-
-			// Trigger zoom update if enabled
-			if (typeof $.fn.zoom !== 'undefined' && oliVigSettings.enableZoom) {
-				$gallery.trigger('zoom.destroy');
-				$gallery.zoom();
-			}
-		},
-
-		updateThumbnails: function(images) {
-			var $thumbsContainer = $('.flex-control-thumbs, .woocommerce-product-gallery__thumbnails');
-			
-			if ($thumbsContainer.length === 0) {
-				return;
-			}
-
-			$thumbsContainer.empty();
-
-			// Add slider/grid mode class
-			if (oliVigSettings.thumbnailMode === 'slider') {
-				$thumbsContainer.addClass('mode-slider');
-			} else {
-				$thumbsContainer.removeClass('mode-slider');
-			}
-
-			// Add transition effect class
-			var $gallery = $('.woocommerce-product-gallery');
-			$gallery.removeClass('oli-vig-transition-fade oli-vig-transition-slide');
-			if (oliVigSettings.transitionEffect === 'fade') {
-				$gallery.addClass('oli-vig-transition-fade');
-			} else if (oliVigSettings.transitionEffect === 'slide') {
-				$gallery.addClass('oli-vig-transition-slide');
-			}
-
-			$.each(images, function(index, image) {
-				var $thumb = $('<li/>').append($('<img/>', {
-					src: image.thumb,
-					alt: image.alt || ''
-				}));
-				$thumbsContainer.append($thumb);
-			});
-
-			// Bind thumbnail clicks
-			var self = this;
-			$thumbsContainer.find('img').on('click', function() {
-				var index = $(this).parent().index();
-				self.showImage(index);
-			});
-		},
-
-		showImage: function(index) {
-			if (!this.currentGallery[index]) {
-				return;
-			}
-
-			var image = this.currentGallery[index];
-			var $mainImage = $('.woocommerce-product-gallery__image').first();
-			var $img = $mainImage.find('img');
-			var $link = $mainImage.find('a');
-			var self = this;
-
-			// Apply transition effect
-			var transitionEffect = oliVigSettings.transitionEffect || 'none';
-
-			if (transitionEffect === 'fade') {
-				// Fade out, change image, fade in
-				$img.addClass('oli-vig-fading-out');
-				setTimeout(function() {
-					$img.attr('src', image.url);
-					$img.attr('alt', image.alt || '');
-
-					if (image.srcset) {
-						$img.attr('srcset', image.srcset);
-					}
-					if (image.sizes) {
-						$img.attr('sizes', image.sizes);
-					}
-
-					if ($link.length) {
-						$link.attr('href', image.full);
-					}
-
-					$img.removeClass('oli-vig-fading-out').addClass('oli-vig-fading-in');
-					setTimeout(function() {
-						$img.removeClass('oli-vig-fading-in');
-					}, 300);
-				}, 300);
-			} else if (transitionEffect === 'slide') {
-				// Determine slide direction
-				var direction = index > self.currentIndex ? 'left' : 'right';
-				
-				// Slide out current image
-				$img.addClass('oli-vig-slide-out-' + direction);
-				setTimeout(function() {
-					$img.attr('src', image.url);
-					$img.attr('alt', image.alt || '');
-
-					if (image.srcset) {
-						$img.attr('srcset', image.srcset);
-					}
-					if (image.sizes) {
-						$img.attr('sizes', image.sizes);
-					}
-
-					if ($link.length) {
-						$link.attr('href', image.full);
-					}
-
-					// Slide in new image from opposite direction
-					var slideInClass = 'oli-vig-slide-in-' + (direction === 'left' ? 'right' : 'left');
-					$img.removeClass('oli-vig-slide-out-left oli-vig-slide-out-right').addClass(slideInClass);
-					setTimeout(function() {
-						$img.removeClass('oli-vig-slide-in-left oli-vig-slide-in-right');
-					}, 400);
-				}, 400);
-			} else {
-				// No transition - instant change
-				$img.attr('src', image.url);
-				$img.attr('alt', image.alt || '');
-
-				if (image.srcset) {
-					$img.attr('srcset', image.srcset);
-				}
-				if (image.sizes) {
-					$img.attr('sizes', image.sizes);
-				}
-
-				if ($link.length) {
-					$link.attr('href', image.full);
-				}
-			}
-
-			this.currentIndex = index;
-
-			// Update active thumbnail
-			var $thumbs = $('.flex-control-thumbs, .woocommerce-product-gallery__thumbnails, ol.flex-control-nav');
-			$thumbs.find('li')
-				.removeClass('active')
-				.eq(index)
-				.addClass('active');
-
-			var $active = $thumbs.find('li').eq(index);
-			if ($active.length && $thumbs.hasClass('mode-slider')) {
-				var vertical = $thumbs.hasClass('position-left') || $thumbs.hasClass('position-right');
-				if (vertical) {
-					$thumbs.stop().animate({
-						scrollTop: $thumbs.scrollTop() + $active.position().top - 8
-					}, 200);
-				} else {
-					$thumbs.stop().animate({
-						scrollLeft: $thumbs.scrollLeft() + $active.position().left - 8
-					}, 200);
-				}
-			}
+			this.renderGallery(images);
 		},
 
 		resetToOriginalGallery: function() {
-			if (this.originalGallery.length === 0) {
+			if (!this.originalGallery.length) {
 				return;
 			}
 
-			var $gallery = $('.woocommerce-product-gallery__wrapper');
-			var $mainImage = $('.woocommerce-product-gallery__image').first();
-			var firstImage = this.originalGallery[0];
-
-			var $img = $mainImage.find('img');
-			var $link = $mainImage.find('a');
-
-			$img.attr('src', firstImage.url);
-			$img.attr('alt', firstImage.alt || '');
-			$img.attr('title', firstImage.title || '');
-
-			if (firstImage.srcset) {
-				$img.attr('srcset', firstImage.srcset);
-			}
-			if (firstImage.sizes) {
-				$img.attr('sizes', firstImage.sizes);
-			}
-
-			if ($link.length) {
-				$link.attr('href', firstImage.full);
-			}
-
-			this.updateThumbnails(this.originalGallery);
-			this.currentGallery = this.originalGallery;
-			this.currentIndex = 0;
+			this.currentGallery = this.originalGallery.slice();
+			this.renderGallery(this.currentGallery);
 		},
 
-		initLightbox: function() {
-			var self = this;
-
-			// Create lightbox markup if it doesn't exist
-			if ($('.oli-vig-lightbox').length === 0) {
-				var labels = oliVigSettings.i18n || {};
-				var $lightbox = $('<div/>', { 'class': 'oli-vig-lightbox' });
-				var $content = $('<div/>', { 'class': 'oli-vig-lightbox-content' });
-				$content.append($('<button/>', {
-					type: 'button',
-					'class': 'oli-vig-lightbox-close',
-					'aria-label': labels.close || 'Close'
-				}).html('&times;'));
-				$content.append($('<button/>', {
-					type: 'button',
-					'class': 'oli-vig-lightbox-prev',
-					'aria-label': labels.previous || 'Previous'
-				}).html('&lsaquo;'));
-				$content.append($('<button/>', {
-					type: 'button',
-					'class': 'oli-vig-lightbox-next',
-					'aria-label': labels.next || 'Next'
-				}).html('&rsaquo;'));
-				$content.append($('<img/>', {
-					'class': 'oli-vig-lightbox-image',
-					src: '',
-					alt: ''
-				}));
-				$lightbox.append($content);
-				$('body').append($lightbox);
+		closePhotoswipe: function() {
+			var $pswp = $('.pswp');
+			if (!$pswp.length) {
+				return;
 			}
 
-			// Open lightbox on image click
-			$(document).on('click', '.woocommerce-product-gallery__image a', function(e) {
-				e.preventDefault();
-				var index = $(this).closest('.woocommerce-product-gallery__image').index();
-				self.openLightbox(index);
+			$pswp.removeClass('pswp--open pswp--animate_opacity pswp--visible pswp--zoom-allowed pswp--notouch');
+			$pswp.attr('aria-hidden', 'true');
+			$('body').removeClass('pswp-open');
+		},
+
+		hasFlexslider: function($el) {
+			return !!( $el && $el.length && $el.data('flexslider') );
+		},
+
+		/**
+		 * WooCommerce 11.2 calls flexslider(0) from onResetSlidePosition after
+		 * reset_data / found_variation (20ms timeout). We rebuild the gallery
+		 * and drop the FlexSlider instance, so guard those calls.
+		 */
+		guardWooCommerceSlider: function() {
+			this.guardFlexsliderCommands();
+			this.guardSlidePositionReset();
+		},
+
+		guardFlexsliderCommands: function() {
+			if (typeof $.fn.flexslider !== 'function' || $.fn.flexslider._oliVigGuarded) {
+				return;
+			}
+
+			var original = $.fn.flexslider;
+			var guarded = function(options) {
+				if (options !== undefined && typeof options !== 'object') {
+					var missing = !this.length;
+					this.each(function() {
+						if ($(this).data('flexslider') === undefined) {
+							missing = true;
+							return false;
+						}
+					});
+					if (missing) {
+						return this;
+					}
+				}
+				return original.apply(this, arguments);
+			};
+
+			$.extend(guarded, original);
+			guarded._oliVigGuarded = true;
+			$.fn.flexslider = guarded;
+		},
+
+		guardSlidePositionReset: function() {
+			if (typeof $.fn.wc_maybe_trigger_slide_position_reset !== 'function' || $.fn.wc_maybe_trigger_slide_position_reset._oliVigGuarded) {
+				return;
+			}
+
+			var original = $.fn.wc_maybe_trigger_slide_position_reset;
+			var self = this;
+			var guarded = function(variation) {
+				var $gallery = $(this).closest('.product').find('.woocommerce-product-gallery').first();
+				if ($gallery.hasClass('oli-vig-gallery') && !self.hasFlexslider($gallery)) {
+					var imageId = variation && variation.image_id ? variation.image_id : '';
+					$(this).attr('current-image', imageId);
+					return this;
+				}
+				return original.apply(this, arguments);
+			};
+
+			$.extend(guarded, original);
+			guarded._oliVigGuarded = true;
+			$.fn.wc_maybe_trigger_slide_position_reset = guarded;
+		},
+
+		destroyGallery: function($gallery) {
+			this.closePhotoswipe();
+
+			$gallery.off('.wc-product-gallery');
+			$gallery.off('.oli-vig');
+			$gallery.off('click');
+			// WooCommerce binds these without a namespace; leftover handlers
+			// call flexslider(0) after we have removed the instance.
+			$gallery.off('woocommerce_gallery_reset_slide_position');
+			$gallery.off('woocommerce_gallery_init_zoom');
+			$gallery.find('.woocommerce-product-gallery__image a').off('click');
+			$gallery.find('.woocommerce-product-gallery__trigger').off('click').remove();
+
+			$gallery.find('.woocommerce-product-gallery__image').each(function() {
+				var $image = $(this);
+				$image.trigger('zoom.destroy');
+				$image.removeData('zoom');
+			});
+			$gallery.find('.zoomImg').remove();
+
+			if ($gallery.data('flexslider')) {
+				try {
+					$gallery.flexslider('destroy');
+				} catch (e) {
+					// Theme galleries may not expose a destroy method.
+				}
+				$gallery.removeData('flexslider');
+			}
+
+			$gallery.find('.flex-viewport').children().unwrap();
+			$gallery.find('ol.flex-control-nav, ul.flex-direction-nav').remove();
+			$gallery.removeClass('flexslider');
+			$gallery.removeData('wc_product_gallery');
+		},
+
+		fallbackAlt: function(image, index, total) {
+			if (image && image.alt) {
+				return image.alt;
+			}
+			if (image && image.thumb_alt) {
+				return image.thumb_alt;
+			}
+			if (oliVigSettings.productName) {
+				return oliVigSettings.productName + ', image ' + String(index);
+			}
+			return this.viewImageLabel(index, total);
+		},
+
+		buildSlide: function(image, isFirst, index, total) {
+			var alt = this.fallbackAlt(image, index, total);
+			var label = this.viewImageLabel(index, total);
+			var $img = $('<img/>', {
+				src: image.src || image.url || '',
+				alt: alt,
+				title: image.title || '',
+				'class': isFirst ? 'wp-post-image' : '',
+				'data-src': image.src || image.url || '',
+				'data-large_image': image.full_src || image.full || image.src || '',
+				'data-large_image_width': image.full_src_w || '',
+				'data-large_image_height': image.full_src_h || ''
 			});
 
-			// Close lightbox
-			$(document).on('click', '.oli-vig-lightbox-close, .oli-vig-lightbox', function(e) {
-				if ($(e.target).hasClass('oli-vig-lightbox') || $(e.target).hasClass('oli-vig-lightbox-close')) {
-					self.closeLightbox();
+			if (image.src_w) {
+				$img.attr('width', image.src_w);
+			}
+			if (image.src_h) {
+				$img.attr('height', image.src_h);
+			}
+			if (image.srcset) {
+				$img.attr('srcset', image.srcset);
+			}
+			if (image.sizes) {
+				$img.attr('sizes', image.sizes);
+			}
+
+			var $anchor = $('<a/>', {
+				href: image.full_src || image.full || image.src || '',
+				'aria-label': label
+			}).append($img);
+
+			return $('<div/>', {
+				'class': 'woocommerce-product-gallery__image',
+				'data-thumb': image.thumb_src || image.thumb || image.src || '',
+				'data-thumb-alt': alt
+			}).append($anchor);
+		},
+
+		enhanceWhenReady: function() {
+			var self = this;
+			var attempts = 0;
+			var tick = function() {
+				var $gallery = self.gallery();
+				if ($gallery.length && $gallery.find('.flex-control-thumbs li, .woocommerce-product-gallery__image').length) {
+					self.enhanceAccessibility($gallery);
+					return;
+				}
+				attempts += 1;
+				if (attempts < 20) {
+					window.setTimeout(tick, 50);
+				}
+			};
+			tick();
+		},
+
+		enhanceAccessibility: function($gallery) {
+			var self = this;
+			var $slides = $gallery.find('.woocommerce-product-gallery__image');
+			var slideTotal = $slides.length;
+
+			$slides.each(function(index) {
+				var $slide = $(this);
+				var $img = $slide.find('img').first();
+				var $link = $slide.find('a').first();
+				var number = index + 1;
+				var label = self.viewImageLabel(number, slideTotal);
+				var alt = $img.attr('alt') || '';
+
+				if (!alt) {
+					alt = oliVigSettings.productName ? (oliVigSettings.productName + ', image ' + String(number)) : label;
+					$img.attr('alt', alt);
+					if (!$slide.attr('data-thumb-alt')) {
+						$slide.attr('data-thumb-alt', alt);
+					}
+				}
+
+				if ($link.length) {
+					$link.attr('aria-label', label);
 				}
 			});
 
-			// Previous/Next buttons
-			$(document).on('click', '.oli-vig-lightbox-prev', function(e) {
-				e.stopPropagation();
-				self.lightboxPrev();
+			var $thumbs = $gallery.find('.flex-control-thumbs li');
+			$thumbs.each(function(index) {
+				var $item = $(this);
+				var $img = $item.find('img').first();
+				var $button = $item.children('button.oli-vig-thumb');
+				var number = index + 1;
+				var total = $thumbs.length;
+				var label = self.viewImageLabel(number, total);
+
+				$item.removeAttr('tabindex');
+				$img.removeAttr('tabindex');
+
+				if (!$button.length) {
+					$img.wrap('<button type="button" class="oli-vig-thumb"></button>');
+					$button = $item.children('button.oli-vig-thumb');
+				}
+
+				$img.attr('alt', '');
+				$button.attr({
+					type: 'button',
+					'aria-label': label,
+					'aria-current': $img.hasClass('flex-active') ? 'true' : 'false'
+				});
+				$button.removeAttr('tabindex');
+
+				$button.off('click.oli-vig-thumb keydown.oli-vig-thumb').on('click.oli-vig-thumb', function(event) {
+					event.preventDefault();
+					event.stopPropagation();
+					self.goToSlide($gallery, index);
+				}).on('keydown.oli-vig-thumb', function(event) {
+					var key = event.key || event.which;
+					if (key === 'Enter' || key === ' ' || key === 'Spacebar' || key === 13 || key === 32) {
+						event.preventDefault();
+						event.stopPropagation();
+						self.goToSlide($gallery, index);
+					}
+				});
 			});
 
-			$(document).on('click', '.oli-vig-lightbox-next', function(e) {
-				e.stopPropagation();
-				self.lightboxNext();
+			this.applyReducedMotion($gallery);
+			this.hookSliderAfter($gallery);
+		},
+
+		goToSlide: function($gallery, index) {
+			if ($gallery.data('flexslider') && typeof $gallery.flexslider === 'function') {
+				$gallery.flexslider(index);
+			} else {
+				var $img = $gallery.find('.flex-control-thumbs li').eq(index).find('img').first();
+				if ($img.length) {
+					$img.trigger('click');
+				}
+			}
+
+			$gallery.find('.flex-control-thumbs button.oli-vig-thumb').each(function(buttonIndex) {
+				$(this).attr('aria-current', buttonIndex === index ? 'true' : 'false');
+			});
+		},
+
+		updateThumbState: function($gallery) {
+			$gallery.find('.flex-control-thumbs li').each(function() {
+				var $item = $(this);
+				var $button = $item.children('button.oli-vig-thumb');
+				var $img = $item.find('img').first();
+				if ($button.length) {
+					$button.attr('aria-current', $img.hasClass('flex-active') ? 'true' : 'false');
+				}
+				$item.removeAttr('tabindex');
+				$img.removeAttr('tabindex');
+				$button.removeAttr('tabindex');
+			});
+		},
+
+		applyReducedMotion: function($gallery) {
+			if (!this.prefersReducedMotion()) {
+				return;
+			}
+
+			var slider = $gallery.data('flexslider');
+			if (slider && slider.vars) {
+				slider.vars.animationSpeed = 0;
+				slider.vars.slideshowSpeed = 0;
+			}
+		},
+
+		hookSliderAfter: function($gallery) {
+			var self = this;
+			var slider = $gallery.data('flexslider');
+			if (!slider || !slider.vars || slider.vars.oliVigAfterHooked) {
+				this.updateThumbState($gallery);
+				return;
+			}
+
+			var previous = slider.vars.after;
+			slider.vars.after = function(instance) {
+				if (typeof previous === 'function') {
+					previous(instance);
+				}
+				self.updateThumbState($gallery);
+			};
+			slider.vars.oliVigAfterHooked = true;
+			this.updateThumbState($gallery);
+		},
+
+		renderGallery: function(images) {
+			var signature = this.gallerySignature(images);
+			if (signature && signature === this.renderedSignature) {
+				return;
+			}
+
+			var $gallery = this.gallery();
+			if (!$gallery.length) {
+				return;
+			}
+
+			var $wrapper = $gallery.find('.woocommerce-product-gallery__wrapper');
+			if (!$wrapper.length) {
+				$wrapper = $('<div/>', { 'class': 'woocommerce-product-gallery__wrapper' });
+				$gallery.prepend($wrapper);
+			}
+
+			this.destroyGallery($gallery);
+			$wrapper.empty();
+
+			var total = images.length;
+			$.each(images, function(index, image) {
+				$wrapper.append(OliVIG.buildSlide(image, 0 === index, index + 1, total));
 			});
 
-			// Keyboard navigation
-			$(document).on('keydown', function(e) {
-				if (!self.lightboxOpen) {
+			this.applyLayout();
+			$gallery.find('.woocommerce-product-gallery__trigger').remove();
+
+			if (typeof $.fn.wc_product_gallery === 'function') {
+				$gallery.wc_product_gallery();
+			}
+
+			$gallery.find('.woocommerce-product-gallery__trigger').slice(1).remove();
+			this.enhanceAccessibility($gallery);
+			this.renderedSignature = signature;
+			$gallery.trigger('woocommerce_gallery_init.oli-vig', [images]);
+		},
+
+		preloadVariationImages: function() {
+			if (!oliVigSettings.preloadImages) {
+				return;
+			}
+
+			$('.variations_form').each(function() {
+				var variations = $(this).data('product_variations');
+				if (!variations || !variations.length) {
 					return;
 				}
 
-				if (e.key === 'Escape') {
-					self.closeLightbox();
-				} else if (e.key === 'ArrowLeft') {
-					self.lightboxPrev();
-				} else if (e.key === 'ArrowRight') {
-					self.lightboxNext();
-				}
+				$.each(variations, function(index, variation) {
+					if (!variation.oli_vig_gallery) {
+						return;
+					}
+					$.each(variation.oli_vig_gallery, function(imageIndex, image) {
+						if (image.src) {
+							var full = new Image();
+							full.src = image.src;
+						}
+						if (image.thumb_src) {
+							var thumb = new Image();
+							thumb.src = image.thumb_src;
+						}
+					});
+				});
 			});
-		},
-
-		openLightbox: function(index) {
-			var gallery = this.currentGallery.length > 0 ? this.currentGallery : this.originalGallery;
-			
-			if (!gallery[index]) {
-				return;
-			}
-
-			this.currentIndex = index;
-			this.lightboxOpen = true;
-
-			var image = gallery[index];
-			$('.oli-vig-lightbox-image').attr('src', image.full).attr('alt', image.alt || '');
-			$('.oli-vig-lightbox').addClass('active');
-
-			this.updateLightboxButtons(gallery);
-		},
-
-		closeLightbox: function() {
-			$('.oli-vig-lightbox').removeClass('active');
-			this.lightboxOpen = false;
-		},
-
-		lightboxPrev: function() {
-			var gallery = this.currentGallery.length > 0 ? this.currentGallery : this.originalGallery;
-			
-			if (this.currentIndex > 0) {
-				this.currentIndex--;
-				var image = gallery[this.currentIndex];
-				$('.oli-vig-lightbox-image').attr('src', image.full).attr('alt', image.alt || '');
-				this.updateLightboxButtons(gallery);
-			}
-		},
-
-		lightboxNext: function() {
-			var gallery = this.currentGallery.length > 0 ? this.currentGallery : this.originalGallery;
-			
-			if (this.currentIndex < gallery.length - 1) {
-				this.currentIndex++;
-				var image = gallery[this.currentIndex];
-				$('.oli-vig-lightbox-image').attr('src', image.full).attr('alt', image.alt || '');
-				this.updateLightboxButtons(gallery);
-			}
-		},
-
-		updateLightboxButtons: function(gallery) {
-			$('.oli-vig-lightbox-prev').prop('disabled', this.currentIndex === 0);
-			$('.oli-vig-lightbox-next').prop('disabled', this.currentIndex === gallery.length - 1);
-		},
-
-		initTouchSupport: function() {
-			var self = this;
-			var $gallery = $('.woocommerce-product-gallery');
-
-			if ($gallery.length === 0) {
-				return;
-			}
-
-			$gallery.addClass('touch-enabled');
-
-			$gallery.on('touchstart', function(e) {
-				self.touchStartX = e.changedTouches[0].screenX;
-			});
-
-			$gallery.on('touchend', function(e) {
-				self.touchEndX = e.changedTouches[0].screenX;
-				self.handleSwipe();
-			});
-		},
-
-		handleSwipe: function() {
-			var swipeThreshold = 50;
-			var diff = this.touchStartX - this.touchEndX;
-
-			if (Math.abs(diff) < swipeThreshold) {
-				return;
-			}
-
-			var gallery = this.currentGallery.length > 0 ? this.currentGallery : this.originalGallery;
-
-			if (diff > 0 && this.currentIndex < gallery.length - 1) {
-				// Swipe left - next image
-				this.showImage(this.currentIndex + 1);
-			} else if (diff < 0 && this.currentIndex > 0) {
-				// Swipe right - previous image
-				this.showImage(this.currentIndex - 1);
-			}
 		}
 	};
 
-	$(document).ready(function() {
+	$(function() {
 		OliVIG.init();
 	});
 

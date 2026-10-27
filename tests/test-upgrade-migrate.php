@@ -2,12 +2,10 @@
 /**
  * Unit tests for prefixed option migration.
  *
- * @package Oli_Variation_Images_Gallery
+ * @package Oli_Variation_Gallery
  */
 
-if ( ! defined( 'ABSPATH' ) ) {
-	define( 'ABSPATH', __DIR__ . '/' );
-}
+require_once __DIR__ . '/bootstrap.php';
 
 $GLOBALS['oli_vig_test_options'] = array();
 
@@ -56,20 +54,6 @@ if ( ! function_exists( 'delete_option' ) ) {
 
 require_once dirname( __DIR__ ) . '/includes/oli-vig-upgrade.php';
 
-/**
- * Assert helper.
- *
- * @param bool   $condition Condition.
- * @param string $message   Message.
- */
-function oli_vig_upgrade_assert( $condition, $message ) {
-	if ( ! $condition ) {
-		fwrite( STDERR, 'FAIL: ' . $message . PHP_EOL );
-		exit( 1 );
-	}
-	echo 'PASS: ' . $message . PHP_EOL;
-}
-
 $GLOBALS['oli_vig_test_options'] = array(
 	'legacy_vig_settings' => array( 'enable_zoom' => 'no' ),
 );
@@ -80,13 +64,13 @@ oli_vig_migrate_legacy_options(
 	)
 );
 
-oli_vig_upgrade_assert(
+oli_vig_test_assert(
 	isset( $GLOBALS['oli_vig_test_options']['oli_vig_settings'] )
 	&& 'no' === $GLOBALS['oli_vig_test_options']['oli_vig_settings']['enable_zoom'],
 	'migration copies leftover options to the prefixed key'
 );
 
-oli_vig_upgrade_assert(
+oli_vig_test_assert(
 	! array_key_exists( 'legacy_vig_settings', $GLOBALS['oli_vig_test_options'] ),
 	'migration deletes the leftover option after copy'
 );
@@ -102,14 +86,19 @@ oli_vig_migrate_legacy_options(
 	)
 );
 
-oli_vig_upgrade_assert(
+oli_vig_test_assert(
 	'yes' === $GLOBALS['oli_vig_test_options']['oli_vig_settings']['enable_zoom'],
 	'migration does not overwrite an existing prefixed option'
 );
 
-oli_vig_upgrade_assert(
+oli_vig_test_assert(
 	! array_key_exists( 'legacy_vig_settings', $GLOBALS['oli_vig_test_options'] ),
 	'migration still deletes the leftover option when the prefixed key already exists'
+);
+
+oli_vig_test_assert(
+	array() === oli_vig_legacy_option_map(),
+	'legacy option map is an array'
 );
 
 echo 'All upgrade migration tests passed.' . PHP_EOL;
