@@ -315,8 +315,8 @@ class Oli_VIG_Importer {
 			wp_die( esc_html__( 'Invalid nonce.', 'oli-variation-gallery' ) );
 		}
 
-		$dry_run = ! empty( $_POST['dry_run'] );
-		$force   = ! empty( $_POST['force'] );
+		$dry_run = isset( $_POST['dry_run'] ) && '1' === sanitize_text_field( wp_unslash( $_POST['dry_run'] ) );
+		$force   = isset( $_POST['force'] ) && '1' === sanitize_text_field( wp_unslash( $_POST['force'] ) );
 		$result  = $this->run_import( $dry_run, $force );
 
 		$redirect_url = add_query_arg(
@@ -417,9 +417,12 @@ class Oli_VIG_Importer {
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Bulk import of locally stored gallery meta.
 		$legacy = $wpdb->get_results(
 			$wpdb->prepare(
-				"SELECT post_id, meta_value, meta_key FROM {$wpdb->postmeta}
-				WHERE meta_key = %s AND meta_value != '' AND meta_value != 'a:0:{}'",
-				self::RTWPVG_LEGACY_META_KEY
+				'SELECT post_id, meta_value, meta_key FROM %i
+				WHERE meta_key = %s AND meta_value != %s AND meta_value != %s',
+				$wpdb->postmeta,
+				self::RTWPVG_LEGACY_META_KEY,
+				'',
+				'a:0:{}'
 			),
 			ARRAY_A
 		);
@@ -436,15 +439,18 @@ class Oli_VIG_Importer {
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Bulk import of native variation gallery meta.
 		$native = $wpdb->get_results(
 			$wpdb->prepare(
-				"SELECT pm.post_id, pm.meta_value, pm.meta_key FROM {$wpdb->postmeta} pm
-				INNER JOIN {$wpdb->posts} p ON p.ID = pm.post_id
+				'SELECT pm.post_id, pm.meta_value, pm.meta_key FROM %i pm
+				INNER JOIN %i p ON p.ID = pm.post_id
 				WHERE pm.meta_key = %s
 				AND p.post_type = %s
 				AND p.post_status != %s
-				AND pm.meta_value != ''",
+				AND pm.meta_value != %s',
+				$wpdb->postmeta,
+				$wpdb->posts,
 				self::WC_GALLERY_META_KEY,
 				'product_variation',
-				'trash'
+				'trash',
+				''
 			),
 			ARRAY_A
 		);

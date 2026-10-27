@@ -5,6 +5,15 @@ All notable changes to Oli Variation Gallery for WooCommerce are documented in t
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.8] - 2026-10-27
+
+### Security
+- La page de réglages ne lit plus aucun paramètre de requête : l'avis d'enregistrement passe par l'API Settings (add_settings_error dans le rappel de nettoyage)
+- Cases à cocher du formulaire d'import lues avec wp_unslash et sanitize_text_field, après le nonce et current_user_can
+- Requêtes de l'importateur : noms de tables passés en placeholders %i dans $wpdb->prepare(), plus aucune interpolation
+
+[1.0.8]: https://github.com/olivierbigras/Oli-Variation-Images-Gallery-for-WooCommerce/releases/tag/1.0.8
+
 ## [1.0.7] - 2026-10-26
 
 ### Added

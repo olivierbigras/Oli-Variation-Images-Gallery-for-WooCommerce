@@ -152,6 +152,18 @@ class Oli_VIG_Settings {
 	 * @return array<string,mixed>
 	 */
 	public function sanitize_settings( $input ) {
+		static $oli_vig_notice_added = false;
+		if ( ! $oli_vig_notice_added && function_exists( 'add_settings_error' ) ) {
+			// Stored by options.php and shown by settings_errors() after the redirect, so the page never reads $_GET.
+			add_settings_error(
+				'oli_vig_messages',
+				'oli_vig_message',
+				__( 'Settings saved successfully.', 'oli-variation-gallery' ),
+				'updated'
+			);
+			$oli_vig_notice_added = true;
+		}
+
 		return self::sanitize( $input );
 	}
 
@@ -201,16 +213,6 @@ class Oli_VIG_Settings {
 	public function render_settings_page() {
 		if ( ! current_user_can( 'manage_woocommerce' ) ) {
 			return;
-		}
-
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Display-only flag set by the Settings API after options.php.
-		if ( isset( $_GET['settings-updated'] ) ) {
-			add_settings_error(
-				'oli_vig_messages',
-				'oli_vig_message',
-				__( 'Settings saved successfully.', 'oli-variation-gallery' ),
-				'updated'
-			);
 		}
 
 		settings_errors( 'oli_vig_messages' );

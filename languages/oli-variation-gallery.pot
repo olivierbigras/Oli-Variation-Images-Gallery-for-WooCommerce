@@ -2,14 +2,14 @@
 # This file is distributed under the GPL v2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Oli Variation Gallery for WooCommerce 1.0.7\n"
+"Project-Id-Version: Oli Variation Gallery for WooCommerce 1.0.8\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/oli-variation-gallery\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-10-27T00:11:54+00:00\n"
+"POT-Creation-Date: 2026-10-27T13:33:12+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: oli-variation-gallery\n"
@@ -216,51 +216,51 @@ msgstr ""
 msgid "Reset Gallery on Clear"
 msgstr ""
 
-#: includes/class-oli-vig-settings.php:211
+#: includes/class-oli-vig-settings.php:161
 msgid "Settings saved successfully."
 msgstr ""
 
-#: includes/class-oli-vig-settings.php:235
+#: includes/class-oli-vig-settings.php:237
 msgid "Configure how variation galleries are displayed on product pages. Zoom, lightbox, and the image slider use the default gallery."
 msgstr ""
 
-#: includes/class-oli-vig-settings.php:246
+#: includes/class-oli-vig-settings.php:248
 msgid "Bottom"
 msgstr ""
 
-#: includes/class-oli-vig-settings.php:247
+#: includes/class-oli-vig-settings.php:249
 msgid "Left"
 msgstr ""
 
-#: includes/class-oli-vig-settings.php:248
+#: includes/class-oli-vig-settings.php:250
 msgid "Right"
 msgstr ""
 
-#: includes/class-oli-vig-settings.php:261
+#: includes/class-oli-vig-settings.php:263
 msgid "Theme default"
 msgstr ""
 
-#: includes/class-oli-vig-settings.php:266
+#: includes/class-oli-vig-settings.php:268
 msgid "Use the theme or WooCommerce default (for example Storefront uses 5), or choose 1–8."
 msgstr ""
 
-#: includes/class-oli-vig-settings.php:279
+#: includes/class-oli-vig-settings.php:281
 msgid "Use the default product image zoom."
 msgstr ""
 
-#: includes/class-oli-vig-settings.php:293
+#: includes/class-oli-vig-settings.php:295
 msgid "Use the default product image lightbox."
 msgstr ""
 
-#: includes/class-oli-vig-settings.php:307
+#: includes/class-oli-vig-settings.php:309
 msgid "Gallery width as a percentage (50-100%)."
 msgstr ""
 
-#: includes/class-oli-vig-settings.php:320
+#: includes/class-oli-vig-settings.php:322
 msgid "Preload variation images for faster switching."
 msgstr ""
 
-#: includes/class-oli-vig-settings.php:334
+#: includes/class-oli-vig-settings.php:336
 msgid "Reset to the main gallery when the variation is cleared."
 msgstr ""
 
