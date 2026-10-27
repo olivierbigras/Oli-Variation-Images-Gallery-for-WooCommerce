@@ -4,7 +4,7 @@ Tags: variations, gallery, product images, variable products, thumbnails
 Requires at least: 6.5
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.0.6
+Stable tag: 1.0.7
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -82,6 +82,16 @@ The variation’s own image replaces the main image and the rest of the main gal
 
 Yes. Already-matching variations are skipped, existing non-empty galleries are left unchanged unless you force an overwrite, and source meta is never deleted.
 
+= What happens to my variation galleries when I delete the plugin? =
+
+Uninstall deletes the plugin options `oli_vig_settings` (thumbnail position, columns, zoom, lightbox, and the other settings) and `oli_vig_version` (the stored plugin version). Variation galleries are product content, so the `_oli_vig_gallery_images` post meta is left in place on purpose. That way the images stay attached to each variation if you reinstall the plugin.
+
+WP-CLI has no `wp post meta delete-all` command. To remove those galleries yourself after uninstall, take a database backup first, then run this prefix-safe query:
+
+	wp db query "DELETE FROM $(wp db prefix)postmeta WHERE meta_key = '_oli_vig_gallery_images'"
+
+Media Library files are not deleted.
+
 = Does it support video galleries? =
 
 This version focuses on image galleries.
@@ -98,6 +108,9 @@ Email oli@olivierbigras.com or open an issue on the plugin's GitHub repository.
 4. Import tool with dry-run count
 
 == Changelog ==
+
+= 1.0.7 - 2026-10-26 =
+* Documented that variation galleries are kept on uninstall (FAQ).
 
 = 1.0.6 - 2026-10-26 =
 * Fixed a JavaScript console error (flexAnimate) when clearing or changing a variation with WooCommerce 11.2.
@@ -145,6 +158,9 @@ Email oli@olivierbigras.com or open an issue on the plugin's GitHub repository.
 * Initial preview
 
 == Upgrade Notice ==
+
+= 1.0.7 =
+Documented that variation galleries are kept on uninstall (FAQ).
 
 = 1.0.6 =
 Fixed a JavaScript console error (flexAnimate) when clearing or changing a variation with WooCommerce 11.2.

@@ -10,7 +10,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 if ( ! defined( 'OLI_VIG_VERSION' ) ) {
-	define( 'OLI_VIG_VERSION', '1.0.6' );
+	define( 'OLI_VIG_VERSION', '1.0.7' );
 }
 
 if ( ! function_exists( 'absint' ) ) {
