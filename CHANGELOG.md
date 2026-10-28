@@ -5,6 +5,11 @@ All notable changes to Oli Variation Gallery for WooCommerce are documented in t
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.9] - 2026-10-28
+
+### Changed
+- Renamed for wp.org slug match; Tested up to only in readme
+
 ## [1.0.8] - 2026-10-27
 
 ### Security

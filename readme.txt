@@ -1,10 +1,10 @@
-=== Oli Variation Gallery for WooCommerce ===
+=== Oli Variation Gallery ===
 Contributors: bigrat95
 Tags: variations, gallery, product images, variable products, thumbnails
 Requires at least: 6.5
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.0.8
+Stable tag: 1.0.9
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -108,6 +108,9 @@ Email oli@olivierbigras.com or open an issue on the plugin's GitHub repository.
 4. Import tool with dry-run count
 
 == Changelog ==
+
+= 1.0.9 - 2026-10-28 =
+* Renamed for wp.org slug match; Tested up to only in readme.
 
 = 1.0.8 - 2026-10-27 =
 * Security hardening: the settings page no longer reads request parameters; the save notice comes from the Settings API.

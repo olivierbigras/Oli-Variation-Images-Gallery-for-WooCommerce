@@ -1,4 +1,4 @@
-# Oli Variation Gallery for WooCommerce
+# Oli Variation Gallery
 
 Add several gallery images per product variation. The default product gallery swaps to the selected variation and falls back to the main gallery.
 
