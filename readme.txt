@@ -167,6 +167,9 @@ Email oli@olivierbigras.com or open an issue on the plugin's GitHub repository.
 
 == Upgrade Notice ==
 
+= 1.0.9 =
+Renamed to Oli Variation Gallery to match the wordpress.org slug.
+
 = 1.0.8 =
 Security hardening of the settings page, the importer and its database queries. No data changes.
 

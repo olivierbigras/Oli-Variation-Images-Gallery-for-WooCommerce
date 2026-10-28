@@ -1,4 +1,4 @@
-Oli Variation Gallery for WooCommerce
+Oli Variation Gallery
 Copyright (C) 2026 Olivier Bigras
 
 This program is free software; you can redistribute it and/or modify
